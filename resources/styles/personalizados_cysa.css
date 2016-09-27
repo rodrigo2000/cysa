@@ -1,0 +1,103 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 26-jul-2016, 10:38:25
+    Author     : rodrigo.sevilla
+*/
+
+.notification-bar-icon i.material-icons {
+    padding-top: 3px;
+    padding-left: 3px;
+}
+
+.notification-bar-icon i.fa {
+    padding-top: 8px;
+    padding-left: 6px;
+    color: #fff;
+}
+
+/*.notification-bar-success .notification-bar-icon i.material-icons,
+.notification-bar-fail .notification-bar-icon i.material-icons, 
+.notification-bar-warning .notification-bar-icon i.material-icons, 
+.notification-bar-info .notification-bar-icon i.material-icons {
+    color: #fff;
+}*/
+
+.timeline .timeline-icon { left:155px; }
+.timeline:before { left: 173px; }
+.timeline .timeline-content { margin-left: 215px; }
+.timeline.stacked .timeline-date { left: -215px; }
+@media (max-width: 991px){
+    .timeline .timeline-date {
+        left:-215px;
+    }
+}
+
+.timeline .timeline-content .timeline-body.bg-warning:before {
+    border-color: transparent #f0c54c transparent transparent;
+}
+
+.timeline .timeline-content .timeline-body.bg-warning:after {
+    border-color: transparent;
+}
+
+.timeline .timeline-content .timeline-body.bg-danger:before {
+    border-color: transparent #d26d54 transparent transparent;
+}
+
+.timeline .timeline-content .timeline-body.bg-danger:after {
+    border-color: transparent;
+}
+
+.timeline .timeline-content .timeline-body.bg-info:before {
+    border-color: transparent #4cc3f0 transparent transparent;
+}
+
+.timeline .timeline-content .timeline-body.bg-info:after {
+    border-color: transparent;
+}
+
+.timeline .timeline-content .timeline-body.bg-success:before {
+    border-color: transparent #7fc35c transparent transparent;
+}
+
+.timeline .timeline-content .timeline-body.bg-success:after {
+    border-color: transparent;
+}
+
+@media (min-width: 992px){
+    .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-danger:before {
+        border-color: transparent transparent transparent #d26d54;
+    }
+
+    .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-danger:after {
+        border-color: transparent transparent transparent transparent;
+    }
+
+    .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-warning:before {
+        border-color: transparent transparent transparent #f0c54c;
+    }
+
+    .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-warning:after {
+        border-color: transparent transparent transparent transparent;
+    }
+    
+    .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-info:before {
+        border-color: transparent transparent transparent #4cc3f0;
+    }
+
+    .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-info:after {
+        border-color: transparent transparent transparent transparent;
+    }
+    
+    .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-success:before {
+        border-color: transparent transparent transparent #7fc35c;
+    }
+
+    .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-success:after {
+        border-color: transparent transparent transparent transparent;
+    }
+}
