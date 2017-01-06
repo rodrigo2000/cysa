@@ -126,7 +126,7 @@ class MY_Controller extends CI_Controller {
         $rutaUsuarios = implode(DIRECTORY_SEPARATOR, array("usuarios", $view . ".php"));
         $rutaDefault = implode(DIRECTORY_SEPARATOR, array($view . ".php"));
         $ruta = implode(DIRECTORY_SEPARATOR, array(realpath("."), "application", "views", ""));
-        if (file_exists($ruta . $rutaUsuarios) && ($this->isTipoCuenta(ADVANS_CUENTA_EMPRESARIAL) || $this->isTipoCuenta(ADVANS_CUENTA_PROFESIONAL) || $this->isTipoCuenta(ADVANS_CUENTA_DEMO))) {
+        if (file_exists($ruta . $rutaUsuarios)) {
             $this->template = $this->parser->parse("usuarios/" . $view, $data, TRUE);
         } elseif (file_exists($ruta . $rutaDefault)) {
             $this->template = $this->parser->parse($view, $data, TRUE);
@@ -250,8 +250,7 @@ class MY_Controller extends CI_Controller {
     }
 
     function modificar($id = null, $data = array()) {
-        if ($this->input->server('REQUEST_METHOD') === "POST") {
-            $id = $this->input->post($this->module['id_field']);
+        if ($this->input->server('REQUEST_METHOD') === "POST") {            
             $this->form_validation->set_rules($this->rulesForm);
             $id = $this->input->post($this->module['id_field']);
             foreach ($this->rulesForm as $rule) {
@@ -267,7 +266,7 @@ class MY_Controller extends CI_Controller {
                 }
             }
         }
-
+	
         if (!isset($data['r'])) {
             $res = $this->db->select($this->module['prefix'] . ".*")->where($this->module['prefix'] . "." . $this->module['id_field'], $id)->get($this->module['tabla'] . " " . $this->module['prefix']);
             if ($res->num_rows() == 1) {
@@ -323,7 +322,7 @@ class MY_Controller extends CI_Controller {
      * @return resource Devuelve el objeto con la conexión a la base de datos, FALSE en caso de error
      */
     function getDatabase($dbName = "") {
-        if (!empty($dbName) && $this->input->server("REQUEST_METHOD") != "GET")
+        if (!empty($dbName) /*&& $this->input->server("REQUEST_METHOD") != "GET"*/)
             return $this->{$this->module['controller'] . "_model"}->getDatabase($dbName);
         return FALSE;
     }
