@@ -9,8 +9,8 @@ define('APP_NAMESPACE', "cysa");
 
 // Constantes de conexión a servidor de base de datos
 define("APP_DATABASE_HOSTNAME", "svrdcont02");
-define("APP_DATABASE_USERNAME", "rodrigo.sevilla");
-define("APP_DATABASE_PASSWORD", "sevilla");
+define("APP_DATABASE_USERNAME", "tester");
+define("APP_DATABASE_PASSWORD", "prueba");
 
 // URLs a otros sistemas internos
 define("APP_SAC_URL", 'http://localhost/Contraloria_v2.0/sac/');
@@ -19,11 +19,12 @@ define('APP_CORRESPONDENCIA_URL', 'http://localhost/Contraloria_v2.0/corresponde
 define('APP_CYSA_URL', 'http://localhost/Contraloria_v2.0/cysa/');
 
 // Constantes de nombres de base de datos
-define('APP_DATABASE_PREFIX', '');
+define('APP_DATABASE_PREFIX', 'preprod_');
 define('APP_DATABASE_SAC', 'sac');
 define('APP_DATABASE_CORRESPONDENCIA', 'correspondencia');
 define('APP_DATABASE_CISOP', 'cisop');
 define('APP_DATABASE_CYSA', 'cysa');
+define('APP_DATABASE_TIMELINE', 'timeline');
 
 // Constantes de la applicacion
 define("CORRESPONDENCIA_NO LEIDO", 0);
