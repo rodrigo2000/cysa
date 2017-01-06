@@ -5,7 +5,11 @@
     </div>
     <div class="card-block">
         <div class="table-responsive">
-            <table class="table table-bordered table-sm table-hover">
+            <table class="table table-bordered table-sm table-hover dataTable">
+		<colgroup>
+		    <col span="4">
+		    <col style="width: 130px;">
+		</colgroup>
                 <thead class="thead-inverse">
                     <tr>
                         <th>Nombre</th>
@@ -22,7 +26,7 @@
     			<td><?= $r['procesos_descripcion']; ?></td>
     			<td><?= $r['procesos_version_iso']; ?></td>
     			<td><?= str_replace(",", ", ", $r['procesos_tipo_auditoria']); ?></td>
-    			<td width="150">
+    			<td>
     			    <a href="<?= base_url() . $this->module['controller'] . "/nuevo_proceso_vigente/" . $r[$this->module['id_field']]; ?>" class="btn btn-xs<?= $r['procesos_vigente'] == 1 ? ' btn-warning' : ' btn-default'; ?>"><i class="fa fa-star"></i></a>
     			    <a href="<?= $this->module['edit_url'] . "/" . $r[$this->module['id_field']]; ?>" class="btn btn-xs btn-primary-outline"><i class="fa fa-pencil"></i></a>
     			    <a href="<?= $this->module['delete_url'] . "/" . $r[$this->module['id_field']]; ?>" class="btn btn-xs btn-danger-outline"><i class="fa fa-trash"></i></a>
