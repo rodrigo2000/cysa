@@ -48,7 +48,7 @@ if (isset($r) && !is_array($r['procesos_tipo_auditoria']) && isset($r['procesos_
 		    <button class="btn btn-primary" type="submit"><?= $etiquetaBoton; ?></button>
 		</div>
 	    </div>
-	    <input type="hidden" name="procesos_id" value="<?= isset($r[$this->module['id_field']]) ? $r[$this->module['id_field']] : ''; ?>"> 
+	    <input type="hidden" name="<?= $this->module['id_field']; ?>" value="<?= isset($r[$this->module['id_field']]) ? $r[$this->module['id_field']] : ''; ?>"> 
 	    <input type="hidden" name="procesos_tipo_auditoria" id="procesos_tipo_auditoria" value="<?= isset($r) ? $r['procesos_tipo_auditoria'] : ''; ?>">
 	</form>
     </div>
