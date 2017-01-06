@@ -8,7 +8,7 @@
             <table class="table table-bordered table-sm table-hover dataTable">
 		<colgroup>
 		    <col span="4">
-		    <col style="width: 130px;">
+		    <col style="width: 140px;">
 		</colgroup>
                 <thead class="thead-inverse">
                     <tr>
