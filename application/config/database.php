@@ -161,3 +161,25 @@ $db[APP_DATABASE_CISOP] = array(
     'failover' => array(),
     'save_queries' => TRUE
 );
+
+$db[APP_DATABASE_TIMELINE] = array(
+    'dsn' => '',
+    'hostname' => APP_DATABASE_HOSTNAME,
+    'username' => APP_DATABASE_USERNAME,
+    'password' => APP_DATABASE_PASSWORD,
+    'database' => APP_DATABASE_PREFIX . APP_DATABASE_TIMELINE,
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => FALSE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE
+);
