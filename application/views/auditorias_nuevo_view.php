@@ -70,12 +70,12 @@ if (isset($r)) {
                     <div class="col-sm-10">
                         <div class="input-group col-md-6 p-l-0 p-r-0">
                             <span class="input-group-addon">Programada</span>
-                            <input type="text" class="form-control datepicker" id="fipa" value="<?= isset($r) ? $r['fechaIniAudit'] : ''; ?>">
+                            <input type="text" class="form-control datepicker" id="fipa" value="<?= isset($r) ? mysqlDate2Date($r['fechaIniAudit']) : ''; ?>" data-input-alternativo="fipa_alt">
                             <input type="hidden" id="fipa_alt" name="fipa" value="<?= isset($r) ? $r['fechaIniAudit'] : ''; ?>">
                         </div>
                         <div class="input-group col-md-6">
                             <span class="input-group-addon">Real</span>
-                            <input type="text" class="form-control datepicker" id="firp" value="<?= isset($r) ? $r['fechaIniReal'] : ''; ?>">
+                            <input type="text" class="form-control datepicker" id="firp" value="<?= isset($r) ? mysqlDate2Date($r['fechaIniReal']) : ''; ?>" data-input-alternativo="firp_alt">
                             <input type="hidden" id="firp_alt" name="firp" value="<?= isset($r) ? $r['fechaIniReal'] : ''; ?>">
                         </div>
                     </div>
@@ -85,12 +85,12 @@ if (isset($r)) {
                     <div class="col-sm-10">
                         <div class="input-group col-md-6 p-l-0 p-r-0">
                             <span class="input-group-addon">Programada</span>
-                            <input type="text" class="form-control datepicker" id="ffpa" value="<?= isset($r) ? $r['fechaFinAudit'] : ''; ?>">
+                            <input type="text" class="form-control datepicker" id="ffpa" value="<?= isset($r) ? mysqlDate2Date($r['fechaFinAudit']) : ''; ?>" data-input-alternativo="ffpa_alt">
                             <input type="hidden" id="ffpa_alt" name="ffpa" value="<?= isset($r) ? $r['fechaFinAudit'] : ''; ?>">
                         </div>
                         <div class="input-group col-md-6">
                             <span class="input-group-addon">Real</span>
-                            <input type="text" class="form-control datepicker" id="ffrp" name="ffrp" value="<?= isset($r) ? $r['fechaFinReal'] : ''; ?>">
+                            <input type="text" class="form-control datepicker" id="ffrp" name="ffrp" value="<?= isset($r) ? mysqlDate2Date($r['fechaFinReal']) : ''; ?>" data-input-alternativo="ffrp_alt">
                             <input type="hidden" id="ffrp_alt" name="ffrp" value="<?= isset($r) ? $r['fechaFinReal'] : ''; ?>">
                         </div>
                     </div>
