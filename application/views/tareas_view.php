@@ -35,3 +35,8 @@
 	<?php endif; ?>
     </div>
 </div>
+<script>
+    var dataTableOrder = "asc";
+    var dataTableFieldOrder = 0;
+    var dataTableOrderTargets = [-1];
+</script>
