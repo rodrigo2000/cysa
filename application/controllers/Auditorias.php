@@ -12,7 +12,7 @@ class Auditorias extends MY_Controller {
         $this->module['title_edit'] = "Editar auditoría";
         $this->module['title_delete'] = "Eliminar auditoría";
         $this->module["id_field"] = "idAuditoria";
-        $this->module['tabla'] = "cat_" . $this->module['name'];
+        $this->module['tabla'] = "cat_auditoria";
         $this->module['prefix'] = "au";
 
         $this->rulesForm = array(
@@ -55,13 +55,16 @@ class Auditorias extends MY_Controller {
     }
 
     function modificar($id = NULL, $data = array()) {
-        $idEmpresa = $this->session->apps[ADVANS_NAMESPACE]['id_empresa_actual'];
         $data = array(
             "tituloModulo" => $this->module['title_edit'],
             "etiquetaBoton" => "Actualizar",
             "urlAction" => $this->module['edit_url'] . "/" . $id,
-            "id" => $id,
-            "idEmpresa" => $idEmpresa
+	    'areas' => array('UNCAI', 'UNCJU', 'UNCTI', 'UCOAI', 'UCOJU', 'UCOTI', 'CMAI', 'CMCS', 'CMNJ', 'CMTI', 'CMJU', 'CMNP', 'CMSA'),
+            'tipos' => array('AE', 'AP', 'CV', 'IC', 'SA', 'MO'),
+            'anios' => array(date("Y") - 1, date("Y"), date("Y") + 1),
+            'direcciones' => $this->Catalogos_model->getDirecciones(),
+            'auditores' => $this->Catalogos_model->getAuditoresLider(33),
+            "id" => $id
         );
         parent::modificar($id, $data);
     }
