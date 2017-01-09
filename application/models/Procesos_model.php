@@ -16,4 +16,14 @@ class Procesos_model extends MY_Model {
 	return parent::getResultados($limit, $start);
     }
 
+    function delete($id) {
+	$etapas = $this->Etapas_model->get_etapas_del_proceso($id);
+	if (count($etapas) > 0) {
+	    foreach ($etapas as $e) {
+		$this->Etapas_model->delete($e['etapas_id']);
+	    }
+	}
+	return parent::delete($id);
+    }
+
 }
