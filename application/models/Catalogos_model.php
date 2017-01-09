@@ -29,7 +29,7 @@ class Catalogos_model extends MY_Model {
 
     function getDepartamentos($idDireccion = NULL, $idSubdireccion = NULL) {
         $return = array();
-        if (!empty($idDireccion) && !empty($idSubdireccions)) {
+        if (!empty($idDireccion) && !empty($idSubdireccion)) {
             $dbSAC = $this->getDatabase("sac");
             $return = $dbSAC
                     ->where("clv_dir", $idDireccion)
