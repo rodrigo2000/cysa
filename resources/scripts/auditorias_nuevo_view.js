@@ -48,7 +48,6 @@ $(document).ready(function () {
         wrapper: 'div',
         errorElement: "span",
         errorPlacement: function (error, element) {
-            console.log(error)
             error.addClass("label label-danger");
             if (element.parent('div[class|=has]').length == 0)
                 element.wrap('<div class="has-danger"></div>');
