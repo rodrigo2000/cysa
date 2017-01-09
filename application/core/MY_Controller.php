@@ -148,7 +148,7 @@ class MY_Controller extends CI_Controller {
      */
     function listado($data = array()) {
 	$config = array();
-	$config["base_url"] = $this->module['url']."/index/";
+	$config["base_url"] = $this->module['url'] . "/index/";
 	$config["total_rows"] = $this->{$this->module['controller'] . "_model"}->record_count();
 	$config["per_page"] = ($config['total_rows'] == 0 ? 1 : $config['total_rows']);
 	$config["uri_segment"] = 3;
