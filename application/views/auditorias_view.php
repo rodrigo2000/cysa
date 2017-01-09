@@ -51,19 +51,21 @@
                         <option value="1">Cancelada</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                <button id="btnBuscar" type="button" class="btn btn-primary"><i class="fa fa-search"></i></button>
             </form>
-            <table class="table table-bordered table-sm table-striped dataTablePersonalizado">
+            <table id="tablaAuditorias" class="table table-sm table-hover table-striped dataTablePersonalizado">
+		<col span="6">
+		<col style="width: 80px;">
                 <thead class="thead-inverse">
                     <tr>
                         <th>No de Auditoría</th>
-                        <th>Rubro</th>
+                        <!--<th>Rubro</th>-->
                         <th>Dirección/Subdirección</th>
-                        <th>FFP</th>
-                        <th>FFR(1°_Etapa)</th>
-                        <th>F.Aprob</th>
+                        <th>Fecha Fin Programada</th>
+                        <th>Fecha Fin Real (1° Etapa)</th>
+                        <th>Fecha Aprobación</th>
                         <th>Estado</th>
-                        <th width="40">&nbsp;</th>
+                        <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,4 +77,12 @@
 <script src="<?= base_url(); ?>resources/scripts/auditorias_view.js" type="text/javascript"></script>
 <script>
     var dataTableOrder = "asc";
+    var dataTableFieldOrder = 0;
+    var dataTableOrderTargets = [-1];
 </script>
+<style>
+    .table thead tr th, .table td {
+	vertical-align: middle;
+	text-align: center;
+    }
+</style>
