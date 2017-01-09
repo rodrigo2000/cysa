@@ -51,7 +51,7 @@ class Auditorias_model extends MY_Model {
 		case 2:
 		    $this->db->where('statusAudit', 1)
 			    ->group_start()
-			    ->where('fechaIniAudit', 'fechaIniReal')
+			    ->where('fechaIniAudit', 'fechaIniReal', TRUE)
 			    ->or_where('fechaSelloOEA IS NOT NULL', NULL, FALSE)
 			    ->group_end();
 		    break;
@@ -60,7 +60,7 @@ class Auditorias_model extends MY_Model {
 		    break;
 		case 4:
 		    $this->db->where('statusAudit', 1)
-			    ->where('fechaIniAudit !=', 'fechaIniReal')
+			    ->where('fechaIniAudit !=', 'fechaIniReal', FALSE)
 			    ->where('fechaSelloOEA IS NULL', NULL, FALSE);
 		    break;
 	    }
@@ -134,7 +134,7 @@ class Auditorias_model extends MY_Model {
 		case 2:
 		    $this->db->where('statusAudit', 1)
 			    ->group_start()
-			    ->where('fechaIniAudit', 'fechaIniReal')
+			    ->where('fechaIniAudit', 'fechaIniReal', FALSE)
 			    ->or_where('fechaSelloOEA IS NOT NULL', NULL, FALSE)
 			    ->group_end();
 		    break;
@@ -143,7 +143,7 @@ class Auditorias_model extends MY_Model {
 		    break;
 		case 4:
 		    $this->db->where('statusAudit', 1)
-			    ->where('fechaIniAudit !=', 'fechaIniReal')
+			    ->where('fechaIniAudit != fechaIniReal', NULL, FALSE)
 			    ->where('fechaSelloOEA IS NULL', NULL, FALSE);
 		    break;
 	    }
@@ -152,7 +152,10 @@ class Auditorias_model extends MY_Model {
 	if ($orderColumn) {
 	    $this->db->order_by($orderColumn, $order);
 	} else {
-	    $this->db->order_by($this->table_prefix . ".anio", "ASC")->order_by("num", "ASC");
+	    $this->db
+		    ->order_by($this->table_prefix . ".anio", "ASC")
+		    ->order_by($this->table_prefix . ".numero", "ASC")
+		    ->order_by($this->table_prefix . ".tipo", "ASC");
 	}
 
 	return $this->getResultados($length, $start);
