@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>PHP</ID>
+  <OriginalElement>\Auditorias</OriginalElement>
+  <nodes>
+    <node x="634.0" y="1115.0">\Iso_model</node>
+    <node x="1174.0" y="1596.0">\Productos_model</node>
+    <node x="585.0" y="2154.0">\Documentos_model</node>
+    <node x="1039.0" y="1008.0">\Detalles_model</node>
+    <node x="1584.0" y="1819.0">\Timeline</node>
+    <node x="672.0" y="0.0">\Timeline_model</node>
+    <node x="1397.0" y="1532.0">\Etapas_model</node>
+    <node x="914.0" y="1745.0">\Empleados_model</node>
+    <node x="966.0" y="1950.0">\Campos_model</node>
+    <node x="1386.0" y="984.0">\Versiones_model</node>
+    <node x="3014.0" y="423.0">\Auditorias</node>
+    <node x="2538.0" y="205.0">\MY_Controller</node>
+    <node x="797.0" y="1027.0">\Procesos_model</node>
+    <node x="674.0" y="1908.0">\Dashboard_model</node>
+    <node x="2845.0" y="140.0">\Catalogos</node>
+    <node x="2662.0" y="73.0">\Reportes</node>
+    <node x="242.0" y="1159.0">\Observaciones_model</node>
+    <node x="2266.0" y="488.0">\Iso</node>
+    <node x="1462.0" y="1307.0">\Catalogos_model</node>
+    <node x="2800.0" y="740.0">\Procesos</node>
+    <node x="2258.0" y="672.0">\Tareas</node>
+    <node x="2125.0" y="204.0">\Productos</node>
+    <node x="392.0" y="932.0">\Tareas_model</node>
+    <node x="2940.0" y="281.0">\Ayuda</node>
+    <node x="800.0" y="1276.0">\MY_Model</node>
+    <node x="474.0" y="1681.0">\Configuraciones_model</node>
+    <node x="0.0" y="1752.0">\Auditorias_model</node>
+    <node x="2424.0" y="0.0">\Dashboard</node>
+    <node x="222.0" y="1425.0">\Recomendaciones_model</node>
+    <node x="2556.0" y="779.0">\Campos</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="\Versiones_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Ayuda" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Tareas" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Auditorias" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Timeline_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Procesos" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Dashboard_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Productos" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Auditorias_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Tareas_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Etapas_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Timeline" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Iso_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Dashboard" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Configuraciones_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Reportes" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Productos_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Empleados_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Campos" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Catalogos_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Observaciones_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Documentos_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Iso" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Campos_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Recomendaciones_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Catalogos" target="\MY_Controller">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Procesos_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="\Detalles_model" target="\MY_Model">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="1546.0" y="1758.5" />
+  <SelectedNodes>
+    <node>\Timeline</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Constants</Category>
+    <Category>Constructors</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
