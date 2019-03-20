@@ -1,25 +1,28 @@
-<div class="row">
-    <div class="col-sm-6">
-	<div class="card card-block">
-	    <h4 class="card-title">Procesos</h4>
-	    <p class="card-text">Listado de procesos con certificación ISO usados por la Contraloría de Mérida.</p>
-	    <a href="<?= base_url(); ?>Procesos" class="btn btn-primary">Ver catálogo</a>
-	</div>
+<div class="card">
+    <div class="card-header no-bg1 b-a-0">
+        <h3>Catálogos relacionados con <?= APP_ABREVIACION; ?></h3>
     </div>
-
-    <div class="col-sm-6">
-	<div class="card card-block">
-	    <h4 class="card-title">Tareas</h4>
-	    <p class="card-text">Listado de etiquetas de tareas que aparecen en la línea de tiempo.</p>
-	    <a href="<?= base_url(); ?>Tareas" class="btn btn-primary">Ver catálogo</a>
-	</div>
-    </div>
-
-    <div class="col-sm-6">
-	<div class="card card-block">
-	    <h4 class="card-title">Campos de base de datos</h4>
-	    <p class="card-text">Listado de campos de base de datos para configurar en la línea de tiempo.</p>
-	    <a href="<?= base_url(); ?>Campos" class="btn btn-primary">Ver catálogo</a>
-	</div>
+    <div class="card-block">
+        <div class="row m-b-1 m-t-1">
+            <div class="col-xs-12 col-sm-4">
+                <div class="list-group">
+                    <a href="<?= base_url(); ?>Auditorias_areas" class="list-group-item"><i class="fa fa-cogs"></i> Areas de auditoría</a>
+                    <a href="<?= base_url(); ?>Auditorias_tipos" class="list-group-item"><i class="fa fa-cogs"></i> Tipos de auditoría</a>
+                    <a href="<?= base_url(); ?>Auditorias_statys" class="list-group-item"><i class="fa fa-cogs"></i> Status de auditoría</a>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                <div class="list-group">
+                    <a href="<?= base_url(); ?>Documentos_tipos" class="list-group-item"><i class="fa fa-cogs"></i> Tipos de documento</a>
+                    <a href="<?= base_url(); ?>Documentos_constantes" class="list-group-item"><i class="fa fa-cogs"></i> Constantes de documento</a>
+                    <a href="<?= base_url(); ?>Documentos_versiones" class="list-group-item"><i class="fa fa-cogs"></i> Versiones de documento</a>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                <div class="list-group">
+                    <a href="<?= base_url(); ?>Importar" class="list-group-item bg-danger"><i class="fa fa-cogs"></i> Importar</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

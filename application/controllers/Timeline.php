@@ -4,16 +4,16 @@ class Timeline extends MY_Controller {
 
     function __construct() {
         parent::__construct();
-        $this->module['name'] = 'timeline';
-        $this->module['controller'] = 'Timeline';
+        $this->module['name'] = strtolower(__CLASS__);
+        $this->module['controller'] = __CLASS__;
         $this->module['title'] = 'Línea de tiempo';
         $this->module['title_list'] = "Línea de tiempo de";
         $this->module['title_new'] = "Nuevo hito";
         $this->module['title_edit'] = "Editar hito";
         $this->module['title_delete'] = "Eliminar hito";
-        $this->module["id_field"] = "idAuditoria";
-        $this->module['tabla'] = "cat_" . $this->module['name'];
-        $this->module['prefix'] = "time";
+        $this->module["id_field"] = "configuraciones_id";
+        $this->module['tabla'] = "configuraciones";
+        $this->module['prefix'] = "conf";
 
         $this->rulesForm = array(
             array('field' => 'clientes_nombre', 'label' => 'nombre del cliente', 'rules' => 'required|trim',),
@@ -23,18 +23,20 @@ class Timeline extends MY_Controller {
         $this->_initialize();
     }
 
-    function index($idAuditoria = NULL) {
-        if (!is_null($idAuditoria)) {
-            $this->session->set_userdata('auditoria', array("id_auditoria" => $idAuditoria));
-        }
-        parent::index();
+    function index($auditorias_id = NULL) {
+        $auditorias_id = $this->Auditoria_model->get_real_auditoria($auditoria);
+        $this->visualizar("timeline_view");
     }
 
     function visualizar($view = NULL, $data = array()) {
-        $idAuditoria = 3;
-        $proceso = $this->{$this->module['controller'] . "_model"}->get_proceso($idAuditoria);
-        $idAuditoria = isset($this->session->auditoria['id_auditoria']) ? $this->session->auditoria['id_auditoria'] : 694;
-        $tipoAuditoria = $this->db->select("tipo")->where("idAuditoria", $idAuditoria)->get("cat_auditoria")->row()->tipo;
+        $auditorias_id = 3;
+        $proceso = $this->{$this->module['controller'] . "_model"}->get_proceso($auditorias_id);
+        $auditorias_id = isset($this->session->auditoria['id_auditoria']) ? $this->session->auditoria['id_auditoria'] : 694;
+        $tipoAuditoria = $this->db
+                ->select("tipo")
+                ->where("idAuditoria", $auditorias_id)
+                ->get("cat_auditoria")
+                ->row()->tipo;
         switch ($tipoAuditoria) {
             case 'SA':
                 $this->db
@@ -61,17 +63,17 @@ class Timeline extends MY_Controller {
                 ->select('idAuditoria')
                 ->select("CONCAT(area,'/',tipo,'/',numero,'/',anio) AS nombreAuditoria")
                 ->select("tipo, idEmpleado")
-                ->where('idAuditoria', $idAuditoria)
+                ->where('idAuditoria', $auditorias_id)
                 ->get("cat_auditoria")
                 ->row_array();
         $etapas = $this->{$this->module['controller'] . "_model"}->get_etapas($proceso['procesos_id']);
-        $tareas = $this->{$this->module['controller'] . "_model"}->get_tareas($idAuditoria, array_column($etapas, 'etapas_id'), $auditoria);
+        $tareas = $this->{$this->module['controller'] . "_model"}->get_tareas($auditorias_id, array_column($etapas, 'etapas_id'), $auditoria);
         $entregables = $this->{$this->module['controller'] . "_model"}->get_entregables(array_column($tareas, 'tareas_id'));
         $auditoria['reprogramacion_inicio_dias_habiles'] = getDiasHabiles($auditoria['fechaIniAudit'], $auditoria['fechaIniReal']);
         $auditoria['reprogramacion_fin_dias_habiles'] = getDiasHabiles($auditoria['fechaFinAudit'], $auditoria['fechaFinReal']);
         $lider = $this->Empleados_model->get_empleado($auditoria['idEmpleado']);
         $auditoria['lider'] = $lider['nombre'] . " " . $lider['aPaterno'] . " " . $lider['aMaterno'];
-        $equipoArray = $this->Auditorias_model->get_equipo_auditoria($idAuditoria);
+        $equipoArray = $this->Auditorias_model->get_equipo_auditoria($auditorias_id);
         $equipo = array();
         foreach ($equipoArray as $e) {
             $nombre = $e['nombre'] . " " . $e['aPaterno'] . " " . $e['aMaterno'];
@@ -88,9 +90,6 @@ class Timeline extends MY_Controller {
             'entregables' => $entregables,
             'auditoria' => $auditoria
         );
-//        echo "<pre>";
-//        print_r($tareas);
-//        die();
         parent::visualizar($view, $data);
     }
 

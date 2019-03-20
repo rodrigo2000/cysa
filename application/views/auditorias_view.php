@@ -5,66 +5,67 @@
     </div>
     <div class="card-block">
         <div class="table-responsive">
-            <form class="form-inline m-b-1">
+            <form id="filtros" class="form-inline m-b-1">
                 <div class="form-group">
-                    <label class="sr-only" for="clv_dir">Dirección</label>
-                    <select id="clv_dir" name="clv_dir" class="form-control">
+                    <label class="sr-only" for="direcciones_id">Dirección</label>
+                    <select id="direcciones_id" name="direcciones_id" class="form-control">
                         <option value="0">Todas las direcciones</option>
                         <?php foreach ($direcciones as $d): ?>
-                            <option value="<?= $d['clv_dir']; ?>"><?= $d['denDireccion']; ?></option>
+                            <option value="<?= $d['direcciones_id']; ?>"><?= $d['direcciones_nombre']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="sr-only" for="anio">Año</label>
-                    <select id="anio" name="anio" class="form-control">
+                    <label class="sr-only" for="auditorias_anio">Año</label>
+                    <select id="auditorias_anio" name="auditorias_anio" class="form-control">
                         <?php foreach ($anios as $a): ?>
                             <option value="<?= $a; ?>"><?= $a; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="sr-only" for="idArea">Área</label>
-                    <select id="idArea" name="idArea" class="form-control">
+                    <label class="sr-only" for="auditorias_area">Área</label>
+                    <select id="auditorias_area" name="auditorias_area" class="form-control">
                         <option value="0" selected="selected">Área</option>
                         <?php foreach ($areas as $a): ?>
-                            <option value="<?= $a; ?>"><?= $a; ?></option>
+                            <option value="<?= $a['auditorias_areas_siglas']; ?>"><?= $a['auditorias_areas_siglas']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="sr-only" for="idTipo">Tipo</label>
-                    <select id="idTipo" name="idTipo" class="form-control">
+                    <label class="sr-only" for="auditorias_tipo">Tipo</label>
+                    <select id="auditorias_tipo" name="auditorias_tipo" class="form-control">
                         <option value="0" selected="selected">Tipo</option>
                         <?php foreach ($tipos as $t): ?>
-                            <option value="<?= $t; ?>"><?= $t; ?></option>
+                            <option value="<?= $t['auditorias_tipos_nombre']; ?>"><?= $t['auditorias_tipos_nombre']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="sr-only" for="idStatus">Status</label>
-                    <select id="idStatus" name="idStatus" class="form-control">
-                        <option value="0" selected="selected">Status</option>
+                    <label class="sr-only" for="auditorias_status_id">Status</label>
+                    <select id="auditorias_status_id" name="auditorias_status_id" class="form-control">
+                        <option value="0" selected="selected">Todos los status</option>
+                        <option value="5">Sin iniciar</option>
                         <option value="2">En Proceso</option>
                         <option value="4">Reprogramada</option>
                         <option value="3">Finalizada</option>
                         <option value="1">Cancelada</option>
+                        <option value="6">Sustituída</option>
                     </select>
                 </div>
-                <button id="btnBuscar" type="button" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                <!--<button id="btnBuscar" type="button" class="btn btn-primary"><i class="fa fa-search"></i></button>-->
             </form>
             <table id="tablaAuditorias" class="table table-sm table-hover table-striped dataTablePersonalizado">
-		<col span="6">
-		<col style="width: 80px;">
+                <col span="6">
+                <col style="width: 150px;">
                 <thead class="thead-inverse">
                     <tr>
                         <th>No de Auditoría</th>
-                        <!--<th>Rubro</th>-->
                         <th>Dirección/Subdirección</th>
-                        <th>Fecha Fin Programada</th>
-                        <th>Fecha Fin Real (1° Etapa)</th>
+                        <th>Fecha Inicio Programada</th>
+                        <th>Fecha Inicio Real</th>
                         <th>Fecha Aprobación</th>
-                        <th>Estado</th>
+                        <th>Status</th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
@@ -80,9 +81,3 @@
     var dataTableFieldOrder = 0;
     var dataTableOrderTargets = [-1];
 </script>
-<style>
-    .table thead tr th, .table td {
-	vertical-align: middle;
-	text-align: center;
-    }
-</style>

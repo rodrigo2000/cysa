@@ -1,0 +1,12 @@
+label[for='auditorias_representante_designado'],
+label[for='auditorias_is_sin_observaciones'] {
+    margin: auto;
+}
+
+div.espaciado select {
+    margin-bottom: 10px;
+}
+
+.w-200 {
+    width: 200px;
+}

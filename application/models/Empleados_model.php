@@ -13,15 +13,14 @@ class Empleados_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
-    function get_empleado($idEmpleado) {
-        $return = FALSE;
-        if (!empty($idEmpleado)) {
-            $dbSAC = $this->getDatabase(APP_DATABASE_SAC);
-            $result = $dbSAC->where($this->id_field, $idEmpleado)
-                    ->get($this->table_name . " " . $this->table_prefix);
-            if ($result->num_rows() == 1) {
-                $return = $result->row_array();
-            }
+    function get_empleado($empleados_id) {
+        return $this->SAC_model->get_empleado($empleados_id);
+    }
+
+    function get_auditorias_de_empleado($empleados_id) {
+        $return = array();
+        if (!empty($empleados_id)) {
+            $return = $this->Auditorias_model->get_auditorias_de_empleado($empleados_id);
         }
         return $return;
     }

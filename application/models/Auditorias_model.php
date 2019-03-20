@@ -6,200 +6,322 @@ if (!defined('BASEPATH'))
 class Auditorias_model extends MY_Model {
 
     function __construct() {
-	parent::__construct();
-	$this->table_name = "cat_auditoria";
-	$this->id_field = "idAuditoria";
-	$this->table_prefix = "a";
-	$this->model_name = __CLASS__;
+        parent::__construct();
+        $this->table_name = strtolower(str_replace("_model", "", __CLASS__));
+        $this->id_field = $this->table_name . "_id";
+        $this->table_prefix = "a";
+        $this->model_name = __CLASS__;
     }
 
-    function record_count_ajax($data = NULL) {
-	if (!isset($data['anio']) || empty($data['anio']) || $data['anio'] == 0) {
-	    $data['anio'] = intval(date("Y"));
-	}
-	$this->db->where("anio", $data['anio']);
-
-	if (isset($data['idTipo']) && !empty($data['idTipo']) && $data['idTipo'] != 0) {
-	    $this->db->where("tipo", $data['idTipo']);
-	}
-
-	if (isset($data['idArea']) && !empty($data['idArea']) && $data['idArea'] != 0) {
-	    $this->db->where("area", $data['idArea']);
-	}
-
-	if (isset($data['clv_dir']) && !empty($data['clv_dir']) && $data['clv_dir'] != 0) {
-	    $this->db->where($this->table_prefix . '.clv_dir', $data['clv_dir']);
-	}
-
-	if (!empty($searchValue)) {
-	    $this->db
-		    ->group_start()
-		    ->or_like('rubroAudit', $searchValue)
-		    ->or_like($this->table_prefix . '.area', $searchValue)
-		    ->or_like($this->table_prefix . '.tipo', $searchValue)
-		    ->or_like($this->table_prefix . '.numero', $searchValue)
-		    ->or_like('denDireccion', $searchValue)
-		    ->or_like('denSubdireccion', $searchValue)
-		    ->group_end();
-	}
-
-	if (isset($data['idStatus']) && !empty($data['idStatus']) && intval($data['idStatus']) != 0) {
-	    switch ($data['idStatus']) {
-		case 1:
-		    $this->db->where('statusAudit', 0);
-		    break;
-		case 2:
-		    $this->db->where('statusAudit', 1)
-			    ->group_start()
-			    ->where('fechaIniAudit', 'fechaIniReal', TRUE)
-			    ->or_where('fechaSelloOEA IS NOT NULL', NULL, FALSE)
-			    ->group_end();
-		    break;
-		case 3:
-		    $this->db->where_not_in('statusAudit', array(0, 1));
-		    break;
-		case 4:
-		    $this->db->where('statusAudit', 1)
-			    ->where('fechaIniAudit !=', 'fechaIniReal', FALSE)
-			    ->where('fechaSelloOEA IS NULL', NULL, FALSE);
-		    break;
-	    }
-	}
-	$this->db
-		->join(APP_DATABASE_SAC . ".ayunta_direccion dir", "dir.clv_dir = " . $this->table_prefix . ".clv_dir", "LEFT")
-		->join(APP_DATABASE_SAC . ".ayunta_subdireccion sub", "sub.clv_dir = " . $this->table_prefix . ".clv_dir AND sub.clv_subdir = " . $this->table_prefix . ".clv_subdir", "LEFT")
-		->join(APP_DATABASE_SAC . ".dcont_empleado emp", "emp.idEmpleado=" . $this->table_prefix . ".idEmpleado", "LEFT")
-		->where("anio IS NOT NULL", NULL, FALSE);
-	return parent::record_count();
+    function get_auditorias_ajax($search = NULL, $columns = NULL, $order = NULL, $incluirEliminados = FALSE) {
+        $where = array();
+        $return = FALSE;
+        if (!empty($search['value'])) {
+            $this->db->group_start()
+                    ->or_like("direcciones_nombre", $search['value'])
+                    ->or_like("subdirecciones_nombre", $search['value'])
+                    ->or_like("departamentos_nombre", $search['value'])
+                    ->group_end();
+//                    ->or_like("e.empleados_numero_empleado", $search['value'])
+//                    ->where("e.fecha_delete IS NULL");
+        }
+        if (!$incluirEliminados) {
+            $this->db->where($this->table_prefix . ".fecha_delete IS NULL");
+        }
+        $this->db
+                ->select($this->table_prefix . ".*")
+                ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_nombre, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
+                ->select("cc_id, cc_periodos_id, cc_direcciones_id, cc_subdirecciones_id, cc_departamentos_id")
+                ->select("direcciones_nombre, direcciones_is_descentralizada, subdirecciones_nombre, departamentos_nombre")
+                ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
+                ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
+                ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")
+                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . $this->table_prefix . ".auditorias_cc_id ", "LEFT")
+                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_is_descentralizada, direcciones_ubicacion")
+                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("subdirecciones_nombre")
+                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("departamentos_nombre");
+        if (!empty($order)) {
+            foreach ($order as $o) {
+                $field = $columns[$o['column']]['name'];
+                $this->db->order_by($field, $o['dir']);
+            }
+        } else {
+            $this->db->order_by('relevancia', 'DESC');
+        }
+        $result = $this->db->get($this->table_name . " " . $this->table_prefix);
+        $strSQL = $this->db->last_query();
+        $error = $this->db->error();
+        $return = array(
+            'result' => $error['code'] == 0 ? $result->result_array() : array(),
+            'sql' => $strSQL,
+            'error' => $error
+        );
+        return $return;
     }
 
-    function getResultados($limit, $start) {
-	$this->db
-		->select("idAuditoria, rubroAudit AS rubroAuditoria, denDireccion, denSubdireccion, " . $this->table_prefix . ".anio, " . $this->table_prefix . ".tipo")
-		->select("CONCAT(IF(segundoPeriodo=1,'2',''), " . $this->table_prefix . ".area, '/', " . $this->table_prefix . ".tipo, '/', " . $this->table_prefix . ".numero, '/', " . $this->table_prefix . ".anio) AS num")
-		->select("CONCAT (emp.nombre,' ',emp.aPaterno,' ',emp.aMaterno) AS nombreAuditorLider")
-		->select("IF(fechaSelloOEA IS NULL, fechaIniReal, UNIX_TIMESTAMP(fechaSelloOEA)) AS fecha, 
-        IF(fechaSelloOEA IS NULL ,'Real', 'OEA') AS tipoFecha,
-	FROM_UNIXTIME(fechaFinAudit,'%Y-%m-%d') AS fechaFinProgramadaAuditoria,
-        FROM_UNIXTIME(fechaFinReal,'%Y-%m-%d') AS fechaFinReal, 
-        IF(" . $this->table_prefix . ".tipo='SA', fechaAprovacionRev1,
-	fechaAprovacion) AS fechaAprobacion, 
-        statusAudit AS statusAuditoria, 
-        fechaIniAudit AS fechaInicioProgramadaAuditoria, 
-        fechaIniReal AS fechaInicioReal")
-		->join(APP_DATABASE_SAC . ".ayunta_direccion dir", "dir.clv_dir = " . $this->table_prefix . ".clv_dir", "LEFT")
-		->join(APP_DATABASE_SAC . ".ayunta_subdireccion sub", "sub.clv_dir = " . $this->table_prefix . ".clv_dir AND sub.clv_subdir = " . $this->table_prefix . ".clv_subdir", "LEFT")
-		->join(APP_DATABASE_SAC . ".dcont_empleado emp", "emp.idEmpleado=" . $this->table_prefix . ".idEmpleado", "LEFT")
-		->where("anio IS NOT NULL", NULL, FALSE);
-
-	return parent::getResultados($limit, $start);
+    /**
+     * Regresa la información del lider de una auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
+     * @return array Información del auditor líder de la auditoría
+     */
+    function get_lider_auditoria($auditorias_id = NULL) {
+        $return = array();
+        if (empty($auditorias_id)) {
+            $session = $this->session->userdata(APP_NAMESPACE);
+            $auditorias_id = $session['auditorias_id'];
+        }
+        if (!empty($auditorias_id)) {
+            $result = $this->db
+                    ->select("CONCAT(e.empleados_nombre, ' ',e.empleados_apellido_paterno,' ',e.empleados_apellido_materno) AS 'nombre_completo'")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = a.auditorias_auditor_lider", "INNER")->select("e.*")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".puestos p", "p.puestos_id = e.empleados_puestos_id", "INNER")->select("p.puestos_nombre")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".titulos t", "t.titulos_id = e.empleados_titulos_id", "LEFT")->select("t.*")
+                    ->where('auditorias_id', $auditorias_id)
+                    ->limit(1)
+                    ->get('auditorias a');
+            //echo $this->db->last_query();
+            if ($result->num_rows() > 0) {
+                $return = $result->row_array();
+            }
+        }
+        return $return;
     }
 
-    function getResultadosAjax($orderColumn, $order, $start, $length, $searchValue, $data) {
-	$return = array();
-	if (!isset($data['anio']) || empty($data['anio']) || $data['anio'] == 0) {
-	    $data['anio'] = intval(date("Y"));
-	}
-	$this->db->where("anio", $data['anio']);
-
-	if (isset($data['idTipo']) && !empty($data['idTipo']) && $data['idTipo'] != 0) {
-	    $this->db->where("tipo", $data['idTipo']);
-	}
-
-	if (isset($data['idArea']) && !empty($data['idArea']) && $data['idArea'] != 0) {
-	    $this->db->where("area", $data['idArea']);
-	}
-
-	if (isset($data['clv_dir']) && !empty($data['clv_dir']) && $data['clv_dir'] != 0) {
-	    $this->db->where($this->table_prefix . '.clv_dir', $data['clv_dir']);
-	}
-
-	if (!empty($searchValue)) {
-	    $this->db
-		    ->group_start()
-		    ->or_like('rubroAudit', $searchValue)
-		    ->or_like($this->table_prefix . '.area', $searchValue)
-		    ->or_like($this->table_prefix . '.tipo', $searchValue)
-		    ->or_like($this->table_prefix . '.numero', $searchValue)
-		    ->or_like('denDireccion', $searchValue)
-		    ->or_like('denSubdireccion', $searchValue)
-		    ->group_end();
-	}
-
-	if (isset($data['idStatus']) && !empty($data['idStatus']) && intval($data['idStatus']) != 0) {
-	    switch ($data['idStatus']) {
-		case 1:
-		    $this->db->where('statusAudit', 0);
-		    break;
-		case 2:
-		    $this->db->where('statusAudit', 1)
-			    ->group_start()
-			    ->where('fechaIniAudit', 'fechaIniReal', FALSE)
-			    ->or_where('fechaSelloOEA IS NOT NULL', NULL, FALSE)
-			    ->group_end();
-		    break;
-		case 3:
-		    $this->db->where_not_in('statusAudit', array(0, 1));
-		    break;
-		case 4:
-		    $this->db->where('statusAudit', 1)
-			    ->where('fechaIniAudit != fechaIniReal', NULL, FALSE)
-			    ->where('fechaSelloOEA IS NULL', NULL, FALSE);
-		    break;
-	    }
-	}
-
-	if ($orderColumn) {
-	    $this->db->order_by($orderColumn, $order);
-	} else {
-	    $this->db
-		    ->order_by($this->table_prefix . ".anio", "ASC")
-		    ->order_by($this->table_prefix . ".numero", "ASC")
-		    ->order_by($this->table_prefix . ".tipo", "ASC");
-	}
-
-	return $this->getResultados($length, $start);
+    /**
+     * Regresa el equipo de trabajo asociado a una auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
+     * @return array Información de los auditores que apoyarán en la auditoría
+     */
+    function get_equipo_auditoria($auditorias_id) {
+        $return = array();
+        if (!empty($auditorias_id)) {
+            $result = $this->db
+                    ->select("CASE
+                    WHEN e.empleados_puestos_id IN (155) THEN 0
+                    WHEN e.empleados_puestos_id IN (45, 290, 145, 294, 293) THEN 1
+                    WHEN e.empleados_puestos_id IN (106, 157) THEN 2
+                    WHEN e.empleados_puestos_id IN (59, 296, 60, 272) THEN 3
+                    WHEN e.empleados_puestos_id IN (40, 269) THEN 4
+                    ELSE 5 END AS 'orden'")
+                    ->select("CONCAT(e.empleados_nombre, ' ',e.empleados_apellido_paterno,' ',e.empleados_apellido_materno) AS 'nombre_completo'")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = ae.auditorias_equipo_empleados_id", "INNER")->select("e.*")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".puestos p", "p.puestos_id = e.empleados_puestos_id", "INNER")->select("p.puestos_nombre")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".titulos t", "t.titulos_id = e.empleados_titulos_id", "LEFT")->select("t.*")
+                    ->where('auditorias_equipo_auditorias_id', $auditorias_id)
+                    ->order_by("orden", "DESC")
+                    ->get('auditorias_equipo ae');
+            if ($result->num_rows() > 0) {
+                $return = $result->result_array();
+            }
+        }
+        return $return;
     }
 
-    function get_lider_auditoria($idAuditoria) {
-	$lider = FALSE;
-	if (!empty($idAuditoria)) {
-	    $dbSAC = $this->getDatabase(APP_DATABASE_SAC);
-	    $lider = $dbSAC->select("idEmpleado")
-			    ->where('idAuditoria', $idAuditoria)
-			    ->get($this->table_name . " " . $table->table_prefix)
-			    ->row()
-		    ->lider;
-	}
-	return $lider;
+    /**
+     * Regresa información de una auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
+     * @return array Información de la auditoría
+     */
+    function get_auditoria($auditorias_id) {
+        $return = array();
+        if (!empty($auditorias_id)) {
+            $result = $this->db
+                    //->select("MATCH (empleados_nombre, empleados_apellido_paterno, empleados_apellido_materno) AGAINST ('" . $search['value'] . "' IN NATURAL LANGUAGE MODE) AS 'relevancia'")
+                    ->select($this->table_prefix . ".*")
+                    ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_nombre, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
+                    ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
+                    ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
+                    ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = " . $this->table_prefix . ".auditorias_auditor_lider", "LEFT")->select("e.*, CONCAT(e.empleados_nombre, ' ',e.empleados_apellido_paterno, ' ', e.empleados_apellido_materno) AS 'auditor_lider_nombre_completo'")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . $this->table_prefix . ".auditorias_cc_id ", "LEFT")->select("cc.*")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_is_descentralizada, direcciones_ubicacion")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("subdirecciones_nombre")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("departamentos_nombre")
+                    ->where($this->id_field, $auditorias_id)
+                    ->limit(1)
+                    ->get($this->table_name . " " . $this->table_prefix);
+            if ($result && $result->num_rows() == 1) {
+                $return = $result->row_array();
+                $equipo = $this->get_equipo_auditoria($auditorias_id);
+                $return['auditoria_equipo'] = $equipo;
+                $return['enlace_designado'] = $this->SAC_model->get_empleado($return['auditorias_enlace_designado']);
+                $return['empleados_involucrados'] = $this->Auditorias_involucrados_model->get_empleados_involucrados_en_auditoria($auditorias_id);
+                $return['observaciones'] = $this->Observaciones_model->get_observaciones($auditorias_id);
+            }
+        }
+        return $return;
     }
 
-    function get_equipo_auditoria($idAuditoria) {
-	$equipo = array();
-	if (!empty($idAuditoria)) {
-	    $result = $this->db
-		    ->select('idEmpleado', FALSE)
-		    ->where('idAuditoria', $idAuditoria)
-		    ->get('cat_auditoria_equipo');
-	    if ($result->num_rows() > 0) {
-		foreach ($result->result_array() as $r) {
-		    $empleado = $this->Empleados_model->get_empleado($r['idEmpleado']);
-		    array_push($equipo, $empleado);
-		}
-	    }
-	}
-	return $equipo;
+    function get_real_auditoria_origen($auditorias_id = NULL) {
+        $return = $auditorias_id;
+        if (!empty($auditorias_id)) {
+            $result = $this->db
+                    ->select("auditorias_origen_id")
+                    ->where("auditorias_id", $auditorias_id)
+                    ->where("auditorias_status_id >=", AUDITORIAS_STATUS_FINALIZADA)
+                    ->limit(1)
+                    ->get($this->table_name);
+            if ($result && $result->num_rows() > 0) {
+                $a = $result->row();
+                if (!empty($a->auditorias_origen_id)) {
+                    $return = $this->get_real_auditoria_origen($a->auditorias_origen_id);
+                }
+            }
+        }
+        return intval($return);
     }
 
-    function get_auditoria($idAuditoria) {
-	$return = NULL;
-	if (!empty($idAuditoria)) {
-	    $result = $this->db->where($this->id_field, $idAuditoria)->limit(1)->get($this->table_name);
-	    if ($result->num_rows() == 1) {
-		$return = $result->result_row();
-	    }
-	}
-	return $return;
+    function get_etapa_de_auditoria($auditorias_id) {
+
+    }
+
+    /**
+     * Devuelve la información de las personas que deben firmar un documento
+     * @param ibteger $auditorias_id Identificador de la auditoría
+     * @param integer $tipo Identificador del tipo de firma (Involucrados, Testigos, Contraloria, Responsables)
+     * @return array Arreglo que contiene la información de los funcionarios públicos que deben firmar un documento
+     */
+    function get_firmas_de_auditoria($auditorias_id, $tipo = NULL) {
+        $return = array();
+        return $return;
+    }
+
+    /**
+     * Regresa el conjunto de observaciones de un auditoría
+     * @param type $auditorias_id Identificador de la auditoría
+     * @return array Arreglo que contiene las observaciones asociadas a una auditoría
+     */
+    function get_observaciones_de_auditoria($auditorias_id) {
+        $return = array();
+        return $return;
+    }
+
+    /**
+     * Permite obtener el listado de documentos generados de una auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
+     * @param integer $idTipoDocumento optional Esta variable sirve por si se desea el listado de un tipo específico de documentos
+     * @return array Arreglo con los identificadores de los documentos generados
+     */
+    function get_documentos_de_auditoria($auditorias_id, $idTipoDocumento = NULL) {
+        $return = array();
+        return $return;
+    }
+
+    function get_productos_no_conformes_de_auditoria($auditorias_id) {
+        $return = array();
+        return $return;
+    }
+
+    function get_notas_de_auditoria($auditorias_id) {
+
+    }
+
+    function get_reprogramaciones_de_auditoria($auditorias_id) {
+
+    }
+
+    function get_ampliaciones_de_auditoria($auditorias_id) {
+
+    }
+
+    function get_auditorias_de_empleado($idEmpleado) {
+        $return = array();
+        if (!empty($idEmpleado)) {
+            $res = $this->db
+                    ->select("a.*, a.tipo AS tipo, a.numero as valnum")
+                    ->select("CONCAT(IF(segundoPeriodo=1,'2',''), a.auditorias_area, '/', a.auditorias_tipo, '/', a.auditorias_numero, '/', a.auditorias_anio) AS auditoria_nombre")
+                    ->group_by("a.numero, id, rubro, num")
+                    ->order_by("a.numero", "ASC")
+                    ->order_by("tipo", "ASC")
+                    ->order_by("anio", "ASC")
+                    ->order_by("num", "ASC")
+                    ->get($this->table_name . " " . $this->table_prefix);
+            if ($res->num_rows() > 0) {
+                $return = $res->result_array();
+            }
+        }
+        return $return;
+    }
+
+    function get_proximo_numero_auditoria($segundo_periodo = FALSE, $anio = NULL) {
+        $return = 1;
+        if (empty($anio)) {
+            $anio = intval(date("Y"));
+        }
+        if (!empty($anio)) {
+            $result = $this->db
+                    ->select("MAX(auditorias_numero) AS 'consecutivo'")
+                    ->where("auditorias_segundo_periodo", intval($segundo_periodo))
+                    ->where("auditorias_anio", $anio)
+                    ->limit(1)
+                    ->get("auditorias");
+            if ($result && $result->num_rows() == 1) {
+                $aux = $result->row_array();
+                $return = intval($aux['consecutivo']);
+            }
+        }
+        return $return;
+    }
+
+    function get_siglas_de_empleados_para_documento_de_auditoria($empleados_id, $auditorias_id) {
+        $return = "";
+        $empleado = $this->SAC_model->get_empleado($empleados_id);
+        $mi_puesto = intval($empleado['empleados_puestos_id']);
+        $siglas = array();
+        if (!empty($empleados_id)) {
+            array_push($siglas, $empleado['empleado_siglas']);
+        }
+        switch ($mi_puesto) {
+            case PUESTO_AUDITOR:
+            case PUESTO_COORDINADOR_AUDITORIA:
+            case PUESTO_COORDINADOR:
+                $coordinador = $this->SAC_model->get_coordinador_de_empleado($empleados_id, $auditorias_id);
+                if (!empty($coordinador)) {
+                    array_push($siglas, $coordinador['empleado_siglas']);
+                }
+            case PUESTO_JEFE_DEPARTAMENTO:
+                $jefe = $this->SAC_model->get_jefe_de_empleado($empleados_id);
+                if (!empty($jefe)) {
+                    array_push($siglas, $jefe['empleado_siglas']);
+                }
+            case PUESTO_SUBDIRECTOR:
+                $subdirector = $this->SAC_model->get_subdirector_de_empleado($empleados_id);
+                if (!empty($subdirector)) {
+                    array_push($siglas, $subdirector['empleado_siglas']);
+                }
+            case PUESTO_DIRECTOR:
+                $titular = $this->SAC_model->get_director_de_ua(APP_DIRECCION_CONTRALORIA);
+                if (!empty($titular)) {
+                    array_push($siglas, $titular['empleado_siglas']);
+                }
+                break;
+            default:
+                break;
+        }
+        // Ponemos en minusculas al auditor lider
+        $siglas[0] = strtolower($siglas[0]);
+        // Invertimos el arreglo
+        $siglas = array_reverse($siglas);
+        // Unimos el arreglo
+        $return = implode("/", $siglas) . "*";
+        return $return;
+    }
+
+    function asignar_enlace_designado($auditorias_id = NULL, $empleados_id = NULL) {
+        $return = FALSE;
+        if (empty($empleados_id)) {
+            $empleados_id = NULL;
+        }
+        if (!empty($auditorias_id)) {
+            $result = $this->db
+                    ->set("auditorias_enlace_designado", $empleados_id)
+                    ->where("auditorias_id", $auditorias_id)
+                    ->update($this->table_name);
+            if ($result && $this->db->affected_rows() > 0) {
+                $return = TRUE;
+            }
+        }
+        return $return;
     }
 
 }

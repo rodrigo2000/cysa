@@ -1,11 +1,19 @@
 <?php
-if (isset($r)) {
-    $r['fechaIniAudit'] = date("Y-m-d", $r['fechaIniAudit']);
-    $r['fechaIniReal'] = date("Y-m-d", $r['fechaIniReal']);
-    $r['fechaFinAudit'] = date("Y-m-d", $r['fechaFinAudit']);
-    $r['fechaFinReal'] = date("Y-m-d", $r['fechaFinReal']);
-    $subdirecciones = $this->Catalogos_model->getSubdirecciones($r['clv_dir']);
-    $departamentos = $this->Catalogos_model->getDepartamentos($r['clv_dir'], $r['clv_subdir']);
+if ($accion === 'modificar' && isset($r) && isset($r['auditorias_id'])) {
+    $aux = $this->Auditorias_fechas_model->get_primera_etapa($r['auditorias_id']);
+    if (empty($aux)) {
+        $aux = array(
+            'auditorias_fechas_inicio_programado' => NULL,
+            'auditorias_fechas_inicio_real' => NULL,
+            'auditorias_fechas_fin_programado' => NULL,
+            'auditorias_fechas_fin_real' => NULL
+        );
+    }
+    $r = array_merge($r, $aux);
+}
+$is_asignar_consecutivo = FALSE;
+if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asignar_consecutivo') == 1) {
+    $is_asignar_consecutivo = TRUE;
 }
 ?><div class="card">
     <div class="card-header no-bg1 b-a-0">
@@ -18,49 +26,54 @@ if (isset($r)) {
                     <label for="area" class="col-sm-2 form-control-label">Número de auditoría</label>
                     <div class="col-sm-10">
                         <div class="input-group">
-                            <select id="area" name="area" class="form-control">
+                            <select id="auditorias_area" name="auditorias_area" class="form-control">
                                 <option value="0">Área</option>
-				<?php foreach ($areas as $key => $a): ?><option value="<?= $key; ?>"<?= isset($r) && $r['area'] === $a ? ' selected="selected"' : ''; ?>><?= $a; ?></option><?php endforeach; ?>
+                                <?php foreach ($areas as $a): ?>
+                                    <option value="<?= $a['auditorias_areas_id']; ?>"<?= isset($r) && $r['auditorias_area'] === $a['auditorias_areas_id'] ? ' selected="selected"' : ''; ?>><?= $a['auditorias_areas_siglas']; ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <div class="input-group-addon">/</div>
-                            <select id="tipo" name="tipo" class="form-control">
+                            <select id="tipo" name="auditorias_tipo" class="form-control">
                                 <option value="0">Tipo</option>
-				<?php foreach ($tipos as $key => $t): ?><option value="<?= $key; ?>"<?= isset($r) && $r['tipo'] === $t ? ' selected="selected"' : ''; ?>><?= $t; ?></option><?php endforeach; ?>
+                                <?php foreach ($tipos as $t): ?>
+                                    <option value="<?= $t['auditorias_tipos_id']; ?>"<?= isset($r) && $r['auditorias_tipo'] === $t['auditorias_tipos_id'] ? ' selected="selected"' : ''; ?>><?= $t['auditorias_tipos_nombre']; ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <div class="input-group-addon">/</div>
-                            <input type="text" id="consecutivo" name="consecutivo" class="form-control" value="<?= isset($r) ? $r['numero'] : ''; ?>">
+                            <input type="text" id="numero_auditoria" class="form-control" value="<?= isset($r) ? $r['auditorias_numero'] : ''; ?>" placeholder="Número" <?= $is_asignar_consecutivo ? 'disabled="disabled"' : ''; ?>>
+                            <input type="hidden" id="auditorias_numero" name="auditorias_numero" value="<?= isset($r) ? $r['auditorias_numero'] : ''; ?>">
                             <div class="input-group-addon">/</div>
                             <select id="anio" name="anio" class="form-control">
-				<?php foreach ($anios as $a): ?><option value="<?= $a; ?>" <?= isset($r) ? ($r['anio'] == $a ? 'selected="selected"' : '') : ($a == date("Y") ? 'selected="selected"' : ''); ?>><?= $a; ?></option><?php endforeach; ?>
+                                <?php foreach ($anios as $a): ?>
+                                    <option value="<?= $a; ?>" <?= isset($r) ? ($r['auditorias_anio'] == $a ? 'selected="selected"' : '') : ($a == date("Y") ? 'selected="selected"' : ''); ?>><?= $a; ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
+                        <?= form_error('auditorias_area'); ?>
+                        <?= form_error('auditorias_tipo'); ?>
+                        <?= form_error('auditorias_numero'); ?>
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
+                    <div class="col-sm-offset-2 col-sm-3">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="esSegundoPeriodo" name="esSegundoPeriodo" value="1" <?= isset($r) && $r['segundoPeriodo'] ? 'checked="checked"' : ''; ?>> 2° Período
+                                <input type="checkbox" id="auditorias_segundo_periodo" name="auditorias_segundo_periodo" value="1" <?= isset($r) && $r['auditorias_segundo_periodo'] == 1 ? 'checked="checked"' : ''; ?>> 2° Período
                             </label>
                         </div>
                     </div>
-                </fieldset>
-                <fieldset class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
+                    <div class="col-sm-3">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="asignar" name="asignar" value="1"> Asignar el numero sugerido para la Auditoría.
+                                <input type="checkbox" id="asignar_consecutivo" name="asignar_consecutivo" value="1" <?= $is_asignar_consecutivo ? 'checked="checked"' : ''; ?>> Asignar el numero sugerido para la Auditoría.
                             </label>
                         </div>
                     </div>
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="ppa" class="col-xs-4 col-sm-2 form-control-label">Pertenece al PAA</label>
-                    <div class="col-xs-8 col-sm-10">
+                    <div class="col-sm-3">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="ppa" name="ppa" value="1" <?= isset($r) && $r['auditProgramada'] ? 'checked="checked"' : ''; ?>>
-                                <div class="btn btn-info btn-sm"><i class="fa fa-info"></i></div>
+                                <input type="checkbox" id="auditorias_is_programada" name="auditorias_is_programada" value="1" <?= isset($r) && $r['auditorias_is_programada'] == 1 ? 'checked="checked"' : ''; ?>>
+                                Pertenece al PAA
                             </label>
                         </div>
                     </div>
@@ -70,13 +83,15 @@ if (isset($r)) {
                     <div class="col-sm-10">
                         <div class="input-group col-md-6 p-l-0 p-r-0">
                             <span class="input-group-addon">Programada</span>
-                            <input type="text" class="form-control datepicker" id="fipa" value="<?= isset($r) ? mysqlDate2Date($r['fechaIniAudit']) : ''; ?>" data-input-alternativo="fipa_alt">
-                            <input type="hidden" id="fipa_alt" name="fipa" value="<?= isset($r) ? $r['fechaIniAudit'] : ''; ?>">
+                            <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_inicio_programado" type="button" datepicker="auditorias_fechas_inicio_programado"><?= isset($r) && !empty($r['auditorias_fechas_inicio_programado']) && $r['auditorias_fechas_inicio_programado'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['auditorias_fechas_inicio_programado']) : '<i class="fa fa-calendar"></i>'; ?></button>
+                            <input type="hidden" id="auditorias_fechas_inicio_programado" name="auditorias_fechas_inicio_programado" value="<?= isset($r) && $r['auditorias_fechas_inicio_programado'] !== '0000-00-00' ? $r['auditorias_fechas_inicio_programado'] : ''; ?>">
+                            <?= form_error('auditorias_fechas_inicio_programado'); ?>
                         </div>
                         <div class="input-group col-md-6">
                             <span class="input-group-addon">Real</span>
-                            <input type="text" class="form-control datepicker" id="firp" value="<?= isset($r) ? mysqlDate2Date($r['fechaIniReal']) : ''; ?>" data-input-alternativo="firp_alt">
-                            <input type="hidden" id="firp_alt" name="firp" value="<?= isset($r) ? $r['fechaIniReal'] : ''; ?>">
+                            <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_inicio_real" type="button" datepicker="auditorias_fechas_inicio_real"><?= isset($r) && !empty($r['auditorias_fechas_inicio_real']) && $r['auditorias_fechas_inicio_real'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['auditorias_fechas_inicio_real']) : '<i class="fa fa-calendar"></i>'; ?></button>
+                            <input type="hidden" id="auditorias_fechas_inicio_real" name="auditorias_fechas_inicio_real" value="<?= isset($r) && $r['auditorias_fechas_inicio_real'] !== '0000-00-00' ? $r['auditorias_fechas_inicio_real'] : ''; ?>">
+                            <?= form_error('auditorias_fechas_inicio_real'); ?>
                         </div>
                     </div>
                 </fieldset>
@@ -85,70 +100,93 @@ if (isset($r)) {
                     <div class="col-sm-10">
                         <div class="input-group col-md-6 p-l-0 p-r-0">
                             <span class="input-group-addon">Programada</span>
-                            <input type="text" class="form-control datepicker" id="ffpa" value="<?= isset($r) ? mysqlDate2Date($r['fechaFinAudit']) : ''; ?>" data-input-alternativo="ffpa_alt">
-                            <input type="hidden" id="ffpa_alt" name="ffpa" value="<?= isset($r) ? $r['fechaFinAudit'] : ''; ?>">
+                            <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_fin_programado" type="button" datepicker="auditorias_fechas_fin_programado"><?= isset($r) && !empty($r['auditorias_fechas_fin_programado']) && $r['auditorias_fechas_fin_programado'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['auditorias_fechas_fin_programado']) : '<i class="fa fa-calendar"></i>'; ?></button>
+                            <input type="hidden" id="auditorias_fechas_fin_programado" name="auditorias_fechas_fin_programado" value="<?= isset($r) && $r['auditorias_fechas_fin_programado'] !== '0000-00-00' ? $r['auditorias_fechas_fin_programado'] : ''; ?>">
+                            <?= form_error('auditorias_fechas_fin_programado'); ?>
                         </div>
                         <div class="input-group col-md-6">
                             <span class="input-group-addon">Real</span>
-                            <input type="text" class="form-control datepicker" id="ffrp" name="ffrp" value="<?= isset($r) ? mysqlDate2Date($r['fechaFinReal']) : ''; ?>" data-input-alternativo="ffrp_alt">
-                            <input type="hidden" id="ffrp_alt" name="ffrp" value="<?= isset($r) ? $r['fechaFinReal'] : ''; ?>">
+                            <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_fin_real" type="button" datepicker="auditorias_fechas_fin_real"><?= isset($r) && !empty($r['auditorias_fechas_fin_real']) && $r['auditorias_fechas_fin_real'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['auditorias_fechas_fin_real']) : '<i class="fa fa-calendar"></i>'; ?></button>
+                            <input type="hidden" id="auditorias_fechas_fin_real" name="auditorias_fechas_fin_real" value="<?= isset($r) && $r['auditorias_fechas_fin_real'] !== '0000-00-00' ? $r['auditorias_fechas_fin_real'] : ''; ?>">
+                            <?= form_error('auditorias_fechas_fin_real'); ?>
                         </div>
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
-                    <label for="direccion" class="col-sm-2 form-control-label">Dirección</label>
+                    <label for="auditorias_direcciones_id" class="col-sm-2 form-control-label">Dirección</label>
                     <div class="col-sm-10">
-                        <select id="direccion" name="direccion" class="form-control">
+                        <select id="auditorias_direcciones_id" name="auditorias_direcciones_id" class="form-control">
                             <option value="0">SELECCIONAR</option>
-			    <?php foreach ($direcciones as $d): ?><option value="<?= $d['clv_dir']; ?>"<?= isset($r) && $r['clv_dir'] == $d['clv_dir'] ? ' selected="selected"' : ''; ?>><?= $d['denDireccion']; ?></option><?php endforeach; ?>
+                            <?php foreach ($direcciones as $d): ?>
+                                <option value="<?= $d['direcciones_id']; ?>"<?= isset($r) && $r['auditorias_direcciones_id'] == $d['direcciones_id'] ? ' selected="selected"' : ''; ?>><?= $d['direcciones_nombre']; ?></option>
+                            <?php endforeach; ?>
                         </select>
+                        <?= form_error('auditorias_direcciones_id'); ?>
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
-                    <label for="subdireccion" class="col-sm-2 form-control-label">Subdirección</label>
+                    <label for="auditorias_subdirecciones_id" class="col-sm-2 form-control-label">Subdirección</label>
                     <div class="col-sm-10">
-                        <select id="subdireccion" name="subdireccion" class="form-control" <?= (isset($subdirecciones) && count($subdirecciones) > 0) ? '' : 'disabled="disabled"'; ?>>
-			    <?php if (isset($subdirecciones) && count($subdirecciones) > 0): ?>
-				<?php foreach ($subdirecciones as $s): ?><option value="<?= $s['clv_subdir']; ?>"<?= isset($r) && $r['clv_subdir'] == $s['clv_subdir'] ? ' selected="selected"' : ''; ?>><?= $s['denSubdireccion']; ?></option><?php endforeach; ?>
-			    <?php endif; ?>
-			</select>
-                    </div>
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="departamento" class="col-sm-2 form-control-label">Departamento</label>
-                    <div class="col-sm-10">
-                        <select id="departamento" name="departamento" class="form-control" <?= (isset($departamentos) && count($departamentos) > 0) ? '' : 'disabled="disabled"'; ?>>
-			    <?php if (isset($departamentos) && count($departamentos) > 0): ?>
-				<?php foreach ($departamentos as $d): ?><option value="<?= $d['clv_depto']; ?>"<?= isset($r) && $r['clv_depto'] == $d['clv_depto'] ? ' selected="selected"' : ''; ?>><?= $d['denDepartamento']; ?></option><?php endforeach; ?>
-			    <?php endif; ?>
-			</select>
-                    </div>
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="rubro" class="col-sm-2 form-control-label">Rubro</label>
-                    <div class="col-sm-10">
-                        <input type="text" id="rubro" name="rubro" class="form-control" value="<?= isset($r) ? $r['rubroAudit'] : ''; ?>">
-                    </div>
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="objetivo" class="col-sm-2 form-control-label">Objetivo</label>
-                    <div class="col-sm-10">
-                        <textarea id="objetivo" name="objetivo" class="form-control" rows="5"><?= isset($r) ? $r['objetivoAudit'] : ''; ?></textarea>
-                    </div>
-                </fieldset>
-                <fieldset class="form-group">
-                    <label for="auditor_lider" class="col-sm-2 form-control-label">Auditor líder</label>
-                    <div class="col-sm-10">
-                        <select id="auditor_lider" name="auditor_lider" class="form-control">
+                        <select id="auditorias_subdirecciones_id" name="auditorias_subdirecciones_id" class="form-control">
                             <option value="0">SELECCIONAR</option>
-			    <?php foreach ($auditores as $a): ?><option value="<?= $a['idEmpleado']; ?>"<?= isset($r) && $r['idEmpleado'] == $a['idEmpleado'] ? ' selected="selected"' : ''; ?>><?= $a['nombreCompleto']; ?></option><?php endforeach; ?>
+                            <?php foreach ($subdirecciones as $s): ?>
+                                <option value="<?= $s['subdirecciones_id']; ?>"<?= isset($r) && $r['auditorias_subdirecciones_id'] == $s['subdirecciones_id'] ? ' selected="selected"' : ''; ?>><?= $s['subdirecciones_nombre']; ?></option>
+                            <?php endforeach; ?>
                         </select>
+                        <?= form_error('auditorias_subdirecciones_id'); ?>
+                    </div>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label for="auditorias_departamentos_id" class="col-sm-2 form-control-label">Departamento</label>
+                    <div class="col-sm-10">
+                        <select id="auditorias_departamentos_id" name="auditorias_departamentos_id" class="form-control">
+                            <option value="0">SELECCIONAR</option>
+                            <?php foreach ($departamentos as $d): ?>
+                                <option value="<?= $d['departamentos_id']; ?>"<?= isset($r) && $r['auditorias_departamentos_id'] == $d['departamentos_id'] ? ' selected="selected"' : ''; ?>><?= $d['departamentos_nombre']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <?= form_error('auditorias_departamentos_id'); ?>
+                    </div>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label for="auditorias_rubro" class="col-sm-2 form-control-label">Rubro</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="auditorias_rubro" name="auditorias_rubro" class="form-control" value="<?= isset($r) ? $r['auditorias_rubro'] : ''; ?>">
+                        <?= form_error('auditorias_rubro'); ?>
+                    </div>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label for="auditorias_objetivo" class="col-sm-2 form-control-label">Objetivo</label>
+                    <div class="col-sm-10">
+                        <textarea id="auditorias_objetivo" name="auditorias_objetivo" class="form-control" rows="5"><?= isset($r) ? $r['auditorias_objetivo'] : ''; ?></textarea>
+                        <?= form_error('auditorias_objetivo'); ?>
+                    </div>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label for="auditorias_auditor_lider" class="col-sm-2 form-control-label">Auditor líder</label>
+                    <div class="col-sm-10">
+                        <select id="auditorias_auditor_lider" name="auditorias_auditor_lider" class="form-control">
+                            <option value="0">SELECCIONAR</option>
+                            <?php $depto = NULL; ?>
+                            <?php foreach ($auditores as $a): ?>
+                                <?php if ($depto != $a['departamentos_nombre']): $depto = $a['departamentos_nombre']; ?>
+                                    <optgroup label="<?= $a['departamentos_nombre']; ?>">
+                                    <?php endif; ?>
+                                    <option value="<?= $a['empleados_id']; ?>"<?= isset($r) && $r['auditorias_auditor_lider'] == $a['empleados_id'] ? ' selected="selected"' : ''; ?>><?= $a['empleados_nombre'] . " " . $a['empleados_apellido_paterno'] . " " . $a['empleados_apellido_materno'] . " (" . $a['empleados_numero_empleado'] . ")"; ?></option>
+                                    <?php if ($depto != $a['departamentos_nombre']): ?>
+                                    </optgroup>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                        <?= form_error('auditorias_auditor_lider'); ?>
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
                     <div class="pull-xs-right col-sm-offset-2 col-sm-10">
                         <a href="<?= base_url() . $this->uri->segment(1); ?>" class="btn btn-default">Cancelar</a>
                         <button type="submit" class="btn btn-primary"><?= $etiquetaBoton; ?></button>
+                        <input type="hidden" name="accion" value="<?= $accion; ?>">
+                        <input type="hidden" name="auditorias_cc_id" value="<?= $accion === 'modificar' && isset($r) ? $r['auditorias_cc_id'] : ''; ?>">
                     </div>
                 </fieldset>
             </form>
@@ -161,7 +199,12 @@ if (isset($r)) {
         text-align: right;
     }
 </style>
-<link href="<?= APP_SAC_URL; ?>resources/plugins/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" rel="stylesheet" type="text/css"/>
-<script src="<?= APP_SAC_URL; ?>resources/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js" type="text/javascript"></script>
-<script src="<?= APP_SAC_URL; ?>resources/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.es.min.js" type="text/javascript"></script>
+<!-- moments.js -->
+<script src="<?= APP_SAC_URL; ?>resources/plugins/moment/min/moment.min.js" type="text/javascript"></script>
+<script src="<?= APP_SAC_URL; ?>resources/plugins/moment/locale/es.js" type="text/javascript"></script>
+<!-- DateRangePicker -->
+<link href="<?= APP_SAC_URL; ?>resources/plugins/bootstrap-daterangepicker/daterangepicker_2.css" rel="stylesheet" type="text/css"/>
+<script src="<?= APP_SAC_URL; ?>resources/plugins/bootstrap-daterangepicker/daterangepicker_2.js" type="text/javascript"></script>
+<!-- Personalizado -->
 <script src="<?= base_url(); ?>resources/scripts/auditorias_nuevo_view.js" type="text/javascript"></script>
+<link href="<?= base_url(); ?>resources/styles/auditorias_nuevo_view.css" rel="stylesheet" type="text/css"/>

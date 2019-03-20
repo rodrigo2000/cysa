@@ -7,16 +7,18 @@ class Dashboard extends MY_Controller {
 
     function __construct() {
         parent::__construct();
-        $this->module['controller'] = "Dashboard";
-        $this->module['title'] = "Tablero";
+        $this->module['name'] = strtolower(__CLASS__);
+        $this->module['controller'] = __CLASS__;
+        $this->module['title'] = "Dashboard";
 
         $this->_initialize();
     }
 
     function index() {
+        //var_dump($this->session->userdata());
         $data = array(
-            'auditores' => $this->Catalogos_model->get_auditores_lider(),
-            'auditorias' => $this->Catalogos_model->get_auditorias_de_empleado($this->session->id_puesto)
+//            'auditores' => $this->Catalogos_model->get_auditores_lider(),
+//            'auditorias' => $this->Catalogos_model->get_auditorias_de_empleado($this->session->userdata('empleados_id'))
         );
         $this->visualizar('dashboard_view', $data);
     }
