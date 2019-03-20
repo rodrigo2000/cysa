@@ -63,7 +63,7 @@ function mysqlDate2Date($f, $addBR = TRUE) {  // yyyy-mm-dd H:m:ss    ==>     13
     $ampm = "am";
     if (isset($hh) && intval($hh) > 12) {
         $ampm = "pm";
-        $hh-=12;
+        $hh -= 12;
     }
     $cadena = $d . ' de ' . getNombreDelMes($m) . ' de ' . $a . ($hora != "" ? ($addBR ? "<br>" : '&nbsp;') . substr("0" . $hh, -2) . ":" . $mm . $ampm : '');
     return $cadena;
@@ -130,7 +130,7 @@ function encriptar($cadena) {
     $min = min(array(strlen($sha1), strlen($base64)));
     $output = "";
     for ($i = 0; $i < $min; $i++) {
-        $output.=$sha1[$i] . $base64[$i];
+        $output .= $sha1[$i] . $base64[$i];
     }
     if (strlen($sha1) < strlen($base64)) {
         $output .= substr($base64, $min);
@@ -159,13 +159,13 @@ function desencriptar($cadena) {
             }
         }
         for ($i = 1; $i <= $min * 2; $i = $i + 2) {
-            $base64.=$cadena[$i];
+            $base64 .= $cadena[$i];
         }
     } else {
         for ($i = 1; $i <= strlen($sha1) * 2; $i = $i + 2) {
-            $base64.=$cadena[$i];
+            $base64 .= $cadena[$i];
         }
-        $base64.=substr($cadena, strlen($sha1) * 2);
+        $base64 .= substr($cadena, strlen($sha1) * 2);
     }
     $output = base64_decode($base64);
     return $output;
@@ -281,7 +281,7 @@ function getFechaOffset_v2($fecha, $dias) {
         $findesemana *= $signo;
         $diasAdd = ($dias + $findesemana);
         $total = strtotime($fecha . ' +' . $diasAdd . ' days');
-        //$total = (($dias+$findesemana) * 86400)+$datestart ;Se cambio por que los dias de cambio de horario genera errores ya que no duran 86400 segundos  
+        //$total = (($dias+$findesemana) * 86400)+$datestart ;Se cambio por que los dias de cambio de horario genera errores ya que no duran 86400 segundos
         //echo '$dias '.$dias.'<br>';}
         return $twstart = date('Y-m-d', $total);
     }//fin de else
@@ -314,5 +314,165 @@ function getDiasHabiles($fecha1, $fecha2) {
             $diasHabiles++;
         }
     }
-    return intval($signo.$diasHabiles);
+    return intval($signo . $diasHabiles);
+}
+
+function get_cargo_de_empleado(&$row) {
+    $cargo = "";
+    if (!empty($row) && isset($row['cc_departamentos_id'])) {
+        $cargo = $row['puestos_nombre'] . " DE " . $row['departamentos_nombre'];
+        if ($row['empleados_puestos_id'] == PUESTO_DIRECTOR && $row['cc_direcciones_id'] == APP_DIRECCION_CONTRALORIA) {
+            $cargo = (!empty($row['empleados_nombramiento']) ? $row['empleados_nombramiento'] : $row['puestos_nombre']) . " DE LA " . strtoupper($row['direcciones_nombre']);
+        } elseif ($row['empleados_puestos_id'] == PUESTO_DIRECTOR || $row['empleados_puestos_id'] == 145 /* 145 = Director General (Descentralizadas) */) {
+            $cargo = $row['puestos_nombre'] . " DE " . $row['direcciones_nombre'];
+        } elseif ($row['empleados_puestos_id'] == PUESTO_SUBDIRECTOR) {
+            if (substr($row['departamentos_nombre'], -3) === "ICA") {
+                $row['departamentos_nombre'] = str_replace("ICA", "ICO", $row['departamentos_nombre']);
+            }
+            $cargo = str_replace('DIRECCIÓN', 'DIRECTOR', $row['departamentos_nombre']);
+        } elseif ($row['empleados_puestos_id'] == PUESTO_JEFE_DEPARTAMENTO) {
+            $cargo = $row['puestos_nombre'] . ($row['departamentos_nombre'] === "ADMINISTRATIVO" ? ' ' : ' DE ') . $row['departamentos_nombre'];
+            $cargo = str_replace("DEPARTAMENTO DE DEPARTAMENTO", "DEPARTAMENTO", $cargo);
+        } elseif ($row['empleados_puestos_id'] == PUESTO_AUDITOR) {
+            switch ($row['empleados_numero_empleado']) {
+                case 9790: // Janelle Polanco
+                    $cargo = "COORDINADOR DE NORMATIVIDAD Y ATENCIÓN A QUEJAS";
+                    break;
+                case 11862: // Jose Carlos Zapata Rivero
+                    $cargo = "AUDITOR INTERNO DE OBRA PÚBLICA";
+                    break;
+                case 16224: //Marcos Ek Gala
+                case 15897: // Manuel Encalada
+                case 8600: // Jose Luis Lugo Cab
+                case 13700: // Azalia
+                case 16731: //: Lupita
+                case 7413: //Norma
+                case 16283: // Miguel Lopez
+                case 11657: // Juan Vazquez
+                case 4124: // Lucy Manzanero
+                    $cargo = "AUDITOR INTERNO";
+                    break;
+                case 12124: // Celia Sosa
+                case 14415: // Karen Alonzo
+                    $cargo = $row['puestos_nombre'];
+                    break;
+                default:
+                    $cargo = str_replace('AUDITORÍA', 'AUDITOR', $row['departamentos_nombre']);
+            }
+        } elseif ($row['empleados_puestos_id'] == PUESTO_COORDINADOR_AUDITORIA) {
+            $cargo = "COORDINADOR DE ";
+            switch ($row['empleados_numero_empleado']) {
+                case 9907: // Alex Mass
+                    $cargo .= "AUDITORÍA DE OBRA PÚBLICA";
+                    break;
+                case 13875: // Miguel Dzib
+                case 9754: // Leti
+                case 178: // Moises Sanguino
+                    $cargo .= "AUDITORÍA";
+                    break;
+                default:
+                    $cargo .= $row['departamentos_nombre'];
+                    break;
+            }
+        } elseif ($row['empleados_puestos_id'] == 297) { // 297 = Coordinador juridico
+            $cargo = $row['puestos_nombre'];
+        } elseif ($row['empleados_puestos_id'] == 143) { // 143 = AUXILIAR OPERATIVO INTERNO
+            $cargo = $row['puestos_nombre'];
+        }
+    }
+    $cargo = capitalizar($cargo);
+    $row['empleados_cargo'] = $cargo;
+    return TRUE;
+}
+
+/**
+ * Genera valores al arreglo del empleado
+ * @param array $empleado
+ * @return boolean
+ */
+function get_nombre_titulado(&$empleado) {
+    if (!empty($empleado)) {
+        if ($empleado['empleados_genero'] === GENERO_FEMENINO && !empty($empleado['titulos_femenino_siglas'])) {
+            $empleado['empleados_nombre_titulado_siglas'] = $empleado['titulos_femenino_siglas'] . " " . $empleado['nombre_completo'];
+            $empleado['empleados_nombre_titulado'] = $empleado['titulos_femenino_nombre'] . " " . $empleado['nombre_completo'];
+        } else {
+            $empleado['empleados_nombre_titulado_siglas'] = $empleado['titulos_masculino_siglas'] . " " . $empleado['nombre_completo'];
+            $empleado['empleados_nombre_titulado'] = $empleado['titulos_masculino_nombre'] . " " . $empleado['nombre_completo'];
+        }
+    }
+    return TRUE;
+}
+
+/**
+ * Agrega la cantidad de daas hábiles a una fecha especificada.
+ * @param date $fechaInicio Fecha base en formato YYYY-MM-DD.
+ * @param integer $dias Cantidad de días hábiles a agregar o quitar a la fecha
+ * @param boolean $solo_habiles TRUE para indicar que agregue o quite dias hábiles. FALSE para agregar todos los días
+ * @return string Devuelve la fecha con la cantidad de días agregados
+ */
+function agregar_dias($fechaInicio, $dias, $solo_habiles = TRUE) {
+    $DT_FechaFin = new DateTime($fechaInicio);
+    $fechaFin = $DT_FechaFin->format('Y-m-d');
+    $dias = intval($dias);
+    $unDia = ($dias > 0 ? '+' : '-') . '1 day';
+    while ($dias !== 0) {
+        $DT_FechaFin->modify($unDia);
+        $fechaFin = $DT_FechaFin->format('Y-m-d');
+        $isWeekend = is_fin_de_semana($fechaFin);
+        while ($isWeekend) {
+            $DT_FechaFin->modify($unDia);
+            $fechaFin = $DT_FechaFin->format('Y-m-d');
+            $isWeekend = is_fin_de_semana($fechaFin);
+        }
+        $dias--;
+    }
+    $dias_inhabiles = get_dias_inabiles_entre_fechas($fechaInicio, $fechaFin);
+    foreach ($dias_inhabiles as $dh) {
+        $DT_FechaFin->modify($unDia);
+        $fechaFin = $DT_FechaFin->format('Y-m-d');
+    }
+    $return = $fechaFin;
+    return $return;
+}
+
+/**
+ * Devuelve el listado de días inhábiles entre dos fechas
+ * @param string $fecha_inicio Fecha de inicio en formato YYYY-MM-DD
+ * @param string $fecha_fin Fecha de fin en formato YYYY-MM-DD
+ * @param boolean $incluir_fines_de_semana TRUE para indicar que tambien se incluyan los dias inhabiles que caigan en fin de semana. FALSE en cualquier otro caso
+ * @return array Listado de fechas de días inhábiles
+ */
+function get_dias_inabiles_entre_fechas($fecha_inicio, $fecha_fin, $incluir_fines_de_semana = FALSE) {
+    $return = array();
+    $CI = CI();
+    if (!empty($fecha_inicio) && !empty($fecha_fin)) {
+        if (!$incluir_fines_de_semana) {
+            $CI->db
+                    ->where("WEEKDAY(dias_inhabiles_fecha) <>", 5)
+                    ->where("WEEKDAY(dias_inhabiles_fecha) <>", 6);
+        }
+        $result = $CI->db
+                ->where("dias_inhabiles_fecha BETWEEN '" . $fecha_inicio . "' AND '" . $fecha_fin . "'")
+                ->get("dias_inhabiles");
+        if ($result && $result->num_rows() > 0) {
+            $return = $result->result_array();
+        }
+    }
+    return $return;
+}
+
+/**
+ * Obtiene las siglas de un empleado
+ * @param array $empleado Información del empleado
+ * @return boolean Devuelve TRUE al finalizar la función
+ */
+function get_siglas_de_empleado(&$empleado) {
+    $siglas = "";
+    if (!empty($empleado)) {
+        $siglas = $empleado['empleados_nombre'][0]
+                . (isset($empleado['empleados_apellido_paterno'][0]) ? $empleado['empleados_apellido_paterno'][0] : '')
+                . (isset($empleado['empleados_apellido_materno'][0]) ? $empleado['empleados_apellido_materno'][0] : '');
+    }
+    $empleado['empleado_siglas'] = $siglas;
+    return TRUE;
 }
