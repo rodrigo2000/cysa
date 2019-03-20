@@ -7,31 +7,7 @@ define('APP_NAME', "Sistema de Control y Seguimiento de Auditorías");
 define('APP_ABREVIACION', 'CYSA');
 define('APP_NAMESPACE', "cysa");
 
-// Constantes de conexión a servidor de base de datos
-define("APP_DATABASE_HOSTNAME", "svrdcont02");
-define("APP_DATABASE_USERNAME", "tester");
-define("APP_DATABASE_PASSWORD", "prueba");
-
-// URLs a otros sistemas internos
-define("APP_SAC_URL", 'http://localhost/Contraloria_v2.0/sac/');
-define("APP_CISOP_URL", 'http://localhost/Contraloria_v2.0/cisop/');
-define('APP_CORRESPONDENCIA_URL', 'http://localhost/Contraloria_v2.0/correspondencia/');
-define('APP_CYSA_URL', 'http://localhost/Contraloria_v2.0/cysa/');
-
-// Constantes de nombres de base de datos
-define('APP_DATABASE_PREFIX', 'preprod_');
-define('APP_DATABASE_SAC', 'sac');
-define('APP_DATABASE_CORRESPONDENCIA', 'correspondencia');
-define('APP_DATABASE_CISOP', 'cisop');
-define('APP_DATABASE_CYSA', 'cysa');
-define('APP_DATABASE_TIMELINE', 'timeline');
-
-// Constantes de la applicacion
-define("CORRESPONDENCIA_NO LEIDO", 0);
-define("CORRESPONDENCIA_LEÍDO", 1);
-define("CORRESPONDENCIA_FINALIZADO", 2);
-define("CORRESPONDENCIA_CANCELAR", 3);
-define("CORRESPONDENCIA_BLOQUEAR", 4);
+include_once('../constantes.php');
 
 // Constantes de sitio web
 define('HTMLVARS_TITLE_PAGE', 'Contraloría :: ' . APP_NAME);
@@ -50,6 +26,8 @@ define('PUESTO_INGENIERO_EN_SOFTWARE', 253);
 define('PUESTO_AUDITOR', 7);
 define('PUESTO_COORDINADOR', 40);
 define('PUESTO_SUBDIRECTOR_INACTIVO', 1);
+define('PUESTO_PRESIDENTE_MUNICIPAL', 85);
+define('PUESTO_SINDICO', 256);
 
 // Dependencias
 define('DEPENDENCIA_CONTRALORIA_MUNICIPAL', 5);
@@ -58,6 +36,38 @@ define('DEPENDENCIA_CONTRALORIA_MUNICIPAL', 5);
 define('AREA_DIRECCION', 1);
 define('AREA_APOYOS', 2);
 define('AREA_AUDITORIA_INTERNA', 3);
+
+define('USUARIO_PERFIL_ADMNISTRADOR', 1);
+define('USUARIO_PERFIL_EMPLEADO_CONTRALORIA', 2);
+define('USUARIO_PERFIL_RESGUARDANTE_BODEGA', 3);
+define('USUARIO_PERFIL_SERVICIO_SOCIAL', 4);
+define('USUARIO_PERFIL_EXTERNO', 5);
+
+define('AUDITORIAS_STATUS_CANCELADA', 0);
+define('AUDITORIAS_STATUS_EN_PROCESO', 1);
+define('AUDITORIAS_STATUS_FINALIZADA', 2);
+define('AUDITORIAS_STATUS_FINALIZADA_RESERVADA', 3);
+define('AUDITORIAS_STATUS_FINALIZADA_MANUAL', 4);
+define('AUDITORIAS_STATUS_FINALIZADA_REPROGRAMADA', 5);
+define('AUDITORIAS_STATUS_FINALIZADA_SUSTITUIDA', 6);
+
+define('GENERO_MASCULINO', 'M');
+define('GENERO_FEMENINO', 'F');
+
+define('CONTRALORIA_TITULAR_EMPLEADOS_NOMBRE', 'María Gómez Nechar');
+define('CONTRALORÍA_TITULAR_EMPLEADOS_ID', 17000);
+define('CONTRALORIA_TITULAR_NOMBRAMIENTO_CABILDO', 'Titular de la Contraloría Municipal');
+
+define('DOCUMENTO_ORDEN_AUDITORIA_FECHA_EMISION', 0);
+define('DOCUMENTO_ORDEN_AUDITORIA_DIRECTOR_UA', 0);
+define('DOCUMENTO_ORDEN_AUDITORIA_DOMICILIO', 0);
+define('DOCUMENTO_ORDEN_AUDITORIA_FECHA_INICIO_AUDITORIA', 0);
+define('DOCUMENTO_ORDEN_AUDITORIA_HORA_INICIO_AUDITORIA', 0);
+define('DOCUMENTO_ORDEN_AUDITORIA_DIRECTOR_CONTRALORIA', 0);
+define('DOCUMENTO_ORDEN_AUDITORIA_MISION_ID', 0);
+define('DOCUMENTO_ORDEN_AUDITORIA_SIGLAS_EMPLEADOS_ID', 0);
+
+
 
 /*
   |--------------------------------------------------------------------------

@@ -52,4 +52,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'Dashboard/index';
 $route['404_override'] = 'Dashboard/error404';
 $route['translate_uri_dashes'] = FALSE;
-$route['Timeline/(:num)'] = 'Timeline/index/$1';
+//$route['Auditoria/nuevo_documento/OA/(:any)'] = "Auditoria/nuevo_documento/$1/OA";
+$route['Auditoria/Documentos/OA/(:any)'] = "Auditoria/documentos/$1/OA";
+$route['Auditoria/(\d+)'] = "Auditoria/auditoria/$1";
