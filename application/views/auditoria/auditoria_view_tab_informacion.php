@@ -38,13 +38,19 @@
                     <p class="lead text-xs-center">SIN OBSERVACIONES</p>
                 <?php endif; ?>
                 <?php if (isset($auditoria['observaciones']) && count($auditoria['observaciones']) > 0): ?>
-                    <ul class="list-group">
-                        <?php foreach ($auditoria['observaciones'] as $o): ?>
-                            <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
-                                <li class="list-group-item"><?= $o['observaciones_titulo']; ?></li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ul>
+                    <div class="card m-b-0">
+                        <?php if ($auditoria['observaciones'][0]['observaciones_auditorias_id'] !== $auditoria['auditorias_id']): ?>
+                            <?php $aa = $this->Auditorias_model->get_auditoria($auditoria['observaciones'][0]['observaciones_auditorias_id']); ?>
+                            <div class="card-header bg-grey-darker">Observaciones de la auditoría <?= $aa['numero_auditoria']; ?></div>
+                        <?php endif; ?>
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($auditoria['observaciones'] as $o): ?>
+                                <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
+                                    <li class="list-group-item"><?= $o['observaciones_titulo']; ?></li>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -96,13 +102,13 @@
                     <dt class="col-sm-3">Equipo de auditoría</dt>
                     <dd class="col-sm-9">
                         <?php
+                        $aux = "No hay auditores de apoyo";
                         if (!empty($auditoria['auditoria_equipo'])) {
                             $aux = array_column($auditoria['auditoria_equipo'], 'nombre_completo');
                             $aux = array_map('capitalizar', $aux);
-                            implode('<br>', $aux);
-                        } else {
-                            echo "No hay auditores de apoyo";
+                            $aux = implode('<br>', $aux);
                         }
+                        echo $aux;
                         ?>
                     </dd>
                 </dl>
