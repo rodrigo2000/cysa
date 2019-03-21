@@ -15,9 +15,10 @@ class Auditorias_tipos extends MY_Controller {
         $this->module['tabla'] = strtolower(__CLASS__);
         $this->module['prefix'] = "aa";
         $this->_initialize();
-        
+
         $this->rulesForm = array(
-            array('field' => 'auditorias_tipos_nombre', 'label' => 'Área', 'rules' => 'required|trim'),
+            array('field' => 'auditorias_tipos_nombre', 'label' => 'Nombre', 'rules' => 'required|trim'),
+            array('field' => 'auditorias_tipos_siglas', 'label' => 'Siglas', 'rules' => 'required|trim'),
         );
         $accion = $this->input->post('accion');
         if ($accion === "modificar") {

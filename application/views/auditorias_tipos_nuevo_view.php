@@ -12,6 +12,13 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label for="auditorias_tipos_siglas" class="col-sm-3 control-label">Siglas</label>
+                <div class="col-sm-2 col-md-1">
+                    <input type="text" id="auditorias_tipos_siglas" name="auditorias_tipos_siglas" class="form-control" value="<?= isset($r) ? $r['auditorias_tipos_siglas'] : ''; ?>">
+                    <?= form_error('auditorias_tipos_siglas'); ?>
+                </div>
+            </div>
+            <div class="form-group row">
                 <div class="text-xs-center">
                     <a href="<?= $this->module['cancel_url']; ?>" class="btn btn-default">Cancelar</a>
                     <button type="submit" class="btn btn-primary"><?= $etiquetaBoton; ?></button>

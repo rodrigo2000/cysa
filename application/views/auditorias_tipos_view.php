@@ -12,6 +12,7 @@
                     <tr>
                         <th width="10">🆔</th>
                         <th>Nombre</th>
+                        <th>Siglas</th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
@@ -20,6 +21,7 @@
                         <tr>
                             <td class="text-xs-center align-middle"><?= $r[$this->module['id_field']] ?></td>
                             <td class="text-xs-center align-middle"><?= $r['auditorias_tipos_nombre']; ?></td>
+                            <td class="text-xs-center align-middle"><?= $r['auditorias_tipos_siglas']; ?></td>
                             <td width="100" class="text-xs-center align-middle">
                                 <?php if ($this->{$this->module['controller'] . "_model"}->puedo_modificar()): ?>
                                     <a href="<?= $this->module['edit_url'] . "/" . $r[$this->module['id_field']]; ?>" class="btn btn-xs btn-info" title="<?= $this->module['title_edit']; ?>"><i class="fa fa-pencil"></i></a>
