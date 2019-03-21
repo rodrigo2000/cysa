@@ -30,7 +30,7 @@ class Auditorias_model extends MY_Model {
         }
         $this->db
                 ->select($this->table_prefix . ".*")
-                ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_nombre, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
+                ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_siglas, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
                 ->select("cc_id, cc_periodos_id, cc_direcciones_id, cc_subdirecciones_id, cc_departamentos_id")
                 ->select("direcciones_nombre, direcciones_is_descentralizada, subdirecciones_nombre, departamentos_nombre")
                 ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
@@ -128,7 +128,7 @@ class Auditorias_model extends MY_Model {
             $result = $this->db
                     //->select("MATCH (empleados_nombre, empleados_apellido_paterno, empleados_apellido_materno) AGAINST ('" . $search['value'] . "' IN NATURAL LANGUAGE MODE) AS 'relevancia'")
                     ->select($this->table_prefix . ".*")
-                    ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_nombre, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
+                    ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_siglas, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
                     ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
                     ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
                     ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")

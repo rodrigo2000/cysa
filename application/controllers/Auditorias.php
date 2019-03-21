@@ -227,7 +227,7 @@ class Auditorias extends MY_Controller {
             if (!empty($r['auditorias_numero'])) {
                 $aux = array(
                     ($r['auditorias_segundo_periodo'] == 1 ? '2' : '') . $r['auditorias_areas_siglas'],
-                    $r['auditorias_tipos_nombre'],
+                    $r['auditorias_tipos_siglas'],
                     sprintf('%1$03d', $r['auditorias_numero']),
                     $r['auditorias_anio'],
                 );
