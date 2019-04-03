@@ -2,8 +2,8 @@
     <div class="col-xs-12 col-sm-6">
         <div class="card">
             <h3 class="card-header bg-info">Datos de la auditoría: <strong><?= $auditoria['auditorias_rubro']; ?></strong></h3>
-            <div class="card-block">
-                <dl class="row">
+            <div class="card-block row">
+                <dl>
                     <dt class="col-sm-3">Área auditada</dt>
                     <dd class="col-sm-9">
                         <?php
@@ -16,9 +16,7 @@
                         ?>
                     </dd>
                     <dt class="col-sm-3">Objetivo</dt>
-                    <dd class="col-sm-9">
-                        <p><?= ucfirst($auditoria['auditorias_objetivo']); ?></p>
-                    </dd>
+                    <dd class="col-sm-9"><?= ucfirst($auditoria['auditorias_objetivo']); ?></dd>
                     <dt class="col-sm-3">Tipo</dt>
                     <dd class="col-sm-9"><?= $auditoria['auditorias_tipos_nombre'] . " (" . $auditoria['auditorias_tipos_siglas'] . ")"; ?></dd>
                     <dt class="col-sm-3 text-truncate">Área responsable</dt>
@@ -33,23 +31,32 @@
             <div class="card-block">
                 <?php if ($auditoria['auditorias_status_id'] == AUDITORIAS_STATUS_EN_PROCESO): // Esta en proceso ?>
                     <p><input type="checkbox" class="labelautyfy" name="auditorias_is_sin_observaciones" id="auditorias_is_sin_observaciones" data-labelauty="Sin observaciones"></p>
-
                 <?php elseif ($auditoria['auditorias_is_sin_observaciones'] == 1): ?>
                     <p class="lead text-xs-center">SIN OBSERVACIONES</p>
                 <?php endif; ?>
                 <?php if (isset($auditoria['observaciones']) && count($auditoria['observaciones']) > 0): ?>
-                    <div class="card m-b-0">
-                        <?php if ($auditoria['observaciones'][0]['observaciones_auditorias_id'] !== $auditoria['auditorias_id']): ?>
-                            <?php $aa = $this->Auditorias_model->get_auditoria($auditoria['observaciones'][0]['observaciones_auditorias_id']); ?>
-                            <div class="card-header bg-grey-darker">Observaciones de la auditoría <?= $aa['numero_auditoria']; ?></div>
-                        <?php endif; ?>
-                        <ul class="list-group list-group-flush">
-                            <?php foreach ($auditoria['observaciones'] as $o): ?>
-                                <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
-                                    <li class="list-group-item"><?= $o['observaciones_titulo']; ?></li>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                        </ul>
+                    <div id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="card m-b-0">
+                            <?php if ($auditoria['observaciones'][0]['observaciones_auditorias_id'] !== $auditoria['auditorias_id']): ?>
+                                <?php $aa = $this->Auditorias_model->get_auditoria($auditoria['observaciones'][0]['observaciones_auditorias_id']); ?>
+                                <div class="card-header bg-gray-darker" role="tab" id="headingOne">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                        Observaciones de la auditoría <?= $aa['numero_auditoria']; ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <div id="collapseOne" class="collapse" role="tabpanel">
+                                <div class="card-block">
+                                    <ul class="list-group list-group-flush">
+                                        <?php foreach ($auditoria['observaciones'] as $o): ?>
+                                            <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
+                                                <li class="list-group-item" style="box-shadow: none;"><?= $o['observaciones_titulo']; ?></li>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 <?php endif; ?>
             </div>
