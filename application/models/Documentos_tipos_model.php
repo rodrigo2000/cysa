@@ -13,7 +13,12 @@ class Documentos_tipos_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
-    function get_tipo_de_documento_segun_siglas($siglas) {
+    /**
+     * Devuelve el identificador del tipo de documento asociado a si siglas
+     * @param string $siglas Cadena que corresponde a las siglas del tipo de documento
+     * @return integer Identificador del tipo de documento
+     */
+    function parse_siglas($siglas) {
         $return = FALSE;
         if (!empty($siglas)) {
             $result = $this->db->select($this->id_field)

@@ -1,7 +1,5 @@
 <div class="card">
-<!--    <div class="card-header no-bg1 b-a-0">
-        <?php $this->load->view('auditoria/header_view'); ?>
-    </div>-->
+    <?php $this->load->view('auditoria/header_view'); ?>
     <div class="card-block">
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))): $auditorias_id = $this->session->userdata(APP_NAMESPACE)[$this->module['id_field']]; ?>
             <div id="accordion" role="tablist" aria-multiselectable="true">
@@ -15,7 +13,7 @@
                     </div>
                     <div id="documentacion-inicial" class="card-block panel-collapse collapse show" role="tabpanel">
                         <div class="list-group">
-                            <a href="<?= base_url() . $this->module['controller'] . "/get_documentos/OA"; ?>" class="list-group-item">Orden de Auditoría (OA)</a>
+                            <a href="<?= base_url() . $this->module['controller'] . "/documento/OA"; ?>" class="list-group-item">Orden de Auditoría (OA)</a>
                             <a href="#" class="list-group-item">Acta de inicio de Auditoría (AIA)</a>
                             <a href="#" class="list-group-item">Autirozación de Auditoría No Programada (AANP)</a>
                         </div>

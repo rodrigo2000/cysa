@@ -17,46 +17,11 @@ class Auditoria extends MY_Controller {
         $this->_initialize();
     }
 
-    function listado($data = array()) {
-        $cysa = $this->session->userdata('cysa');
-        $anios_para_select = $this->Auditoria_model->get_anios_para_select();
-        $anio = intval(date("Y"));
-        if (!isset($cysa['auditorias_anio']) && empty($cysa['auditorias_anio']) && !empty($anios_para_select)) {
-            if (!empty($anios_para_select['en_proceso'])) {
-                $anio = $anios_para_select['en_proceso'][0]['auditorias_anio'];
-            } elseif (!empty($anios_para_select['finalizadas'])) {
-                $anio = 0 - $anios_para_select['finalizadas'][0]['auditorias_anio'];
-            }
-            $this->{$this->module['controller'] . "_model"}->actualizar_session('auditorias_anio', intval($anio));
+    function index($auditorias_id = NULL) {
+        if (empty($auditorias_id) && isset($this->session->cysa['auditorias_id'])) {
+            redirect('/Auditoria/' . $this->session->cysa['auditorias_id']);
         }
-        if (isset($cysa['auditorias_anio']) && !empty($cysa['auditorias_anio'])) {
-            $anio = $cysa['auditorias_anio'];
-        }
-        $auditorias = array();
-        if (isset($cysa['auditorias_id']) && !empty($cysa['auditorias_id'])) {
-            $data['auditoria'] = $this->Auditorias_model->get_auditoria($cysa['auditorias_id']);
-        }
-        $auditorias = $this->Auditoria_model->get_mis_auditorias(abs($anio));
-        $tipo_auditoria_AP = array(1, 2, 3);
-        $APs = $ICs = array();
-        foreach ($auditorias as $a) {
-            if (in_array($a['auditorias_tipo'], $tipo_auditoria_AP)) {
-                array_push($APs, $a);
-            } else {
-                array_push($ICs, $a);
-            }
-        }
-        $auditorias_para_select = array(
-            'auditorias_AP' => $APs,
-            'auditorias_IC' => $ICs
-        );
-        $aux = array(
-            'registros' => array(),
-            'mis_auditorias_id' => $auditorias_para_select,
-            'mis_auditorias_anio' => $anios_para_select
-        );
-        $data = array_merge($data, $aux);
-        parent::listado($data);
+        parent::index();
     }
 
     function auditoria($auditoria) {
@@ -84,7 +49,7 @@ class Auditoria extends MY_Controller {
      * @param integer $auditorias_id Identificador de la auditoría
      * @param string|integer $documentos_tipos_id Identificador del tipo de auditoría o siglas del documento
      */
-    function get_documentos($documentos_tipos_id = NULL, $documentos_id = NULL) {
+    function documento($documentos_tipos_id = NULL, $documentos_id = NULL) {
         $auditorias_id = $this->session->cysa['auditorias_id'];
         $auditoria = $this->Auditoria_model->get_auditoria($auditorias_id);
         $this->module['title_list'] = "Documentos";
@@ -100,7 +65,7 @@ class Auditoria extends MY_Controller {
         );
         if (!is_numeric($documentos_tipos_id)) {
             $documentos_tipos_id = strtoupper($documentos_tipos_id);
-            $documentos_tipos_id = $this->Documentos_tipos_model->get_tipo_de_documento_segun_siglas($documentos_tipos_id);
+            $documentos_tipos_id = $this->Documentos_tipos_model->parse_siglas($documentos_tipos_id);
             $documentos_tipos_id = intval($documentos_tipos_id);
         }
         switch ($documentos_tipos_id) {

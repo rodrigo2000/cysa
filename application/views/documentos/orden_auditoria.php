@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header no-bg1 b-a-0">
-        <?php $this->load->view('auditoria/header_view', array('registros' => $registros)); ?>
+        <?php $this->load->view('auditoria/header_view'); ?>
     </div>
     <div class="card-block">
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))): ?>
@@ -8,24 +8,21 @@
             <?php foreach ($documentos_auditoria as $da): $r = isset($da['valores']) && !empty($da['valores']) ? $da['valores'] : NULL; ?>
                 <?php $documento = $da; ?>
                 <form id="frmOficios" method="post" action="<?= $urlAction; ?>" novalidate="novalidate" onsubmit="return false;">
-                    <div class="form-group row">
-                        <div class="col-sm-12 text-xs-center">
-                            <a href="<?= base_url() . $this->uri->segment(1); ?>" class="btn btn-default">Regresar</a>
-                            <a href="<?= base_url() . $this->uri->segment(1) . "/nuevo_documento/" . $this->uri->segment(3) . "/" . $this->uri->segment(4); ?>" class="btn btn-default m-l-2">Nuevo</a>
-                            <div class="col-md-4">
-                                <select id="direcciones_id" namE="direcciones_id" class="form-control">
-                                    <option value="0" selected="selected">SELECCIONE</option>
-                                    <?php foreach ($direcciones as $d): ?>
-                                        <option value="<?= $d['direcciones_id']; ?>"><?= $d['direcciones_nombre']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                    <div class="btn-group m-b-1" role="group">
+                        <div class="btn-group" role="group">
+                            <button id="btnGroupDrop1" type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Nuevo
+                            </button>
+                            <div class="dropdown-menu" style="height: 300px; overflow: auto;">
+                                <?php foreach ($direcciones as $d): ?>
+                                    <a class="dropdown-item" href="<?= base_url() . $this->uri->segment(1) . "/nuevo_documento/" . $this->uri->segment(3) . "/" . $this->uri->segment(4) . $d['direcciones_id']; ?>"><?= $d['direcciones_nombre_cc']; ?></a>
+                                <?php endforeach; ?>
                             </div>
-                            <a href="#" class="btn btn-default m-l-2">Autorizar</a>
-                            <?php if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_MODIFICAR, APP_NAMESPACE, 'Documentos')): ?>
-                                <button type="button" class="btn btn-primary m-l-2 boton_guardar"><?= $etiquetaBoton; ?></button>
-                            <?php endif; ?>
-                            <a href="" class="btn btn-info m-l-2" target="_blank">Vista impresión</a>
                         </div>
+                        <button type="button" class="btn btn-sm btn-primary boton_guardar"><?= $etiquetaBoton; ?></button>
+                        <a href="" class="btn btn-sm btn-info" target="_blank">Vista impresión</a>
+                        <a href="#" class="btn btn-sm btn-default btn-warning">Autorizar</a>
+                        <a href="<?= base_url() . $this->uri->segment(1) . "/" . $auditoria['auditorias_id']; ?>#documentos" class="btn btn-sm btn-default">Regresar</a>
                     </div>
                     <div id="oficio-hoja">
                         <div id="oficio-header">

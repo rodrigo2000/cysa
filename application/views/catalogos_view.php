@@ -8,7 +8,7 @@
                 <div class="list-group">
                     <a href="<?= base_url(); ?>Auditorias_areas" class="list-group-item"><i class="fa fa-cogs"></i> Areas de auditoría</a>
                     <a href="<?= base_url(); ?>Auditorias_tipos" class="list-group-item"><i class="fa fa-cogs"></i> Tipos de auditoría</a>
-                    <a href="<?= base_url(); ?>Auditorias_statys" class="list-group-item"><i class="fa fa-cogs"></i> Status de auditoría</a>
+                    <a href="<?= base_url(); ?>Auditorias_status" class="list-group-item"><i class="fa fa-cogs"></i> Status de auditoría</a>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-4">

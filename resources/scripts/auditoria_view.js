@@ -110,6 +110,11 @@ $(document).ready(function () {
             $("#btn-actualizar-permisos-adicionales").html('Actualizar permisos').prop('disabled', false);
         }, "json");
     });
+
+    var hash = window.location.hash;
+    if (!isEmpty(hash)) {
+        $('#tabMenuAuditoria a[href="' + hash + '"]').tab('show')
+    }
 });
 
 function asignar_enlace_designado(empleados_id) {

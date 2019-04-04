@@ -59,6 +59,9 @@ class SAC_model extends MY_Model {
                     ->get("centros_costos cc");
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
+                foreach ($return as $index => $d) {
+                    $return[$index]['direcciones_nombre_cc'] = sprintf("%02d", $d['cc_etiqueta_direccion']) . " - " . $d['direcciones_nombre'];
+                }
             }
         }
         return $return;
@@ -89,6 +92,9 @@ class SAC_model extends MY_Model {
                     ->get("centros_costos cc");
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
+                foreach ($return as $index => $s) {
+                    $return[$index]['subdirecciones_nombre_cc'] = sprintf("%02d", $s['cc_etiqueta_direccion']) . "." . sprintf("%02d", $s['cc_etiqueta_subdireccion']) . " - " . $s['subdirecciones_nombre'];
+                }
             }
         }
         return $return;
@@ -123,6 +129,9 @@ class SAC_model extends MY_Model {
                     ->get("centros_costos cc");
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
+                foreach ($return as $index => $d) {
+                    $return[$index]['departamentos_nombre_cc'] = sprintf("%02d", $d['cc_etiqueta_direccion']) . "." . sprintf("%02d", $d['cc_etiqueta_subdireccion']) . "." . sprintf("02%d", $d['cc_etiqueta_departamento']) . " - " . $d['departamentos_nombre'];
+                }
             }
         }
         return $return;

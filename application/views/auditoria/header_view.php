@@ -2,11 +2,11 @@
 $cysa = $this->session->userdata('cysa');
 $mis_auditorias_anio = $this->Auditoria_model->get_anios_para_select();
 $anio = intval(date("Y"));
-if (!isset($cysa['auditorias_anio']) && empty($cysa['auditorias_anio']) && !empty($anios_para_select)) {
-    if (!empty($anios_para_select['en_proceso'])) {
-        $anio = $anios_para_select['en_proceso'][0]['auditorias_anio'];
-    } elseif (!empty($anios_para_select['finalizadas'])) {
-        $anio = 0 - $anios_para_select['finalizadas'][0]['auditorias_anio'];
+if (!isset($cysa['auditorias_anio']) && empty($cysa['auditorias_anio']) && !empty($mis_auditorias_anio)) {
+    if (!empty($mis_auditorias_anio['en_proceso'])) {
+        $anio = $mis_auditorias_anio['en_proceso'][0]['auditorias_anio'];
+    } elseif (!empty($mis_auditorias_anio['finalizadas'])) {
+        $anio = 0 - $mis_auditorias_anio['finalizadas'][0]['auditorias_anio'];
     }
     $this->{$this->module['controller'] . "_model"}->actualizar_session('auditorias_anio', intval($anio));
 }
@@ -33,7 +33,6 @@ $mis_auditorias_id = array(
 $auditorias_id = isset($this->session->cysa['auditorias_id']) ? $this->session->cysa['auditorias_id'] : NULL;
 $anio_select = isset($this->session->cysa['auditorias_anio']) ? $this->session->cysa['auditorias_anio'] : NULL;
 ?>
-<script> let auditorias_id = '<?= $auditorias_id; ?>';</script>
 <div class="col-xs-6 col-sm-4 col-md-3 pull-right hidden-xs-down">
     <select name="mis_auditorias_id" class="mis_auditorias_id form-control">
         <?php if (empty($auditorias_id)): ?>

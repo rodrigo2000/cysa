@@ -4,7 +4,7 @@
     </div>
     <div class="card-block">
         <?php if (isset($this->session->cysa[$this->module['id_field']])): ?>
-            <ul class="nav nav-tabs" role="tablist">
+            <ul id="tabMenuAuditoria" class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#informacion" role="tab">Información</a>
                 </li>
