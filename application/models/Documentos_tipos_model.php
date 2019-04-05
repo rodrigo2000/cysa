@@ -21,7 +21,8 @@ class Documentos_tipos_model extends MY_Model {
     function parse_siglas($siglas) {
         $return = FALSE;
         if (!empty($siglas)) {
-            $result = $this->db->select($this->id_field)
+            $result = $this->db
+                    ->select($this->id_field)
                     ->like('documentos_tipos_abreviacion', $siglas)
                     ->limit(1)
                     ->get($this->table_name);
