@@ -13,6 +13,7 @@ class SAC_model extends MY_Model {
     function get_ultimo_periodo() {
         $return = array();
         $result = $this->dbSAC
+                ->where("periodos_id", 2) /* Temporalmente siempre regresará el periodo 2 */
                 ->where("fecha_delete IS NULL")
                 ->order_by("periodos_fecha_fin", "DESC")
                 ->limit(1)
@@ -399,10 +400,10 @@ class SAC_model extends MY_Model {
 
     /**
      * Busca los empleados dentro del sistema
-     * @param boolean $incluirEliminados
+     * @param boolen $incluir_eliminados TRUE cuando se desea buscar entre los registros eliminados
      * @return array Devuelve la información relacionada con los empleados. FALSE en cualquier otro caso.
      */
-    function get_empleados($incluirEliminados = FALSE) {
+    function get_empleados($incluir_eliminados = FALSE) {
         $return = array();
         $this->dbSAC->select("e.*, CONCAT(e.empleados_nombre,' ',e.empleados_apellido_paterno, ' ',e.empleados_apellido_materno) AS 'nombre_completo'")
                 ->join("titulos t", "t.titulos_id = " . "e.empleados_titulos_id", "LEFT")->select("t.*")
@@ -413,7 +414,7 @@ class SAC_model extends MY_Model {
                 ->join("direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_nombre_generico, direcciones_ubicacion, direcciones_is_descentralizada")
                 ->join("subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("s.subdirecciones_nombre")
                 ->join("departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("dd.departamentos_nombre");
-        if (!$incluirEliminados) {
+        if (!$incluir_eliminados) {
             $this->dbSAC->where("e.fecha_delete IS NULL");
         }
         $result = $this->dbSAC->get("empleados e");
@@ -431,10 +432,11 @@ class SAC_model extends MY_Model {
     /**
      * Devuelve la información de un empleado
      * @param integer $empleados_id Identificador del empleado
-     * @param boolen $is_numero_empleado TRUE cuando el valor de
+     * @param boolen $is_numero_empleado TRUE cuando el valor de $empleados_id se refiere al número del empleado
+     * @param boolen $incluir_eliminados TRUE cuando se desea buscar entre los registros eliminados
      * @return array Información del empleado
      */
-    function get_empleado($empleados_id, $is_numero_empleado = FALSE) {
+    function get_empleado($empleados_id, $is_numero_empleado = FALSE, $incluir_eliminados = FALSE) {
         $return = array();
         if (!empty($empleados_id)) {
             if ($is_numero_empleado) {
@@ -442,8 +444,8 @@ class SAC_model extends MY_Model {
             } else {
                 $this->dbSAC->where("empleados_id", $empleados_id);
             }
-            $aux = $this->get_empleados();
-            if (!empty($aux)) {
+            $aux = $this->get_empleados($incluir_eliminados);
+            if (!empty($aux) && count($aux) > 0) {
                 $return = $aux[0];
             }
         }
@@ -475,22 +477,25 @@ class SAC_model extends MY_Model {
      * Obtiene la información del director de una Unidad Administrativa
      * @param intener $direcciones_id Identificador de la dirección
      * @param integer $periodos_id IDentificador del período
+     * @param boolen $incluir_eliminados TRUE cuando se desea buscar entre los registros eliminados
      * @return array
      */
-    function get_director_de_ua($direcciones_id, $periodos_id = NULL) {
+    function get_director_de_ua($direcciones_id, $periodos_id = NULL, $incluir_eliminados = FALSE) {
         $return = array();
         if (empty($periodos_id)) {
             $p = $this->get_ultimo_periodo();
-            $periodos_id = $p['periodos_id'];
+            $periodos_id = intval($p['periodos_id']);
         }
         if (!empty($direcciones_id)) {
             $this->dbSAC
                     ->where("cc.cc_periodos_id", $periodos_id)
                     ->where("cc.cc_direcciones_id", $direcciones_id)
-                    ->where("e.empleados_puestos_id", PUESTO_DIRECTOR)
-                    ->where("e.empleados_fecha_baja IS NULL");
-            $aux = $this->get_empleados();
-            if (!empty($aux)) {
+                    ->where_in("e.empleados_puestos_id", array(PUESTO_DIRECTOR, 294, 293, 145));
+            if (!$incluir_eliminados) {
+                $this->dbSAC->where("e.empleados_fecha_baja IS NULL");
+            }
+            $aux = $this->get_empleados($incluir_eliminados);
+            if (!empty($aux) && count($aux) > 0) {
                 $return = $aux[0];
             }
         }
