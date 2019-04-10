@@ -59,4 +59,9 @@ class Documentos extends MY_Controller {
         echo json_encode($json);
     }
 
+    function _post_delete($status, $id, $data = NULL, $dataDelete = NULL) {
+        $this->module['controller'] = "Auditoria";
+        return parent::_post_delete($status, $id, $data, $dataDelete);
+    }
+
 }

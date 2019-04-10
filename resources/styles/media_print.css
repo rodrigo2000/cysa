@@ -1,0 +1,162 @@
+@media print {
+    @page {
+        size:letter portrait;
+    }
+    @page {
+        margin-top:1cm;
+        margin-bottom: 1cm;
+        margin-left: 1.2cm;
+        margin-right: 1.2cm;
+    }
+    html, body {
+        width: auto !important;
+        height: auto !important;
+        min-height: auto !important;
+        overflow: hidden;
+        font-size: 12pt !important;
+    }
+    body, .app, .main-panel, .main-content, .content-view, input {
+        background: none !important;
+    }
+    body, .app, .main-panel, .main-content, .content-view, .card, .card-block {
+        margin: 0px !important;
+        padding: 0px !important;
+        overflow: hidden;
+    }
+    .col-print-1 {width:8%;  float:left;}
+    .col-print-2 {width:16%; float:left;}
+    .col-print-3 {width:25%; float:left;}
+    .col-print-4 {width:33%; float:left;}
+    .col-print-5 {width:42%; float:left;}
+    .col-print-6 {width:50%; float:left;}
+    .col-print-7 {width:58%; float:left;}
+    .col-print-8 {width:66%; float:left;}
+    .col-print-9 {width:75%; float:left;}
+    .col-print-10{width:83%; float:left;}
+    .col-print-11{width:92%; float:left;}
+    .col-print-12{width:100%; float:left;}
+    input[type=button],input[type=submit]{
+        display: none;
+    }
+    input {
+        border: none;
+    }
+    div#oficio-hoja {
+        padding: 0.4cm;
+    }
+    div#oficio-hoja {
+        border:none;
+        height: 100%;
+        overflow: hidden;
+        font-size: 12pt;
+    }
+    .texto-mision {
+        font-size: 10pt !important;
+        line-height: 15px;
+        margin-bottom: 2em;
+        text-align: justify;
+    }
+
+    .texto-ccp {
+        font-size: 8pt !important;
+        line-height: 15px;
+    }
+    div#oficio-hoja.autorizado p,
+    div#oficio-hoja.autorizado div:not(.texto-ccp),
+    div#oficio-hoja.autorizado div:not(.texto-mision),
+    .texto-resaltar {
+        font-size:12pt;
+    }
+    div#oficio-hoja > table > thead td img {
+        margin-bottom: 1cm;
+    }
+    div#oficio-hoja > table > thead {
+        display: table-header-group;
+    }
+    div#oficio-hoja > table > thead img {
+        position:fixed;
+        top: 0cm;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    div#oficio-hoja > table > thead th {
+        height: 100px;
+    }
+    div#oficio-hoja > table > tfoot td {
+        height: 55px;
+    }
+    div#oficio-hoja > table > tfoot img {
+        position:fixed;
+        bottom: 0cm;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    div#oficio-hoja > table > tfoot {
+        display: table-footer-group;
+    }
+    div#oficio-hoja p {
+        widows: 3;
+        orphans: 3;
+    }
+    .salto-de-pagina {
+        page-break-before: always;
+        break-before: always;
+    }
+    .salto-solo-si-es-necesario {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    .thead-inverse tr th{
+        background-color: black !important;
+    }
+    .firmar-arriba{
+        width: 5cm;
+        margin: 0px auto 5px auto;
+        border-top: 1px solid black;
+    }
+    table#servidores_publicos {
+        font-size:8px;
+    }
+    table.table-fixed tr th {
+        /*height: 35px !important;*/
+    }
+    table.table-fixed tbody {
+        height: auto;
+    }
+    .table thead > tr  {
+        background: black;
+    }
+    .table tbody tr td {
+        background: none;
+    }
+    div#oficio-hoja.autorizado .watermark {
+        display: none;
+    }
+    #firma-titular-contraloria {
+        line-height: 20px;
+        margin-bottom: 5px;
+    }
+    .watermark {
+        /* Safari */
+        -webkit-transform: rotate(-60deg);
+        /* Firefox */
+        -moz-transform: rotate(-60deg);
+        /* IE */
+        -ms-transform: rotate(-60deg);
+        /* Opera */
+        -o-transform: rotate(-60deg);
+        /* Internet Explorer */
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+        font-size: 5em !important;
+        left: 2cm;  /* Los 2cm son en relación al margen de la hoja, pero también considerando la rotación */
+        top: 10cm;  /* Igual que el caso anterior */
+        position: fixed;
+        z-index: 10;
+    }
+
+    /* CYSA - OA - Orden de Auditoria */
+    .dd-select, .dd-selected, .dd-options {
+        background-color: none !important;
+        border:none;
+    }
+}

@@ -32,7 +32,7 @@ class MY_Controller extends CI_Controller {
     }
 
     /**
-     * Función que indica si el tipo de usuario proporcionado corresponde al tipo de usuario 
+     * Función que indica si el tipo de usuario proporcionado corresponde al tipo de usuario
      * de la sesión del usuario
      * @param type $idTipoUsuario Identificador del tipo de usuario a verificar
      * @return bool Devuelve TRUE cuando el tipo de usuario proporcionado es igual al tipo de usuario de la sesión del usuario. Devuelve FALSE cuando son diferentes.
@@ -42,7 +42,7 @@ class MY_Controller extends CI_Controller {
     }
 
     /**
-     * Función que indica si el perfil del usuario proporcionado corresponde al perfil 
+     * Función que indica si el perfil del usuario proporcionado corresponde al perfil
      * del usuario de la sesión del usuario
      * @param type $idPerfil Identificador del perfil del usuario a verificar
      * @return bool Devuelve TRUE cuando el perfil del usuario proporcionado es igual al perfil del usuario de la sesión del usuario. Devuelve FALSE cuando son diferentes.
@@ -52,7 +52,7 @@ class MY_Controller extends CI_Controller {
     }
 
     /**
-     * Función que inicializa variables de acceso restringido y 
+     * Función que inicializa variables de acceso restringido y
      * luego re-direcciona a la página correspondiente
      */
     function sin_permisos() {
@@ -94,7 +94,7 @@ class MY_Controller extends CI_Controller {
     }
 
     /**
-     * Esta función inicializa variables del controlador que sirven para 
+     * Esta función inicializa variables del controlador que sirven para
      * generar las URL del controlador
      */
     function _initialize() {

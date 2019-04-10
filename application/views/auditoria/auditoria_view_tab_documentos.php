@@ -1,5 +1,4 @@
 <div class="card">
-    <?php $this->load->view('auditoria/header_view'); ?>
     <div class="card-block">
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))): $auditorias_id = $this->session->userdata(APP_NAMESPACE)[$this->module['id_field']]; ?>
             <div id="accordion" role="tablist" aria-multiselectable="true">

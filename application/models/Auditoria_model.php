@@ -225,4 +225,24 @@ class Auditoria_model extends MY_Model {
         return $this->Auditorias_involucrados_model->set_empleados_involucrados($auditorias_id, $empleados_id);
     }
 
+    /**
+     * Permite autorizar o desautorizar un documento
+     * @param integer $documentos_id Identificador del documento
+     * @param integer $valor 1=Autorizado, 0=Desautorizado, NULL=Cualquier otro caso
+     * @return boolean Regresa TRUE cuando se pudo autorizar/desautorizar el documento
+     */
+    function autorizar_documento($documentos_id, $valor = NULL) {
+        $return = FALSE;
+        if (!empty($documentos_id)) {
+            $r = $this->db
+                    ->set("documentos_is_aprobado", $valor)
+                    ->where("documentos_id", $documentos_id)
+                    ->update("documentos");
+            if ($this->db->affected_rows() == 1) {
+                $return = TRUE;
+            }
+        }
+        return $return;
+    }
+
 }

@@ -1,5 +1,20 @@
 $(document).ready(function () {
-    $(".xeditable").editable({
+    $("span.editable:not(.xeditable)").each(function (index, element) {
+        if ($(this).html() === "") {
+            $(this).html($(this).attr("default-value"));
+        }
+    }).on('blur', function () {
+        if ($(this).html() === "") {
+            $(this).html($(this).attr("default-value"));
+        }
+    }).on('keypress', function (event) {
+        var aceptar_enter = $(this).attr("aceptar-enter");
+        if (event.which == 13 && aceptar_enter != 1) {
+            event.preventDefault();
+            return false;
+        }
+    });
+    $(".xeditable", "div#oficio-hoja:not(.autorizado)").editable({
         url: base_url + "Oficios/actualizar_campo_de_oficio",
         datepicker: {
             language: 'es',
@@ -25,6 +40,12 @@ $(document).ready(function () {
             }
         }
     });
+
+    $("input.autoresize").on('input', function () {
+        this.style.width = this.value.length + "ch";
+    }).trigger('input');
+
+    $("input", ".autorizado").prop("readonly", true).prop("disabled", true);
 
     $('#headers_id.ddslick').ddslick({
         width: '100%',
@@ -60,30 +81,43 @@ $(document).ready(function () {
     $("ul,div", "#footers_id").css("background-color", "yellow");
 
     $("button.boton_guardar").on('click', function () {
-        var formData = $("#frmOficios").serializeArray();
-        var data = {};
-        $(formData).each(function (index, obj) {
-            data[obj.name] = obj.value;
-        });
-        data.headers_id = $(".dd-selected-value", "#headers_id").attr('value');
-        data.footers_id = $(".dd-selected-value", "#footers_id").attr('value');
-        data.constantes = {};
-        $("span.editable").each(function (index, element) {
-            var id = $(element).prop('id');
-            var valor = $(element).html();
-            data.constantes[id] = valor;
-        });
-        $(".xeditable").each(function (index, element) {
-            var id = $(element).prop("id");
-            var arr = $("#" + id).editable('getValue');
-            data.constantes[id] = arr[id];
-        });
-        var url = base_url + 'Documentos/guardar'
-        $.post(url, data, function (json) {
-            if (json.success) {
-                $("#documentos_id").val(json.documentos_id);
-                alert("Cambios actualizados");
-            }
-        }, "json");
+        get_form_data(true);
     });
 });
+
+function get_form_data(async = false) {
+    var formData = $("#frmOficios").serializeArray();
+    var data = {};
+    $(formData).each(function (index, obj) {
+        data[obj.name] = obj.value;
+    });
+    data.headers_id = $(".dd-selected-value", "#headers_id").attr('value');
+    data.footers_id = $(".dd-selected-value", "#footers_id").attr('value');
+    data.constantes = {};
+    $("span.editable").each(function (index, element) {
+        var id = $(element).prop('id');
+        var valor = $(element).html();
+        data.constantes[id] = valor;
+    });
+    $(".xeditable").each(function (index, element) {
+        var id = $(element).prop("id");
+        var arr = $("#" + id).editable('getValue');
+        data.constantes[id] = arr[id];
+    });
+    var url = base_url + 'Documentos/guardar';
+    $.post(url, data, function (json) {
+        if (json.success) {
+            if ($("#documentos_id").val() === '0') {
+                 $(".actualizar_id").each(function(index, element){
+                     var href = $(element).prop('href') + "/" + json.documentos_id;
+                     $(element).prop('href', href);
+                 });
+            }
+            $("#documentos_id").val(json.documentos_id);
+            $(".actualizar_id").removeClass('hidden-xs-up');
+            $("#accion").val('modificar');
+            alert("Cambios actualizados");
+        }
+    }, "json");
+    return true;
+}

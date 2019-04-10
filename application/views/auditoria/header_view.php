@@ -102,7 +102,7 @@ $anio_select = isset($this->session->cysa['auditorias_anio']) ? $this->session->
         <select name="mis_auditorias_id" class="mis_auditorias_id form-control">
             <option value="0">SELECCIONE</option>
             <?php foreach ($mis_auditorias_id as $r): ?>
-                <?php if ($r['auditorias_status_id'] > 0): ?>
+                <?php if (isset($r['auditorias_status_id']) && $r['auditorias_status_id'] > 0): ?>
                     <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= $r['numero_auditoria']; ?></option>
                 <?php endif; ?>
             <?php endforeach; ?>
