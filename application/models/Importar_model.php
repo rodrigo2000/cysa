@@ -172,7 +172,7 @@ class Importar_model extends MY_Model {
                     flush();
                 }
             }
-            $e = $this->SAC_model->get_empleado($a['idEmpleado'], TRUE);
+            $e = $this->SAC_model->get_empleado($a['idEmpleado'], TRUE, TRUE);
             $empleados_id = NULL;
             if (!empty($e)) {
                 $empleados_id = $e['empleados_id'];
@@ -300,7 +300,7 @@ class Importar_model extends MY_Model {
                 ->result_array();
         $batch = array();
         foreach ($data as $d) {
-            $e = $this->SAC_model->get_empleado($d['idEmpleado'], TRUE);
+            $e = $this->SAC_model->get_empleado($d['idEmpleado'], TRUE, TRUE);
             $insert = array(
                 'auditorias_equipo_auditorias_id' => $d['idAuditoria'],
                 'auditorias_equipo_empleados_id' => $e['empleados_id'],
@@ -385,6 +385,38 @@ class Importar_model extends MY_Model {
         }
         $this->dbNuevoCYSA->insert_batch('observaciones', $batch);
         $return = "Catálogo de observaciones importado.";
+        if ($flush) {
+            echo $return . "<br>";
+            ob_flush();
+            flush();
+            $return = TRUE;
+        }
+        return $return;
+    }
+
+    function importar_asistencias($flush = FALSE) {
+        $this->dbNuevoCYSA->truncate('asistencias');
+        $data = $this->dbProtoCYSA
+                ->where('iddocto >', 0)
+                ->get('cat_asistencia_acei')
+                ->result_array();
+        $ahora = ahora();
+        $batch = array();
+        foreach ($data as $d) {
+            $e = $this->SAC_model->get_empleado($d['idEmpleado'], TRUE);
+            $empleados_id = NULL;
+            if (!empty($e)) {
+                $empleados_id = $e['empleados_id'];
+            }
+            $insert = array(
+                'asistencias_documentos_id' => $d['iddocto'],
+                'asistencias_empleados_id' => $empleados_id,
+                'asistencias_tipo' => $d['asiste']
+            );
+            array_push($batch, $insert);
+        }
+        $this->dbNuevoCYSA->insert_batch('asistencias', $batch);
+        $return = "Catálogo de asistencias de documentos importado.";
         if ($flush) {
             echo $return . "<br>";
             ob_flush();

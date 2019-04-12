@@ -53,6 +53,10 @@ class Importar extends MY_Controller {
                     $message = $this->Importar_model->importar_involucrados();
                     $id = $c;
                     break;
+                case 'asistencias':
+                    $message = $this->Importar_model->importar_asistencias();
+                    $id = $c;
+                    break;
             }
         }
         $json = array(

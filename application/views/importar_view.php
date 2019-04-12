@@ -56,6 +56,13 @@
                             <span id="involucrados"></span>
                         </label>
                     </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" name="catalogo[]" value="asistencias">
+                            Catálogo de Asistencias en documentos de auditorías
+                            <span id="asistencias"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-group row">
