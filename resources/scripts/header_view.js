@@ -2,6 +2,9 @@ $(document).ready(function () {
     $('select.mis_auditorias_anio').change(function () {
         var url = base_url + controller + '/get_mis_auditorias';
         $("select.mis_auditorias_id").html('<option value="0" selected="selected">Cargando auditorías...</option>');
+        if (typeof (auditorias_id) === 'undefined') {
+            auditorias_id = 0;
+        }
         $.post(url, {auditorias_anio: this.value, auditorias_id: auditorias_id}, function (json) {
             var html = '<option value="0">SELECCIONE</option>';
             var APs = '', ICs = '';

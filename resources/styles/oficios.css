@@ -1,3 +1,7 @@
+b {
+    font-weight: bolder;
+}
+
 #numero_folio {
     width: 43px;
 }
@@ -14,6 +18,10 @@ div#oficio-hoja {
 
 div#oficio-hoja p {
     font-size: 14pt;
+}
+
+div#oficio-hoja.acta p {
+    margin-bottom: 0px;
 }
 
 .texto-sangria {
@@ -158,4 +166,57 @@ input.autoresize {
 
 #equipo_auditoria p {
     margin: 0px 5px;
+}
+
+
+/********************* ACTAS *******************/
+span.autocomplete_empleados_delete {
+    cursor: pointer;
+}
+p.firmas_firmas {
+    background-color: lightgray !important;
+    margin-bottom: 1.5em !important;
+}
+div.firmas {
+    text-align: center;
+}
+
+div.firmas p.firmas_ua_nombre {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+div.firmas div.firmas_empleado {
+    border-top: 1px solid black;
+    display: block;
+    margin: 5em auto 1em auto;
+    width: 280px;
+}
+
+div.firmas div.firmas_testigos div.firmas_empleado {
+    display: inline-block;
+    margin: 5em 2em 1em 2em;
+}
+
+table tfoot div {
+    border:1px solid #ccc;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+div#checkbox_asistencia {
+    padding-bottom: 4px;
+    font-size: 2em;
+}
+
+div#checkbox_asistencia input[type=checkbox] {
+    transform: scale(2);
+}
+
+#oficio-hoja.acta.autorizado button,
+#oficio-hoja.acta.autorizado .btn,
+#oficio-hoja.acta.autorizado .autocomplete_empleados_delete,
+#oficio-hoja.acta.autorizado div#checkbox_asistencia {
+    display: none;
 }

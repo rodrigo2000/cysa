@@ -159,4 +159,34 @@
         background-color: none !important;
         border:none;
     }
+
+    /******************** ACTA ***********************/
+    div#oficio-hoja p {
+        widows: 1;
+        orphans: 1;
+    }
+
+    div#oficio-hoja.acta > table > thead img {
+        position:fixed;
+        top: 5mm;
+        left: 0%;
+        transform: translateX(0%);
+    }
+
+    div#oficio-hoja.acta > table > tfoot img {
+        position:relative;
+    }
+
+    .autocomplete_empleados_delete {
+        display:none;
+    }
+
+    div.firmas div.firmas_testigos div.firmas_empleado {
+        display: inline-block;
+        margin: 5em 0.5em 1em 0.5em;
+    }
+
+    .white {
+        background-color: white;
+    }
 }
