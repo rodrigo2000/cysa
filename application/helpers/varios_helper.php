@@ -357,7 +357,7 @@ function get_cargo_de_empleado(&$row) {
                     $cargo = $row['puestos_nombre'];
                     break;
                 default:
-                    $cargo = str_replace('AUDITORÍA', 'AUDITOR', $row['departamentos_nombre']);
+                    $cargo = str_ireplace('auditoría', 'auditor', $row['departamentos_nombre']);
             }
         } elseif ($row['empleados_puestos_id'] == PUESTO_COORDINADOR_AUDITORIA) {
             $cargo = "COORDINADOR DE ";
