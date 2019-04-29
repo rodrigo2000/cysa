@@ -84,52 +84,54 @@ $(document).ready(function () {
         get_form_data(true);
     });
 
-    var empleados = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        remote: {
-            url: base_sac_url + 'Usuarios/get_empleados_typeahead/%QUERY',
-            wildcard: '%QUERY',
-            filter: function (response) {
-                return response.data;
+    if (typeof Bloodhound !== 'undefined') {
+        var empleados = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: base_sac_url + 'Usuarios/get_empleados_typeahead/%QUERY',
+                wildcard: '%QUERY',
+                filter: function (response) {
+                    return response.data;
 
+                }
             }
-        }
-    });
+        });
 
-    $('.autocomplete').typeahead({
-        highlight: true,
-        hint: true,
-        minLength: 1
-    }, {
-        name: 'buscar',
-        display: 'value',
-        source: empleados,
+        $('.autocomplete').typeahead({
+            highlight: true,
+            hint: true,
+            minLength: 1
+        }, {
+            name: 'buscar',
+            display: 'value',
+            source: empleados,
 //        async: true,
 //        limit: 100
-    }).bind('typeahead:select', function (ev, suggestion) {
-        let url = base_url + "Asistencias/agregar_asistencia";
-        let data = {
-            documentos_id: $("#documentos_id").val(),
-            empleados_id: suggestion.empleados_id,
-            asistencias_tipo: $(this).attr("data-asistencias-tipo")
-        }
-        let $this = this;
-        $.post(url, data, function (json) {
-            var a = parseInt($($this).attr("data-asistencias-tipo"));
-            if (json.success) {
-                if (a == 3) {
-                    agregar_involucrado($this, suggestion);
-                } else if (a == 2) {
-                    agregar_testigo($this, suggestion);
-                }
-            } else {
-                alert("No se puedo agregar al empleado. " + json.message);
+        }).bind('typeahead:select', function (ev, suggestion) {
+            let url = base_url + "Asistencias/agregar_asistencia";
+            let data = {
+                documentos_id: $("#documentos_id").val(),
+                empleados_id: suggestion.empleados_id,
+                asistencias_tipo: $(this).attr("data-asistencias-tipo")
             }
-        }, "json");
-    });
+            let $this = this;
+            $.post(url, data, function (json) {
+                var a = parseInt($($this).attr("data-asistencias-tipo"));
+                if (json.success) {
+                    if (a == 3) {
+                        agregar_involucrado($this, suggestion);
+                    } else if (a == 2) {
+                        agregar_testigo($this, suggestion);
+                    }
+                } else {
+                    alert("No se puedo agregar al empleado. " + json.message);
+                }
+            }, "json");
+        });
+    }
 
-    $(".btn_agregar").on('click', function () {
+    $(document).on('click', ".btn_agregar", function () {
         $(this).addClass('hidden-xs-up');
         var tipo = $(this).attr("data-tipo");
         var asistencias_tipo = $(this).attr("data-asistencias-tipo");
@@ -138,9 +140,7 @@ $(document).ready(function () {
                 .css('display', '-webkit-inline-box')
                 .removeClass('hidden-xs-up');
         $("input.tt-input", "#autocomplete_" + tipo).attr("data-asistencias-tipo", asistencias_tipo);
-    });
-
-    $(document).on('click', '.autocomplete_empleados_delete', function () {
+    }).on('click', '.autocomplete_empleados_delete', function () {
         let url = base_url + "Asistencias/eliminar_asistencia";
         let empleados_id = $(this).attr("data-empleados-id");
         let data = {
@@ -162,9 +162,7 @@ $(document).ready(function () {
                 alert("No se puedo eliminar el empleado. " + json.message);
             }
         }, "json");
-    });
-
-    $("button.ocultar").on('click', function () {
+    }).on('click', 'button.ocultar', function () {
         var span = $(this).parent('span').parent('span');
         span.parent('span').next('a.btn_agregar').removeClass('hidden-xs-up');
         span.addClass('hidden-xs-up');
