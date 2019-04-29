@@ -21,6 +21,7 @@ class Auditoria extends MY_Controller {
         $url = base_url() . $this->module['controller'];
         $this->module['autorizar_url'] = $url . "/autorizar";
         $this->module['desautorizar_url'] = $url . "/desautorizar";
+        $this->module['documentos_url'] = $url . "/documento";
         parent::_initialize();
     }
 
@@ -68,9 +69,9 @@ class Auditoria extends MY_Controller {
         $titular = $this->SAC_model->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $auditoria['auditorias_periodos_id']);
         $de_empleados_id = $titular['empleados_id'];
         $accion = "nuevo";
+        $index = 0;
         switch ($documentos_tipos_id) {
-            case 10:
-                $index = 0;
+            case TIPO_DOCUMENTO_ORDEN_AUDITORIA:
                 $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
                 if ($documentos_id !== "nuevo") {
                     $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
@@ -88,7 +89,22 @@ class Auditoria extends MY_Controller {
                     }
                 }
                 $this->module['title_list'] = "Orden de Auditoría";
-                $vista = "documentos/orden_auditoria";
+                $vista = "documentos/" . basename($documentos[$index]['documentos_versiones_archivo_impresion'], ".php");
+                break;
+            case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
+                $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
+                if ($documentos_id !== "nuevo") {
+                    $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
+                    $accion = "modificar";
+                    if (intval($documentos_id) > 0) {
+                        $index = array_search($documentos_id, array_column($documentos, 'documentos_id'));
+                    } elseif (isset($documentos[$index]['documentos_id'])) {
+                        $documentos_id = $documentos[$index]['documentos_id'];
+                    }
+                    $documentos[$index]['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
+                }
+                $this->module['title_list'] = "Acta de Inicio de Auditoría";
+                $vista = "documentos/" . basename($documentos[$index]['documentos_versiones_archivo_impresion'], ".php");
                 break;
             default:
                 $vista = "auditoria/documentos_view";
@@ -127,7 +143,7 @@ class Auditoria extends MY_Controller {
             'mis_auditorias_id' => $this->Auditoria_model->get_mis_auditorias(),
             'mis_auditorias_anio' => $this->Auditoria_model->get_anios_para_select(),
             'logotipos' => $this->Logotipos_model->get_todos(),
-            'direcciones' => $this->SAC_model->get_direcciones_de_periodo($auditoria['auditorias_periodos_id']),
+            'direcciones_select' => $this->SAC_model->get_direcciones_de_periodo($auditoria['auditorias_periodos_id']),
             'etiquetaBoton' => "Guardar",
             'id' => $auditorias_id,
             'accion' => $accion,
@@ -241,15 +257,29 @@ class Auditoria extends MY_Controller {
         $return = FALSE;
         $informacion = array(
             'state' => 'danger',
-            'message' => 'No tiene permisos para desautorizar documentos'
+            'message' => 'No tiene permisos para desautorizar documentos.'
         );
+        $documentos_tipo = NULL;
+        if (!empty($documentos_id)) {
+            $aux = $this->Documentos_model->get_tipo_de_documento_de_documento($documentos_id);
+            $a = strrpos($aux['documentos_tipos_abreviacion'], "|");
+            if ($a !== FALSE && is_numeric($a)) {
+                $a++;
+            }
+            $documentos_tipo = substr($aux['documentos_tipos_abreviacion'], $a);
+        } else {
+            $informacion['message'] = "No se especificó el identificador del documento.";
+        }
         if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_DESAUTORIZAR_DOCUMENTO) && !empty($documentos_id)) {
             $return = $this->Auditoria_model->autorizar_documento($documentos_id, 1);
             $informacion['state'] = 'success';
             $informacion['message'] = 'Documento autorizado';
         }
         $this->session->set_flashdata('informacion', $informacion);
-        redirect(base_url() . $this->module['controller'] . "/documento/OA/" . $documentos_id);
+        if (!empty($documentos_tipo)) {
+            redirect(base_url() . $this->module['controller'] . "/documento/" . $documentos_tipo . "/" . $documentos_id);
+        }
+        redirect(base_url() . $this->module['controller'] . "/Audtoria/");
     }
 
     function desautorizar($documentos_id = NULL) {
@@ -258,14 +288,27 @@ class Auditoria extends MY_Controller {
             'state' => 'danger',
             'message' => 'No tiene permisos para desautorizar documentos'
         );
-        $r = $this->session->userdata('permisos');
+        $documentos_tipo = NULL;
+        if (!empty($documentos_id)) {
+            $aux = $this->Documentos_model->get_tipo_de_documento_de_documento($documentos_id);
+            $a = strrpos($aux['documentos_tipos_abreviacion'], "|");
+            if ($a !== FALSE && is_numeric($a)) {
+                $a++;
+            }
+            $documentos_tipo = substr($aux['documentos_tipos_abreviacion'], $a);
+        } else {
+            $informacion['message'] = "No se especificó el identificador del documento.";
+        }
         if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_DESAUTORIZAR_DOCUMENTO) && !empty($documentos_id)) {
             $return = $this->Auditoria_model->autorizar_documento($documentos_id, 0);
             $informacion['state'] = 'success';
             $informacion['message'] = 'Documento desautorizado';
         }
         $this->session->set_flashdata('informacion', $informacion);
-        redirect(base_url() . $this->module['controller'] . "/documento/OA/" . $documentos_id);
+        if (!empty($documentos_tipo)) {
+            redirect(base_url() . $this->module['controller'] . "/documento/" . $documentos_tipo . "/" . $documentos_id);
+        }
+        redirect(base_url() . $this->module['controller'] . "/Audtoria/");
     }
 
     function descargar($documentos_id) {
@@ -276,30 +319,40 @@ class Auditoria extends MY_Controller {
         $titular = $this->SAC_model->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $auditoria['auditorias_periodos_id']);
         $de_empleados_id = $titular['empleados_id'];
         $accion = "descargar";
+        $is_oficio = TRUE;
         switch ($documentos_tipos_id) {
-            case 10:
+            case TIPO_DOCUMENTO_ORDEN_AUDITORIA:
                 $para_direcciones_id = $documento['valores'][ORD_ENT_ID_DIR_AUDIT];
                 $de_empleados_id = $documento['valores'][ORD_ENT_ID_DIR_CONTRA];
                 $this->module['title_list'] = "Orden de Auditoría";
-                $vista = "documentos/orden_auditoria";
+                $vista = "documentos/" . basename($documento['documentos_versiones_archivo_impresion'], ".php");
                 $periodos_id = $documento['documentos_periodos_id'];
+                break;
+            case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
+                $is_oficio = FALSE;
+                $template = $this->Documentos_model->get_template($documentos_tipos_id);
+                $documento = array_merge($documento, $template);
+                $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
+                $this->module['title_list'] = "Acta de Inicio de Auditoría";
+                $vista = "documentos/" . basename($documento['documentos_versiones_archivo_impresion'], ".php");
                 break;
             default :
                 echo "Tipo de documento no encontrado";
                 die();
         }
-        $e = $this->SAC_model->get_director_de_ua($para_direcciones_id, $periodos_id);
-        if (!empty($e)) {
-            $cc_empleado = $this->SAC_model->get_empleado($e['empleados_id']);
-            $para_nombre = $cc_empleado['empleados_nombre_titulado_siglas'];
-            $para_cargo = $cc_empleado['empleados_cargo'];
-            $para_tratamiento = '';
+        if ($is_oficio) {
+            $e = $this->SAC_model->get_director_de_ua($para_direcciones_id, $periodos_id);
+            if (!empty($e)) {
+                $cc_empleado = $this->SAC_model->get_empleado($e['empleados_id']);
+                $para_nombre = $cc_empleado['empleados_nombre_titulado_siglas'];
+                $para_cargo = $cc_empleado['empleados_cargo'];
+                $para_tratamiento = '';
+            }
+            $cc_empleado = $this->SAC_model->get_empleado($de_empleados_id);
+            $de_nombre = $cc_empleado['empleados_nombre_titulado_siglas'];
+            $de_cargo = $cc_empleado['empleados_cargo'];
+            $de_tratamiento = '';
         }
-        $cc_empleado = $this->SAC_model->get_empleado($de_empleados_id);
-        $de_nombre = $cc_empleado['empleados_nombre_titulado_siglas'];
-        $de_cargo = $cc_empleado['empleados_cargo'];
-        $de_tratamiento = '';
-
         $data = array(
             'auditoria' => $auditoria,
             'registros' => array(),
@@ -314,20 +367,22 @@ class Auditoria extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($auditoria['auditorias_periodos_id']),
             'etiquetaBoton' => "Guardar",
             'id' => $auditorias_id,
-            'accion' => $accion,
-            'oficio_para' => array(
+            'accion' => $accion
+        );
+        if ($is_oficio) {
+            $data['oficio_para'] = array(
                 'direcciones_id' => $para_direcciones_id,
                 'nombre' => $para_nombre,
                 'cargo' => $para_cargo,
                 'tratamiento' => $para_tratamiento
-            ),
-            'oficio_de' => array(
+            );
+            $data['oficio_de'] = array(
                 'empleados_id' => $de_empleados_id,
                 'nombre' => $de_nombre,
                 'cargo' => $de_cargo,
                 'tratamiento' => $de_tratamiento
-            )
-        );
+            );
+        }
         if (isset($data['r']['oficios_omisos_is_autorizado']) && intval($data['r']['oficios_omisos_is_autorizado']) === 1) {
             $data["is_autorizado"] = TRUE;
         }

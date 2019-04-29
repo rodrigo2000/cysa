@@ -127,4 +127,23 @@ class Documentos_model extends MY_Model {
         return $return;
     }
 
+    /**
+     * Devuelve información del tipo de documento de un documento
+     * @param integer $documentos_id Identificador del documento
+     * @return array Información del tipo de documento
+     */
+    function get_tipo_de_documento_de_documento($documentos_id = NULL) {
+        $return = array();
+        if (!empty($documentos_id)) {
+            $result = $this->db->select("dt.*")
+                    ->join("documentos_tipos dt", "dt.documentos_tipos_id = d.documentos_documentos_tipos_id", "INNER")
+                    ->where($this->id_field, $documentos_id)
+                    ->get($this->table_name . " " . $this->table_prefix);
+            if ($result && $result->num_rows() == 1) {
+                $return = $result->row_array();
+            }
+        }
+        return $return;
+    }
+
 }

@@ -56,6 +56,21 @@ class Documentos extends MY_Controller {
                 'accion' => 'modificar',
             );
         }
+        switch ($documentos_tipos_id) {
+            case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
+                $involucrados = $this->input->post('involucrados[]');
+                foreach ($involucrados as $empleados_id) {
+                    $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
+                }
+                $testigos = $this->input->post("testigos[]");
+                foreach ($testigos as $empleados_id) {
+                    $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_TESTIGO);
+                }
+                break;
+
+            default:
+                break;
+        }
         echo json_encode($json);
     }
 

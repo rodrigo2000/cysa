@@ -133,6 +133,8 @@ class Auditorias_model extends MY_Model {
                     ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
                     ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = " . $this->table_prefix . ".auditorias_auditor_lider", "LEFT")->select("e.*, CONCAT(e.empleados_nombre, ' ',e.empleados_apellido_paterno, ' ', e.empleados_apellido_materno) AS 'auditor_lider_nombre_completo'")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".puestos p", "p.puestos_id = empleados_puestos_id", "LEFT")->select("puestos_nombre")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".titulos t", "t.titulos_id = empleados_titulos_id", "LEFT")->select("t.titulos_masculino_siglas, t.titulos_masculino_nombre, t.titulos_femenino_siglas, t.titulos_femenino_nombre")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . $this->table_prefix . ".auditorias_cc_id ", "LEFT")->select("cc.*")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_is_descentralizada, direcciones_ubicacion")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("subdirecciones_nombre")
@@ -142,9 +144,11 @@ class Auditorias_model extends MY_Model {
                     ->get($this->table_name . " " . $this->table_prefix);
             if ($result && $result->num_rows() == 1) {
                 $return = $result->row_array();
+                $return['nombre_completo'] = $return['auditor_lider_nombre_completo'];
+                get_nombre_titulado($return);
                 $equipo = $this->get_equipo_auditoria($auditorias_id);
                 $return['auditoria_equipo'] = $equipo;
-                $return['enlace_designado'] = $this->SAC_model->get_empleado($return['auditorias_enlace_designado']);
+                $return['enlace_designado'] = $this->SAC_model->get_empleado($return['auditorias_enlace_designado'], TRUE);
                 $return['empleados_involucrados'] = $this->Auditorias_involucrados_model->get_empleados_involucrados_en_auditoria($auditorias_id);
                 $return['observaciones'] = $this->Observaciones_model->get_observaciones($auditorias_id);
             }
@@ -320,6 +324,14 @@ class Auditorias_model extends MY_Model {
             if ($result && $this->db->affected_rows() > 0) {
                 $return = TRUE;
             }
+        }
+        return $return;
+    }
+
+    function get_involucrados($auditorias_id, $tipo) {
+        $return = array();
+        if (!empty($auditorias_id) && !empty($tipo)) {
+            $return = $this->Auditorias_involucrados_model->get_empleados_involucrados_en_auditoria($auditorias_id, $tipo);
         }
         return $return;
     }

@@ -12,9 +12,9 @@
                     </div>
                     <div id="documentacion-inicial" class="card-block panel-collapse collapse show" role="tabpanel">
                         <div class="list-group">
-                            <a href="<?= base_url() . $this->module['controller'] . "/documento/OA"; ?>" class="list-group-item">Orden de Auditoría (OA)</a>
-                            <a href="#" class="list-group-item">Acta de inicio de Auditoría (AIA)</a>
-                            <a href="#" class="list-group-item">Autirozación de Auditoría No Programada (AANP)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/OA"; ?>" class="list-group-item">Orden de Auditoría (OA)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/AIA"; ?>" class="list-group-item">Acta de inicio de Auditoría (AIA)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/AANP"; ?>" class="list-group-item">Autirozación de Auditoría No Programada (AANP)</a>
                         </div>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                             </a>
                         </h6>
                     </div>
-                    <div id="documentacion-inicial" class="card-block panel-collapse collapse in" role="tabpanel">
+                    <div id="documentacion-final" class="card-block panel-collapse collapse in" role="tabpanel">
                         <ul>
                             <li>Oficio de Citatorio (OC)</li>
                             <li>Oficio de Envío de Documentos (OED)</li>
@@ -70,7 +70,7 @@
                             </a>
                         </h6>
                     </div>
-                    <div id="documentacion-inicial" class="card-block panel-collapse collapse in" role="tabpanel">
+                    <div id="oficios-generales" class="card-block panel-collapse collapse in" role="tabpanel">
                         <ul>
                             <li>Oficio de Resolución de Prórroga (ORP)</li>
                             <li>Oficio de Solicitud de Información (OSI)</li>
@@ -86,7 +86,7 @@
                             </a>
                         </h6>
                     </div>
-                    <div id="documentacion-inicial" class="card-block panel-collapse collapse in" role="tabpanel">
+                    <div id="actas" class="card-block panel-collapse collapse in" role="tabpanel">
                         <ul>
                             <li>Acta de Resultados (ARA/ARR)</li>
                             <li>Acta de Cierre de Entrega de Información (ACEI)</li>

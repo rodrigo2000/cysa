@@ -74,7 +74,7 @@
                         <thead>
                             <tr>
                                 <td>
-                                    <?php if ($documento_autorizado || $accion === "descargar1"): ?>
+                                    <?php if ($documento_autorizado || $accion === "descargar"): ?>
                                         <div class="text-xs-center m-b-1">
                                             <img src="<?= base_url() . "resources/imagen_institucional/" . $documento['logotipos_header_archivo']; ?>">
                                         </div>
