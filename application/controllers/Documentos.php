@@ -28,6 +28,26 @@ class Documentos extends MY_Controller {
         $logotipos_id = intval($this->input->post('headers_id'));
         $accion = $this->input->post('accion');
         $documentos_versiones_id = intval($this->input->post('documentos_versiones_id'));
+        $html = $this->input->post('html');
+        $this->Documentos_model->get_template($documentos_tipos_id);
+        switch ($documentos_tipos_id) {
+            case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
+                $involucrados = $this->input->post('involucrados[]');
+                foreach ($involucrados as $empleados_id) {
+                    $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
+                }
+                $testigos = $this->input->post("testigos[]");
+                foreach ($testigos as $empleados_id) {
+                    $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_TESTIGO);
+                }
+                if (!isset($constantes[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS])) { // ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS
+                    $constantes[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] = 0;
+                }
+                break;
+
+            default:
+                break;
+        }
         if (empty($documentos_id)) {
             $documento = $this->Documentos_model->crear($auditorias_id, $documentos_tipos_id, $documentos_versiones_id);
             if ($documento['state'] === 'success') {
@@ -56,21 +76,8 @@ class Documentos extends MY_Controller {
                 'accion' => 'modificar',
             );
         }
-        switch ($documentos_tipos_id) {
-            case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
-                $involucrados = $this->input->post('involucrados[]');
-                foreach ($involucrados as $empleados_id) {
-                    $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
-                }
-                $testigos = $this->input->post("testigos[]");
-                foreach ($testigos as $empleados_id) {
-                    $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_TESTIGO);
-                }
-                break;
-
-            default:
-                break;
-        }
+        $html = utf8_decode($html);
+        $this->Documentos_blob_model->insert_update($documentos_id, 'html', $html);
         echo json_encode($json);
     }
 

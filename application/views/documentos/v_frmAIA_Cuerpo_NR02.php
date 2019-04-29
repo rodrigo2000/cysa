@@ -142,7 +142,7 @@ if (count($direcciones) > 1) {
                                     <?php $enlace_designado = $auditoria['enlace_designado']; ?>
                                     <?php $fecha_acto_inicio = isset($r) && isset($r[ACTA_INICIO_FECHA_ACTO_INICIO]) ? $r[ACTA_INICIO_FECHA_ACTO_INICIO] : date('Y-m-d'); ?>
                                     <p class="text-justify bg-punteado">
-                                        <span class="white">En la ciudad de Mérida, capital del Estado de Yucatán, Estados Unidos Mexicanos,
+                                        <span class="bg-white">En la ciudad de Mérida, capital del Estado de Yucatán, Estados Unidos Mexicanos,
                                             siendo las
                                             <span id="<?= ACTA_INICIO_HORA_INI; ?>" contenteditable="true" class="editable" default-value="HH:MM"><?= isset($r) ? $r[ACTA_INICIO_HORA_INI] : ''; ?></span>
                                             horas del día
@@ -193,13 +193,13 @@ if (count($direcciones) > 1) {
                                             <span class="resaltar"><?= $articulo . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']; ?></span>.
                                         </span>
                                     </p>
-                                    <p class="text-xs-center bg-punteado"><span style="background: white;">HECHOS</span></p>
+                                    <p class="text-xs-center bg-punteado"><span class="bg-white">HECHOS</span></p>
                                     <!-- Opción cuando no acudan a la diligencia los servidores públicos citados -->
                                     <div id="checkbox_asistencia" class="text-xs-center alert alert-info hidden-print">
-                                        <input type="checkbox" id="chkAsistencia" name="chkAsistencia" value="1" <?= isset($documento[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS]) && $documento[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] == 1 ? 'checked="checked"' : ""; ?>>
+                                        <input type="checkbox" id="chkAsistencia" name="constantes[<?= ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS ?>]" value="1" <?= isset($r[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS]) && $r[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] == 1 ? 'checked="checked"' : ""; ?>>
                                         <label for="chkAsistencia"> Los funcionarios públicos asistieron a la lectura del acta</label>
                                     </div>
-                                    <div id="noAsistencia" style="<?= isset($documento[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS]) && $documento[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] == 1 ? 'display:none;' : ''; ?>">
+                                    <div id="noAsistencia" style="<?= isset($r[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS]) && $r[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] == 1 ? 'display:none;' : ''; ?>">
                                         <p class="text-justify bg-punteado">
                                             <span class="bg-white">
                                                 Estando presente el
@@ -210,13 +210,13 @@ if (count($direcciones) > 1) {
                                                 <span class="resaltar"><?= !empty($auditoria['auditorias_enlace_designado']) ? $enlace_designado['empleados_nombre_titulado'] . ', Enlace Designado, ' : ''; ?></span>
                                                 y los testigos
                                                 <span id="<?= ACTA_INICIO_TESTIGOS_NO_ASISTIERON; ?>" contenteditable="true" class="editable" default-value="[Título, nombre y cargo de los servidores públicos nombrados para intervenir como testigo en el acta de inicio de la auditoría, los cuales no asistieron al acto de inicio de auditoría]"><?= isset($r) ? $r[ACTA_INICIO_TESTIGOS_NO_ASISTIERON] : ''; ?></span>,
-                                                no se presentó<span class="bg-red">(aron)</span> en ésta diligencia de inicio de auditoría, no obstante de haber hecho de conocimiento previamente
+                                                no se presentaron en ésta diligencia de inicio de auditoría, no obstante de haber hecho de conocimiento previamente
                                                 mediante la Orden de Auditoría
                                                 <span class="resaltar"><?= $auditoria['numero_auditoria']; ?></span>
                                                 recepcionado el
-                                                <span class="resaltar"><?= mysqlDate2OnlyDate($fecha_notificacion_OE); ?></span>. Sirva el presente para manifestar
-                                                que la omisión anterior podrá ser causal de responsabilidad prevista en el Ley de Responsabilidades Administrativas
-                                                del Estado de Yucatán.
+                                                <span class="resaltar"><?= !empty($fecha_notificacion_OE) ? mysqlDate2OnlyDate($fecha_notificacion_OE) : $sinEspecificar; ?></span>.
+                                                Sirva el presente para manifestar que la omisión anterior podrá ser causal de responsabilidad prevista en el
+                                                Ley de Responsabilidades Administrativas del Estado de Yucatán.
                                             </span>
                                         </p>
                                         <p class="text-justify bg-punteado">
@@ -224,13 +224,35 @@ if (count($direcciones) > 1) {
                                                 Derivado de lo anterior, el suscrito
                                                 <span class="resaltar"><?= $auditoria['empleados_nombre_titulado']; ?></span>, Auditor Líder,
                                                 nombra a los servidores públicos
-                                                <span class="resaltar">TESTIGOS</span>,
+                                                <?php
+                                                $testigos = array();
+                                                foreach ($documento['asistencias'] as $d) {
+                                                    if (isset($d[TIPO_ASISTENCIA_TESTIGO])) {
+                                                        foreach ($d[TIPO_ASISTENCIA_TESTIGO]as $e) {
+                                                            $aux = '<span class="resaltar">' . $e['empleados_nombre_titulado'] . '</span>';
+                                                            array_push($testigos, $aux);
+                                                        }
+                                                    }
+                                                }
+                                                $contador_testigos = count($testigos);
+                                                $strTestigos = "";
+                                                if (count($testigos) > 0) {
+                                                    $ultimo = NULL;
+                                                    if (count($testigos) > 1) {
+                                                        $ultimo = array_pop($testigos);
+                                                        $strTestigos = implode("; ", $testigos) . '<span class="plural"> y </span>' . $ultimo;
+                                                    } else {
+                                                        $strTestigos = implode("; ", $testigos);
+                                                    }
+                                                }
+                                                echo (!empty($strTestigos) ? $strTestigos : 'ELIJA LOS TESTIGOS');
+                                                ?>,
                                                 en calidad de testigos a fin de dejar constancia de la presente diligencia, quienes se comprometen a entregar
                                                 un ejemplar del Acta de Inicio de Auditoría al titular de la unidad administrativa sujeta a auditaría.
                                             </span>
                                         </p>
                                     </div>
-                                    <div id="siAsistencia" style="<?= isset($documento[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS]) && $documento[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] == 1 ? '' : 'display:none;'; ?>">
+                                    <div id="siAsistencia" style="<?= isset($r[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS]) && $r[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] == 1 ? '' : 'display:none;'; ?>">
                                         <?php if (empty($auditoria['auditorias_enlace_designado'])): ?>
                                             <!-- Opción 1 -->
                                             <p class="text-justify bg-punteado">
@@ -305,17 +327,17 @@ if (count($direcciones) > 1) {
                                                     }
                                                 }
                                                 $contador_testigos = count($testigos);
-                                                $aux = "";
+                                                $strTestigos = "";
                                                 if (count($testigos) > 0) {
                                                     $ultimo = NULL;
                                                     if (count($testigos) > 1) {
                                                         $ultimo = array_pop($testigos);
-                                                        $aux = implode("; ", $testigos) . '<span class="plural"> y </span>' . $ultimo;
+                                                        $strTestigos = implode("; ", $testigos) . '<span class="plural"> y </span>' . $ultimo;
                                                     } else {
-                                                        $aux = implode("; ", $testigos);
+                                                        $strTestigos = implode("; ", $testigos);
                                                     }
                                                 }
-                                                echo $aux;
+                                                echo (!empty($strTestigos) ? $strTestigos : 'ELIJA LOS TESTIGOS');
                                                 ?>
                                                 <span id="autocomplete_testigos" class="input-group hidden-xs-up hidden-print">
                                                     <input type="text" class="autocomplete form-control" placeholder="Empleado">
@@ -466,9 +488,5 @@ if (count($direcciones) > 1) {
                 });
             }
         });
-
-<?php if (!isset($documento[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS])): ?>
-            $("input#chkAsistencia").trigger("click").trigger("change");
-<?php endif; ?>
     });
 </script>

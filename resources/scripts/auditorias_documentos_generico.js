@@ -175,7 +175,29 @@ function get_form_data(async = false) {
     var data = $("#frmOficios").serializeObject();
     data.headers_id = $(".dd-selected-value", "#headers_id").attr('value');
     data.footers_id = $(".dd-selected-value", "#footers_id").attr('value');
+    var oficio = $("#oficio-hoja").clone(true);
+    $("button,.btn,.autocomplete_empleados_delete,.hidden-print,.watermark", oficio).remove();
+    $('.resaltar, .editable, .bg-white>span', oficio).each(function (index, element) {
+        let txt = $(element).text();
+        $(element).replaceWith(txt);
+    });
+    $(".dd-selected-image", oficio).each(function (index, element) {
+        let obj = $(element).css('margin-bottom', '1em').removeClass();
+        let div = $(element).parents('div.dd-container');
+        div.parent('td').addClass('text-xs-center');
+        div.replaceWith(obj);
+    });
+    data.html = $(oficio).html();
+    var c = null;
+    if (!isEmpty(data.constantes)) {
+        c = data.constantes;
+    }
     data.constantes = {};
+    $.each(c, function (index, element) {
+        if (element !== undefined) {
+            data.constantes[index] = element;
+        }
+    });
     $("span.editable").each(function (index, element) {
         var id = $(element).prop('id');
         var valor = $(element).html();
