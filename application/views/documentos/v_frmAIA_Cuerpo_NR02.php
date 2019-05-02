@@ -49,7 +49,6 @@ if (count($direcciones) > 1) {
 <!-- Personalizado -->
 <script src="<?= base_url(); ?>resources/scripts/auditoria_view.js" type="text/javascript"></script>
 <script src="<?= base_url(); ?>resources/scripts/auditorias_documentos_generico.js" type="text/javascript"></script>
-
 <link href="<?= base_url(); ?>resources/styles/oficios.css" rel="stylesheet" type="text/css"/>
 <link href="<?= base_url(); ?>resources/styles/media_print.css" rel="stylesheet" type="text/css"/>
 <?php if ($accion === "descargar"): ?>

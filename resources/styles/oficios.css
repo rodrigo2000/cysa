@@ -62,7 +62,9 @@ table { font-size: 10pt; }
         background: yellow;
     }
 
-    div#oficio-hoja.autorizado .sin-estilo {
+    div#oficio-hoja.autorizado .sin-estilo,
+    #frmOficios.autorizado .alert,
+    #frmOficios.impresion .alert{
         background: none;
         border: none;
     }
@@ -78,6 +80,10 @@ table { font-size: 10pt; }
 
     #frmOficios:not(.autorizado) span.resaltar {
         background-color: palegreen;
+    }
+
+    body div.card {
+        box-shadow: none;
     }
 
 }
@@ -168,49 +174,50 @@ input.autoresize {
     margin: 0px 5px;
 }
 
-
-/********************* ACTAS *******************/
 span.autocomplete_empleados_delete {
     cursor: pointer;
 }
-p.firmas_firmas {
+
+
+/********************* ACTAS *******************/
+#oficio-hoja.acta p.firmas_firmas {
     background-color: lightgray !important;
     margin-bottom: 1.5em !important;
 }
-div.firmas {
+#oficio-hoja.acta div.firmas {
     text-align: center;
 }
 
-div.firmas p.firmas_ua_nombre {
+#oficio-hoja.acta div.firmas p.firmas_ua_nombre {
     font-weight: bold;
     text-transform: uppercase;
 }
 
-div.firmas div.firmas_empleado {
+#oficio-hoja.acta div.firmas div.firmas_empleado {
     border-top: 1px solid black;
     display: block;
     margin: 5em auto 1em auto;
     width: 280px;
 }
 
-div.firmas div.firmas_testigos div.firmas_empleado {
+#oficio-hoja.acta div.firmas div.firmas_testigos div.firmas_empleado {
     display: inline-block;
     margin: 5em 2em 1em 2em;
 }
 
-table tfoot div {
+#oficio-hoja.acta table tfoot div {
     border:1px solid #ccc;
     text-transform: uppercase;
     text-align: center;
     margin-bottom: 5px;
 }
 
-div#checkbox_asistencia {
+#oficio-hoja.acta div#checkbox_asistencia {
     padding-bottom: 4px;
     font-size: 2em;
 }
 
-div#checkbox_asistencia input[type=checkbox] {
+#oficio-hoja.acta div#checkbox_asistencia input[type=checkbox] {
     transform: scale(2);
 }
 

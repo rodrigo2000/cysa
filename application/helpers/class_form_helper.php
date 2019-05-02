@@ -22,7 +22,7 @@ function valid_rfc_fisica($str) {
     } else {
         $matches[1] = 1900 + (int) $matches[1];
     }
-    date_default_timezone_set ( 'America/Merida' );
+    date_default_timezone_set('America/Merida');
     return strtotime($matches[1] . '-' . $matches[2] . '-' . $matches[3]) ? true : false;
 }
 
@@ -40,7 +40,7 @@ function valid_rfc_moral($str) {
     } else {
         $matches[1] = 1900 + (int) $matches[1];
     }
-    date_default_timezone_set ( 'America/Merida' );
+    date_default_timezone_set('America/Merida');
     return strtotime($matches[1] . '-' . $matches[2] . '-' . $matches[3]) ? true : false;
 }
 

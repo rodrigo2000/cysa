@@ -40,13 +40,10 @@ $(document).ready(function () {
             }
         }
     });
-
     $("input.autoresize").on('input', function () {
         this.style.width = this.value.length + "ch";
     }).trigger('input');
-
     $("input", ".autorizado").prop("readonly", true).prop("disabled", true);
-
     $('#headers_id.ddslick').ddslick({
         width: '100%',
         imagePosition: "left",
@@ -56,14 +53,12 @@ $(document).ready(function () {
             $("img.dd-selected-image", "#headers_id").css("margin", "auto");
         }
     });
-
     // HEADERS
     $("#headers_id").css("margin", "auto").css("margin-bottom", "1em");
     $(".dd-selected", "#headers_id").css("display", "flex");
     $("img", "#headers_id").css("margin", "auto");
     $("a.dd-option", "#headers_id").css("display", "grid");
     $("ul,div", "#headers_id").css("background-color", "yellow");
-
     // FOOTERS
     $('#footers_id.ddslick').ddslick({
         width: '100%',
@@ -79,11 +74,9 @@ $(document).ready(function () {
     $("img", "#footers_id").css("margin", "auto");
     $("a.dd-option", "#footers_id").css("display", "grid");
     $("ul,div", "#footers_id").css("background-color", "yellow");
-
     $("button.boton_guardar").on('click', function () {
         get_form_data(true);
     });
-
     if (typeof Bloodhound !== 'undefined') {
         var empleados = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -93,11 +86,9 @@ $(document).ready(function () {
                 wildcard: '%QUERY',
                 filter: function (response) {
                     return response.data;
-
                 }
             }
         });
-
         $('.autocomplete').typeahead({
             highlight: true,
             hint: true,
@@ -168,7 +159,6 @@ $(document).ready(function () {
         span.addClass('hidden-xs-up');
     });
 });
-
 function get_form_data(async = false) {
     var data = $("#frmOficios").serializeObject();
     data.headers_id = $(".dd-selected-value", "#headers_id").attr('value');
@@ -254,16 +244,18 @@ function actualizar_plurales() {
 
 function agregar_involucrado($this, suggestion) {
     var html = '<span class="resaltar" id="empleado_' + suggestion.empleados_id + '">' +
-            suggestion.empleados_nombre_titulado + ', ' +
-            suggestion.empleados_cargo +
+            suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
             '<input type="hidden" name="involucrados[]" value="' + suggestion.empleados_id + '">' +
             ' <span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span>, ' +
             '</span>';
+    if ($("span.resaltar", "#seccion_involucrados").length > 0 && $("span.plural", "#seccion_involucrados").length == 0) {
+        html = '<span class="plural"> y ' + (suggestion.empleados_genero == 1 ? 'del' : 'de la') + ' </span>' + html;
+    }
     $($this).parent('span').parent('span').before(html);
     $($this).val('').focus();
     actualizar_plurales();
     if ($(".direccion_" + suggestion.cc_direcciones_id, ".firmas_involucrados").length == 0) {
-        // Agregamos la direccion
+// Agregamos la direccion
         html = '<div class="direccion_' + suggestion.cc_direcciones_id + '">' +
                 '<p class="firmas_ua_nombre">' + suggestion.direcciones_nombre + '</p>' +
                 '</div>';
@@ -297,7 +289,7 @@ function agregar_testigo($this, suggestion) {
             '<input type="hidden" name="testigos[]" value="' + suggestion.empleados_id + '">' +
             '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span>' +
             '</span>';
-    if ($("span.resaltar", "#seccion_testigos").length > 0) {
+    if ($("span.resaltar", "#seccion_testigos").length > 0 && $("span.plural", "#seccion_testigos").length == 0) {
         html = '<span class="plural"> y </span>' + html;
     }
     $($this).parent('span').parent('span').before(html);
@@ -316,3 +308,30 @@ String.prototype.capitalize = function () {
         return p1 + p2.toUpperCase();
     });
 };
+function mostrar_parrafo(id, obj) {
+    if ($("#" + id).length > 0) {
+        $("#" + id).removeClass('hidden-xs-up');
+        $(obj).addClass('hidden-xs-up');
+        $(obj).parents(".show-hide")
+                .removeClass('text-xs-center')
+                .addClass('text-justify texto-sangria')
+                .find(".btn-hide")
+                .removeClass('hidden-xs-up');
+        $(obj).parents('.show-hide').find('input').val(1);
+    }
+    return false;
+}
+
+function ocultar_parrafo(id, obj) {
+    if ($("#" + id).length > 0) {
+        $("#" + id).addClass('hidden-xs-up');
+        $(obj).addClass('hidden-xs-up');
+        $(obj).parents(".show-hide")
+                .removeClass('text-justify texto-sangria')
+                .addClass('text-xs-center')
+                .find(".btn-show")
+                .removeClass('hidden-xs-up');
+        $(obj).parents('.show-hide').find('input').val(0);
+    }
+    return false;
+}

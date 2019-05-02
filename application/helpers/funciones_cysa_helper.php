@@ -38,3 +38,32 @@ function is_fin_de_semana($fecha) {
     }
     return $return;
 }
+
+function get_frase_de_ua($a) {
+    $return = "";
+    if (!empty($a)) {
+        if ($a['direcciones_is_descentralizada'] != 1) {
+            if ($a['cc_etiqueta_departamento'] != 1) {
+                $return .= " al departamento de " . $a['departamentos_nombre'];
+            }
+            if (!empty($return)) {
+                $return .= " de ";
+            }
+            $return .= " al organismo a su cargo";
+        } else {
+            if ($a['cc_etiqueta_departamento'] != 1) {
+                $return = " al departamento de " . $a['departamentos_nombre'];
+            }
+            if ($a['cc_etiqueta_subdireccion'] != 1) {
+                $return .= " de la Subdirección de " . $a['subdirecciones_nombre'];
+            }
+            if (empty($return)) {
+                $return = "a";
+            } else {
+                $return .= " de ";
+            }
+            $return .= " la dirección a su cargo";
+        }
+    }
+    return $return;
+}

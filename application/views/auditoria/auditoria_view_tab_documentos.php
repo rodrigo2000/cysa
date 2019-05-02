@@ -55,11 +55,11 @@
                         </h6>
                     </div>
                     <div id="documentacion-final" class="card-block panel-collapse collapse in" role="tabpanel">
-                        <ul>
-                            <li>Oficio de Citatorio (OC)</li>
-                            <li>Oficio de Envío de Documentos (OED)</li>
-                            <li>Imprimir portada o guarda exterior</li>
-                        </ul>
+                        <div class="list-group">
+                            <a href="<?= $this->module['documentos_url'] . "/OC"; ?>" class="list-group-item">Oficio de Citatorio (OC)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/OED"; ?>" class="list-group-item">Oficio de Envío de Documentos (OED)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/imprimir"; ?>" class="list-group-item">Imprimir portada o guarda exterior</a>
+                        </div>
                     </div>
                 </div>
                 <div class="card panel panel-default m-b-xs">
@@ -71,11 +71,11 @@
                         </h6>
                     </div>
                     <div id="oficios-generales" class="card-block panel-collapse collapse in" role="tabpanel">
-                        <ul>
-                            <li>Oficio de Resolución de Prórroga (ORP)</li>
-                            <li>Oficio de Solicitud de Información (OSI)</li>
-                            <li>Oficio de Resolución de Ampliación de Plazo (RAP)</li>
-                        </ul>
+                        <div class="list-group">
+                            <a href="<?= $this->module['documentos_url'] . "/ORP"; ?>" class="list-group-item">Oficio de Resolución de Prórroga (ORP)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/OSI"; ?>" class="list-group-item">Oficio de Solicitud de Información (OSI)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/RAP"; ?>" class="list-group-item">Oficio de Resolución de Ampliación de Plazo (RAP)</a>
+                        </div>
                     </div>
                 </div>
                 <div class="card panel panel-default m-b-xs">
@@ -87,11 +87,11 @@
                         </h6>
                     </div>
                     <div id="actas" class="card-block panel-collapse collapse in" role="tabpanel">
-                        <ul>
-                            <li>Acta de Resultados (ARA/ARR)</li>
-                            <li>Acta de Cierre de Entrega de Información (ACEI)</li>
-                            <li>Autirozación Administrativa (AA)</li>
-                        </ul>
+                        <div class="list-group">
+                            <a href="<?= $this->module['documentos_url'] . "/ARA"; ?>" class="list-group-item">Acta de Resultados (ARA/ARR)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/ACEI"; ?>" class="list-group-item">Acta de Cierre de Entrega de Información (ACEI)</a>
+                            <a href="<?= $this->module['documentos_url'] . "/AA"; ?>" class="list-group-item">Autirozación Administrativa (AA)</a>
+                        </div>
                     </div>
                 </div>
             </div>
