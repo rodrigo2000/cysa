@@ -82,6 +82,9 @@ class Auditorias_model extends MY_Model {
             //echo $this->db->last_query();
             if ($result->num_rows() > 0) {
                 $return = $result->row_array();
+                get_nombre_titulado($return);
+                get_cargo_de_empleado($return);
+                get_siglas_de_empleado($return);
             }
         }
         return $return;
@@ -112,6 +115,11 @@ class Auditorias_model extends MY_Model {
                     ->get('auditorias_equipo ae');
             if ($result->num_rows() > 0) {
                 $return = $result->result_array();
+                foreach ($return as $index => $row) {
+                    get_nombre_titulado($return[$index]);
+                    get_cargo_de_empleado($return[$index]);
+                    get_siglas_de_empleado($return[$index]);
+                }
             }
         }
         return $return;
