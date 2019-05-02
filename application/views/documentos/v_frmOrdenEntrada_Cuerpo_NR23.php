@@ -140,13 +140,13 @@
                                         <tbody>
                                             <?php $lider = $this->Auditorias_model->get_lider_auditoria(); ?>
                                             <tr>
-                                                <td class="align-middle"><p><?= ($lider['empleados_genero'] === GENERO_MASCULINO ? $lider['titulos_masculino_siglas'] : $lider['titulos_femenino_siglas']) . " " . capitalizar($lider['nombre_completo']); ?></p></td>
+                                                <td class="align-middle"><p><?= $lider['empleados_nombre_titulado_siglas']; ?></p></td>
                                                 <td class="align-middle"><p><?= $lider['empleados_puestos_id'] == PUESTO_AUDITOR ? 'Auditor Líder' : capitalizar($lider['puestos_nombre']); ?></p></td>
                                             </tr>
                                             <?php $equipo = $this->Auditorias_model->get_equipo_auditoria($auditoria['auditorias_id']); ?>
                                             <?php foreach ($equipo as $e): ?>
                                                 <tr>
-                                                    <td class="align-middle"><p><?= ($e['empleados_genero'] === GENERO_MASCULINO ? $e['titulos_masculino_siglas'] : $e['titulos_femenino_siglas']) . " " . capitalizar($e['nombre_completo']); ?></p></td>
+                                                    <td class="align-middle"><p><?= $e['empleados_nombre_titulado_siglas']; ?></p></td>
                                                     <td class="align-middle"><p><?= capitalizar($e['puestos_nombre']); ?></p></td>
                                                 </tr>
                                             <?php endforeach; ?>
