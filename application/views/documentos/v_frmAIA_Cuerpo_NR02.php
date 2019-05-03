@@ -21,7 +21,7 @@ $direcciones = array();
 foreach ($documentos[$index]['asistencias'] as $direcciones_id => $d) {
     if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
         $aux = $this->SAC_model->get_direccion($direcciones_id);
-        array_push($direcciones, $aux['direcciones_nombre']);
+        array_push($direcciones, $aux['nombre_completo_direccion']);
     }
 }
 if (count($direcciones) > 1) {
@@ -56,16 +56,6 @@ if (count($direcciones) > 1) {
     <script src="<?= APP_SAC_URL; ?>resources/scripts/emular_impresora.js" type="text/javascript"></script>
 <?php endif; ?>
 <link href="<?= APP_SAC_URL; ?>resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
-<style>
-    .bg-punteado {
-        background-image: url(<?= APP_SAC_URL; ?>resources/images/guion-admnistracion-2018-2021.gif);
-        background-repeat: repeat-x;
-        background-position: bottom;
-    }
-    .acta #oficio-body p {
-        /*margin: 0px auto;*/
-    }
-</style>
 <div class="card">
     <div class="card-header no-bg1 b-a-0 hidden-print">
         <?php $this->load->view('auditoria/header_view'); ?>
@@ -475,7 +465,6 @@ if (count($direcciones) > 1) {
 </div>
 <script>
     $(document).ready(function () {
-        actualizar_plurales();
         $("input#chkAsistencia").change(function () {
             if ($("input#chkAsistencia").prop("checked")) {
                 $("#noAsistencia").fadeOut('slow', function () {
