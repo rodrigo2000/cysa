@@ -1,6 +1,6 @@
 $(document).ready(function () {
-    $("span.editable:not(.xeditable)").each(function (index, element) {
-        if ($(this).html() === "") {
+    $("*[default-value]", "#frmOficios").each(function (index, element) {
+        if ($.trim($(this).text()) === "") {
             $(this).html($(this).attr("default-value"));
         }
     }).on('blur', function () {
@@ -77,6 +77,7 @@ $(document).ready(function () {
     $("button.boton_guardar").on('click', function () {
         get_form_data(true);
     });
+    actualizar_plurales();
     if (typeof Bloodhound !== 'undefined') {
         var empleados = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -111,7 +112,7 @@ $(document).ready(function () {
                 var a = parseInt($($this).attr("data-asistencias-tipo"));
                 if (json.success) {
                     if (a == 3) {
-                        agregar_involucrado($this, suggestion);
+                        agregar_involucrado($this, suggestion, a);
                     } else if (a == 2) {
                         agregar_testigo($this, suggestion);
                     }
@@ -157,6 +158,17 @@ $(document).ready(function () {
         var span = $(this).parent('span').parent('span');
         span.parent('span').next('a.btn_agregar').removeClass('hidden-xs-up');
         span.addClass('hidden-xs-up');
+    }).on('click', '.opciones', function () {
+        var opciones = $(this).attr("data-opciones").split('|');
+        var html = $(this).html();
+        var next = null;
+        for (var i = 0; i < opciones.length; i++) {
+            if (opciones[i] == html) {
+                next = i + 1;
+            }
+        }
+        var n = next % opciones.length;
+        $(this).html(opciones[n]).trigger('change');
     });
 });
 function get_form_data(async = false) {
@@ -176,17 +188,8 @@ function get_form_data(async = false) {
         div.replaceWith(obj);
     });
     data.html = $(oficio).html();
-    var c = null;
-    if (!isEmpty(data.constantes)) {
-        c = data.constantes;
-    }
-    data.constantes = {};
-    $.each(c, function (index, element) {
-        if (element !== undefined) {
-            data.constantes[index] = element;
-        }
-    });
-    $("span.editable").each(function (index, element) {
+    data.constantes = $.extend({}, data.constantes);
+    $(".editable, span[name^=constantes]", "#frmOficios").each(function (index, element) {
         var id = $(element).prop('id');
         var valor = $(element).html();
         data.constantes[id] = valor;
@@ -240,6 +243,7 @@ function actualizar_plurales() {
     plurales(mostrar, "#seccion_involucrados_2");
     var mostrar = $("span.resaltar", "#seccion_testigos").length > 1 ? true : false;
     plurales(mostrar, "#seccion_testigos");
+    plurales(mostrar, "#seccion_testigos_2");
 }
 
 function agregar_involucrado($this, suggestion) {
@@ -314,7 +318,7 @@ function mostrar_parrafo(id, obj) {
         $(obj).addClass('hidden-xs-up');
         $(obj).parents(".show-hide")
                 .removeClass('text-xs-center')
-                .addClass('text-justify texto-sangria')
+                .addClass('text-justify texto-sangria bg-punteado')
                 .find(".btn-hide")
                 .removeClass('hidden-xs-up');
         $(obj).parents('.show-hide').find('input').val(1);
@@ -327,7 +331,7 @@ function ocultar_parrafo(id, obj) {
         $("#" + id).addClass('hidden-xs-up');
         $(obj).addClass('hidden-xs-up');
         $(obj).parents(".show-hide")
-                .removeClass('text-justify texto-sangria')
+                .removeClass('text-justify texto-sangria bg-punteado')
                 .addClass('text-xs-center')
                 .find(".btn-show")
                 .removeClass('hidden-xs-up');

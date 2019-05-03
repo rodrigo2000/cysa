@@ -104,7 +104,6 @@ class Auditoria extends MY_Controller {
                     $documentos[$index]['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
                 }
                 $this->module['title_list'] = "Acta de Inicio de Auditoría";
-
                 break;
             case TIPO_DOCUMENTO_CITATORIO:
                 $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
@@ -137,8 +136,18 @@ class Auditoria extends MY_Controller {
 
                 break;
             case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:
+                $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
+                if ($documentos_id !== "nuevo") {
+                    $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
+                    $accion = "modificar";
+                    if (intval($documentos_id) > 0) {
+                        $index = array_search($documentos_id, array_column($documentos, 'documentos_id'));
+                    } elseif (isset($documentos[$index]['documentos_id'])) {
+                        $documentos_id = $documentos[$index]['documentos_id'];
+                    }
+                    $documentos[$index]['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
+                }
                 $this->module['title_list'] = "Acta de Cierre de Entrega de Información";
-
                 break;
             case TIPO_DOCUMENTO_ACTA_ADMINISTRATIVA:
                 $this->module['title_list'] = "Acta Administrativa";
@@ -383,16 +392,15 @@ class Auditoria extends MY_Controller {
                 break;
             case TIPO_DOCUMENTO_ENVIO_DOCUMENTOS:
                 $this->module['title_list'] = "Oficio de Envío de Documentos";
-
                 break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_REVISION:
                 $this->module['title_list'] = "Acta de Resultados";
-
                 break;
             case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:
+                $is_oficio = FALSE;
+                $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
                 $this->module['title_list'] = "Acta de Cierre de Entrega de Información";
-
                 break;
             case TIPO_DOCUMENTO_ACTA_ADMINISTRATIVA:
                 $this->module['title_list'] = "Acta Administrativa";

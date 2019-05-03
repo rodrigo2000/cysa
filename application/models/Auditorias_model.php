@@ -78,8 +78,7 @@ class Auditorias_model extends MY_Model {
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".titulos t", "t.titulos_id = e.empleados_titulos_id", "LEFT")->select("t.*")
                     ->where('auditorias_id', $auditorias_id)
                     ->limit(1)
-                    ->get('auditorias a');
-            //echo $this->db->last_query();
+                    ->get($this->table_name . " " . $this->table_prefix);
             if ($result->num_rows() > 0) {
                 $return = $result->row_array();
                 get_nombre_titulado($return);
@@ -144,7 +143,8 @@ class Auditorias_model extends MY_Model {
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".puestos p", "p.puestos_id = empleados_puestos_id", "LEFT")->select("puestos_nombre")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".titulos t", "t.titulos_id = empleados_titulos_id", "LEFT")->select("t.titulos_masculino_siglas, t.titulos_masculino_nombre, t.titulos_femenino_siglas, t.titulos_femenino_nombre")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . $this->table_prefix . ".auditorias_cc_id ", "LEFT")->select("cc.*")
-                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_is_descentralizada, direcciones_ubicacion")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_is_descentralizada, direcciones_ubicacion, direcciones_tipos_ua_id")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".tipos_ua tua", "tua.tipos_ua_id = d.direcciones_tipos_ua_id", "LEFT")->select("tua.tipos_ua_nombre, tua.tipos_ua_genero")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("subdirecciones_nombre")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("departamentos_nombre")
                     ->where($this->id_field, $auditorias_id)
@@ -153,6 +153,7 @@ class Auditorias_model extends MY_Model {
             if ($result && $result->num_rows() == 1) {
                 $return = $result->row_array();
                 $return['nombre_completo'] = $return['auditor_lider_nombre_completo'];
+                forma_nombre_completo_de_ua($return);
                 get_nombre_titulado($return);
                 $equipo = $this->get_equipo_auditoria($auditorias_id);
                 $return['auditoria_equipo'] = $equipo;

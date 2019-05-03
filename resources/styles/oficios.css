@@ -2,6 +2,12 @@ b {
     font-weight: bolder;
 }
 
+#oficio-hoja.acta .bg-punteado {
+    background-image: url(../../../SAC/resources/images/guion-admnistracion-2018-2021.gif);
+    background-repeat: repeat-x;
+    background-position: bottom;
+}
+
 #numero_folio {
     width: 43px;
 }
@@ -24,7 +30,7 @@ div#oficio-hoja.acta p {
     margin-bottom: 0px;
 }
 
-.texto-sangria {
+#oficio-hoja:not(.acta) .texto-sangria {
     text-indent: 1cm;
 }
 
@@ -84,6 +90,11 @@ table { font-size: 10pt; }
 
     body div.card {
         box-shadow: none;
+    }
+
+    div#oficio-hoja:not(.autorizado) div.span.editable {
+        background: yellow;
+        font-size: 14pt;
     }
 
 }
@@ -174,10 +185,10 @@ input.autoresize {
     margin: 0px 5px;
 }
 
-span.autocomplete_empleados_delete {
+span.autocomplete_empleados_delete,
+#oficio-hoja .opciones /* ACEI */ {
     cursor: pointer;
 }
-
 
 /********************* ACTAS *******************/
 #oficio-hoja.acta p.firmas_firmas {

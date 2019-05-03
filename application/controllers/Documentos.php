@@ -30,22 +30,29 @@ class Documentos extends MY_Controller {
         $documentos_versiones_id = intval($this->input->post('documentos_versiones_id'));
         $html = $this->input->post('html');
         $this->Documentos_model->get_template($documentos_tipos_id);
+        $involucrados = $this->input->post('involucrados[]');
+        foreach ($involucrados as $empleados_id) {
+            $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
+        }
+        $testigos = $this->input->post("testigos[]");
+        foreach ($testigos as $empleados_id) {
+            $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_TESTIGO);
+        }
         switch ($documentos_tipos_id) {
             case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
-                $involucrados = $this->input->post('involucrados[]');
-                foreach ($involucrados as $empleados_id) {
-                    $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
-                }
-                $testigos = $this->input->post("testigos[]");
-                foreach ($testigos as $empleados_id) {
-                    $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_TESTIGO);
-                }
                 if (!isset($constantes[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS])) { // ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS
                     $constantes[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] = 0;
                 }
                 break;
-
-            default:
+            case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:
+                if (isset($constantes[ACEI_PARRAFO_U2])) {
+                    $constantes[ACEI_PARRAFO_U2] = str_ireplace("\n", "", $constantes[ACEI_PARRAFO_U2]);
+                    $constantes[ACEI_PARRAFO_U2] = str_ireplace(array('</p>', '<br>'), "\n", $constantes[ACEI_PARRAFO_U2]);
+                    $constantes[ACEI_PARRAFO_U2] = strip_tags($constantes[ACEI_PARRAFO_U2]);
+                    $constantes[ACEI_PARRAFO_U2] = html_entity_decode($constantes[ACEI_PARRAFO_U2]);
+                }
+                break;
+            default :
                 break;
         }
         if (empty($documentos_id)) {
