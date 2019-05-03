@@ -9,7 +9,7 @@ class Asistencias_model extends MY_Model {
         parent::__construct();
         $this->table_name = strtolower(str_replace("_model", "", __CLASS__));
         $this->id_field = $this->table_name . "_documentos_id";
-        $this->table_prefix = "m";
+        $this->table_prefix = "asis";
         $this->model_name = __CLASS__;
     }
 
@@ -19,9 +19,17 @@ class Asistencias_model extends MY_Model {
             $this->db->where("asistencias_tipo >", 0);
         }
         if (!empty($documentos_id)) {
-            $result = $this->db
+            $result = $this->db->select($this->table_prefix . ".*")
                     ->where($this->id_field, $documentos_id)
-                    ->get($this->table_name);
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = " . $this->table_prefix . ".asistencias_empleados_id", "LEFT")
+                    ->order_by("CASE
+                    WHEN empleados_puestos_id IN (155) THEN 0
+                    WHEN empleados_puestos_id IN (45, 290, 145, 294, 293) THEN 1
+                    WHEN empleados_puestos_id IN (106, 157) THEN 2
+                    WHEN empleados_puestos_id IN (59, 296, 60, 272) THEN 3
+                    WHEN empleados_puestos_id IN (40, 269) THEN 4
+                    ELSE 5 END ASC")
+                    ->get($this->table_name . " " . $this->table_prefix);
             if ($result && $result->num_rows($result) > 0) {
                 $return = $result->result_array();
             }
