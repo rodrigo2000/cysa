@@ -171,10 +171,12 @@ class SAC_model extends MY_Model {
         if (!empty($direcciones_id)) {
             $result = $this->dbSAC
                     ->where("direcciones_id", $direcciones_id)
+                    ->join("tipos_ua tua", "tua.tipos_ua_id = direcciones_tipos_ua_id", "LEFT")
                     ->limit(1)
                     ->get("direcciones");
             if ($result && $result->num_rows() == 1) {
                 $return = $result->row_array();
+                forma_nombre_completo_de_ua($return);
             }
         }
         return $return;
@@ -192,6 +194,9 @@ class SAC_model extends MY_Model {
                     ->get("centros_costos cc");
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
+                foreach ($return as $index => $r) {
+                    forma_nombre_completo_de_ua($return[$index]);
+                }
             }
         }
         return $return;
@@ -413,7 +418,14 @@ class SAC_model extends MY_Model {
 //                ->join("empleados_cc_historico ecch", "ecch.historico_" . $this->id_field . " = " . "e." . $this->id_field, "LEFT")->select("ecch.historico_fecha_baja")->where("ecch.historico_fecha_baja IS NULL")
                 ->join("direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_nombre_generico, direcciones_ubicacion, direcciones_is_descentralizada")
                 ->join("subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("s.subdirecciones_nombre")
-                ->join("departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("dd.departamentos_nombre");
+                ->join("departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("dd.departamentos_nombre")
+                ->order_by("CASE
+                    WHEN puestos_id IN (155) THEN 0
+                    WHEN puestos_id IN (45, 290, 145, 294, 293) THEN 1
+                    WHEN puestos_id IN (106, 157) THEN 2
+                    WHEN puestos_id IN (59, 296, 60, 272) THEN 3
+                    WHEN puestos_id IN (40, 269) THEN 4
+                    ELSE 5 END ASC");
         if (!$incluir_eliminados) {
             $this->dbSAC->where("e.fecha_delete IS NULL");
         }
