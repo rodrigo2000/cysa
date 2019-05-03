@@ -476,3 +476,19 @@ function get_siglas_de_empleado(&$empleado) {
     $empleado['empleado_siglas'] = $siglas;
     return TRUE;
 }
+
+function forma_nombre_completo_de_ua(&$empleado) {
+    if (!empty($empleado) && is_array($empleado)) {
+        $generos = array("la", "el");
+        $g = $h = NULL;
+        if (!is_null($empleado['tipos_ua_genero']) && is_numeric($empleado['tipos_ua_genero'])) {
+            $g = $generos[$empleado['tipos_ua_genero']];
+        }
+        if (!empty($empleado['tipos_ua_nombre'])) {
+            $h = $empleado['tipos_ua_nombre'];
+        }
+        $data = array($g, $h, 'de', $empleado['direcciones_nombre']);
+        $empleado['nombre_completo_direccion'] = implode(" ", $data);
+    }
+    return TRUE;
+}
