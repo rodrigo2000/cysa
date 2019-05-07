@@ -31,12 +31,16 @@ class Documentos extends MY_Controller {
         $html = $this->input->post('html');
         $this->Documentos_model->get_template($documentos_tipos_id);
         $involucrados = $this->input->post('involucrados[]');
-        foreach ($involucrados as $empleados_id) {
-            $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
+        if (is_array($involucrados)) {
+            foreach ($involucrados as $empleados_id) {
+                $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
+            }
         }
         $testigos = $this->input->post("testigos[]");
-        foreach ($testigos as $empleados_id) {
-            $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_TESTIGO);
+        if (is_array($testigos)) {
+            foreach ($testigos as $empleados_id) {
+                $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_TESTIGO);
+            }
         }
         switch ($documentos_tipos_id) {
             case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
