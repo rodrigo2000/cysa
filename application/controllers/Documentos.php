@@ -36,6 +36,12 @@ class Documentos extends MY_Controller {
                 $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
             }
         }
+        $involucrados_contraloria = $this->input->post('involucrados_contraloria[]');
+        if (is_array($involucrados_contraloria)) {
+            foreach ($involucrados_contraloria as $empleados_id) {
+                $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA);
+            }
+        }
         $testigos = $this->input->post("testigos[]");
         if (is_array($testigos)) {
             foreach ($testigos as $empleados_id) {
