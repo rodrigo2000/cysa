@@ -26,9 +26,7 @@
                     </div>
                     <div id="reprogramaciones" class="card-block panel-collapse collapse in" role="tabpanel">
                         <ul>
-                            <li>Orden de Auditoría (OA)</li>
-                            <li>Acta de inicio de Auditoría (AIA)</li>
-                            <li>Autirozación de Auditoría No Programada (AANP)</li>
+                            <li>Reprogramación 1</li>
                         </ul>
                     </div>
                 </div>
@@ -40,9 +38,7 @@
                     </div>
                     <div id="ampliaciones" class="card-block panel-collapse collapse in" role="tabpanel">
                         <ul>
-                            <li>Orden de Auditoría (OA)</li>
-                            <li>Acta de inicio de Auditoría (AIA)</li>
-                            <li>Autirozación de Auditoría No Programada (AANP)</li>
+                            <li>Ampliación 1</li>
                         </ul>
                     </div>
                 </div>
@@ -58,7 +54,7 @@
                         <div class="list-group">
                             <a href="<?= $this->module['documentos_url'] . "/OC"; ?>" class="list-group-item">Oficio de Citatorio (OC)</a>
                             <a href="<?= $this->module['documentos_url'] . "/OED"; ?>" class="list-group-item">Oficio de Envío de Documentos (OED)</a>
-                            <a href="<?= $this->module['documentos_url'] . "/imprimir"; ?>" class="list-group-item">Imprimir portada o guarda exterior</a>
+                            <a href="<?= $this->module['url'] . "/portada"; ?>" class="list-group-item">Imprimir portada o guarda exterior</a>
                         </div>
                     </div>
                 </div>

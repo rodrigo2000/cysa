@@ -115,7 +115,9 @@
                                 <?php endif; ?>
                             <?php endforeach; ?>
                             <?php foreach ($auditoria['empleados_involucrados'] as $e): ?>
+                                <?php if (isset($e['empleados_id'])): ?>
                                     <option value="<?= $e['empleados_id']; ?>" selected="selected"><?= $e['nombre_completo'] . (!empty($e['empleados_numero_empleado']) ? " (" . $e['empleados_numero_empleado'] . ")" : ''); ?></option>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         </select>
                     </div>

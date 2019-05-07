@@ -71,17 +71,20 @@ class Auditoria extends MY_Controller {
         $accion = "nuevo";
         $index = 0;
         $vista = NULL;
+        $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
+        if ($documentos_id !== "nuevo") {
+            $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
+            $accion = "modificar";
+            if (intval($documentos_id) > 0) {
+                $index = array_search($documentos_id, array_column($documentos, 'documentos_id'));
+            } elseif (isset($documentos[$index]['documentos_id'])) {
+                $documentos_id = $documentos[$index]['documentos_id'];
+            }
+            $documentos[$index]['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
+        }
         switch ($documentos_tipos_id) {
             case TIPO_DOCUMENTO_ORDEN_AUDITORIA:
-                $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
                 if ($documentos_id !== "nuevo") {
-                    $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
-                    $accion = "modificar";
-                    if (intval($documentos_id) > 0) {
-                        $index = array_search($documentos_id, array_column($documentos, 'documentos_id'));
-                    } elseif (isset($documentos[$index]['documentos_id'])) {
-                        $documentos_id = $documentos[$index]['documentos_id'];
-                    }
                     if (!empty($documentos[$index]['valores'][ORD_ENT_ID_DIR_AUDIT])) {
                         $para_direcciones_id = $documentos[$index]['valores'][ORD_ENT_ID_DIR_AUDIT];
                     }
@@ -92,61 +95,27 @@ class Auditoria extends MY_Controller {
                 $this->module['title_list'] = "Orden de Auditoría";
                 break;
             case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
-                $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
-                if ($documentos_id !== "nuevo") {
-                    $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
-                    $accion = "modificar";
-                    if (intval($documentos_id) > 0) {
-                        $index = array_search($documentos_id, array_column($documentos, 'documentos_id'));
-                    } elseif (isset($documentos[$index]['documentos_id'])) {
-                        $documentos_id = $documentos[$index]['documentos_id'];
-                    }
-                    $documentos[$index]['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
-                }
                 $this->module['title_list'] = "Acta de Inicio de Auditoría";
                 break;
             case TIPO_DOCUMENTO_CITATORIO:
-                $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
                 if ($documentos_id !== "nuevo") {
-                    $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
-                    $accion = "modificar";
-                    if (intval($documentos_id) > 0) {
-                        $index = array_search($documentos_id, array_column($documentos, 'documentos_id'));
-                    } elseif (isset($documentos[$index]['documentos_id'])) {
-                        $documentos_id = $documentos[$index]['documentos_id'];
-                    }
                     if (!empty($documentos[$index]['valores'][CITATORIO_ID_UA])) {
                         $para_direcciones_id = $documentos[$index]['valores'][CITATORIO_ID_UA];
                     }
                     if (!empty($documentos[$index]['valores'][CITATORIO_ID_DIR_CONTRA])) {
                         $de_empleados_id = $documentos[$index]['valores'][CITATORIO_ID_DIR_CONTRA];
                     }
-                    $documentos[$index]['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
                 }
                 $this->module['title_list'] = "Oficio de Citatorio";
-
                 break;
             case TIPO_DOCUMENTO_ENVIO_DOCUMENTOS:
                 $this->module['title_list'] = "Oficio de Envío de Documentos";
-
                 break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_REVISION:
                 $this->module['title_list'] = "Acta de Resultados";
-
                 break;
             case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:
-                $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
-                if ($documentos_id !== "nuevo") {
-                    $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
-                    $accion = "modificar";
-                    if (intval($documentos_id) > 0) {
-                        $index = array_search($documentos_id, array_column($documentos, 'documentos_id'));
-                    } elseif (isset($documentos[$index]['documentos_id'])) {
-                        $documentos_id = $documentos[$index]['documentos_id'];
-                    }
-                    $documentos[$index]['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
-                }
                 $this->module['title_list'] = "Acta de Cierre de Entrega de Información";
                 break;
             case TIPO_DOCUMENTO_ACTA_ADMINISTRATIVA:
@@ -456,6 +425,295 @@ class Auditoria extends MY_Controller {
             $data["is_autorizado"] = TRUE;
         }
         $this->visualizar($vista, $data);
+    }
+
+    function portada() {
+        if ($this->input->server("REQUEST_METHOD") === "POST") {
+            $post = $this->input->post();
+            $empleados_id = $this->session->userdata("empleados_id");
+            $expedientes_id = intval($post['expedientes_id']);
+            $auditorias_id = $post["auditorias_id"];
+            if (!isset($post['expedientes_isPPR'])) {
+                $post['expedientes_isPPR'] = 0;
+            }
+            if (!isset($post['expedientes_isReservada'])) {
+                $post['expedientes_isRerservada'] = 0;
+            }
+
+            $post['expedientes_fecha_apertura'] = empty($post['expedientes_fecha_apertura']) ? NULL : $post['expedientes_fecha_apertura'];
+            $post['expedientes_fecha_cierre'] = empty($post['expedientes_fecha_cierre']) ? NULL : $post['expedientes_fecha_cierre'];
+            $post['expedientes_numero_fojas'] = implode(",", $_POST['numero_fojas']);
+            $post['expedientes_numero_tomo'] = count($post['numero_fojas']);
+            $post['expedientes_numero_total_tomos'] = count($post['numero_fojas']);
+            $post['expedientes_fecha_desclasificacion'] = empty($post['expedientes_fecha_desclasificacion']) ? NULL : $post['expedientes_fecha_desclasificacion'];
+            unset($post['numero_fojas'], $post['accion'], $post['auditorias_id']);
+
+            if (empty($expedientes_id)) {
+                $post['expedientes_idEmpleado'] = $empleados_id;
+                $post['expedientes_fecha_creacion'] = ahora();
+                $r = $this->EXPEDIENTES_model->insert($post);
+            } else {
+                $r = $this->EXPEDIENTES_model->update_expedientes_por_auditoria($auditorias_id, $post);
+            }
+            $auditorias_origen_actualizados = FALSE;
+            if ($r['state'] === 'success') {
+                // Si se capturó la fecha de desclasificación, entonces actualizamos la auditoría origen, en caso de que exista
+                if (isset($post['expedientes_fecha_desclasificacion']) && !empty($post['expedientes_fecha_desclasificacion'])) {
+                    $auditorias_origen = $this->Auditorias_model->get_auditorias_origen($auditorias_id);
+                    foreach ($auditorias_origen as $ao) {
+                        $data['expedientes_fecha_desclasificacion'] = $post['expedientes_fecha_desclasificacion'];
+                        $this->EXPEDIENTES_model->update_expedientes_por_auditoria($au['idAuditoria'], $data);
+                        $auditorias_origen_actualizados = TRUE;
+                    }
+                }
+                $return['success'] = TRUE;
+            }
+            $s['informacion'] = array(
+                'state' => 'success',
+                'message' => 'Se ha actualizado los datos de la auditoría' . ($auditorias_origen_actualizados ? ' y la fecha de desclasificación de sus auditorías origen' : '') . "."
+            );
+            $this->session->set_flashdata($s);
+            redirect($this->module['url'] . "/portada");
+        }
+        $cysa = $this->session->userdata(APP_NAMESPACE);
+        $auditorias_id = $cysa[$this->module['id_field']];
+        $r = array(
+            $this->module['id_field'] => $auditorias_id
+        );
+        $expediente = $this->EXPEDIENTES_model->get_expediente_de_auditoria($auditorias_id);
+        if (is_array($expediente) && !empty($expediente)) {
+            $r = array_merge($r, $expediente);
+        }
+        $data = array(
+            'urlAction' => $this->module['url'] . "/portada",
+            'tituloModulo' => 'Portada o guardar exterior',
+            'etiquetaBoton' => 'Guardar',
+            'accion' => 'modificar',
+            'r' => $r
+        );
+        $vista = "auditorias_portada_view";
+        $this->visualizar($vista, $data);
+    }
+
+    function imprimir_portada($expedientes_id = NULL) {
+
+
+// La siguiente condición sirve para poder descagar el expediente desde SIMA, ya que impide cargar las funciones de validacion de sesion
+        if (!($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['forzar_descargar']) && intval($_GET['forzar_descargar']) == 1)) {
+
+        }
+
+        $error = "";
+        $where = "";
+        $PREFIX = "proto_";
+        if (empty($expedientes_id)) {
+            $cysa = $this->session->userdata(APP_NAMESPACE);
+            $where = "e.expedientes_idAuditoria = " . $cysa['auditorias_id'];
+        } else {
+            $where = "e.expedientes_id = " . $expedientes_id;
+        }
+        $strSQL = "SELECT e.*, sec.secciones_nombre, ssec.subsecciones_nombre, ser.series_nombre, sser.subseries_nombre, secciones_clave, "
+                . "f.fondos_nombre, sf.subfondos_nombre, d.denDireccion, s.denSubdireccion, dep.denDepartamento, a.*, af.fechas_envios_osi "
+                . "FROM expedientes e "
+                . "INNER JOIN fondos f ON f.fondos_id = e.expedientes_fondos_id "
+                . "INNER JOIN subfondos sf ON sf.subfondos_id = e.expedientes_subfondos_id AND sf.subfondos_fondos_id = e.expedientes_fondos_id "
+                . "LEFT JOIN secciones sec ON sec.secciones_id = e.expedientes_secciones_id "
+                . "LEFT JOIN subsecciones ssec ON ssec.subsecciones_numero = e.expedientes_subsecciones_numero AND sec.secciones_id = e.expedientes_secciones_id "
+                . "LEFT JOIN series ser ON ser.series_numero = e.expedientes_series_numero "
+                . "    AND ser.series_subsecciones_numero = e.expedientes_subsecciones_numero "
+                . "    AND ser.series_secciones_id = e.expedientes_secciones_id "
+                . "LEFT JOIN subseries sser ON sser.subseries_numero = e.expedientes_subseries_numero "
+                . "    AND sser.subseries_secciones_id = e.expedientes_secciones_id "
+                . "    AND sser.subseries_subsecciones_numero = e.expedientes_subsecciones_numero "
+                . "    AND sser.subseries_series_numero = e.expedientes_series_numero "
+                . "LEFT JOIN " . $PREFIX . "sac.ayunta_direccion d ON d.clv_dir = e.expedientes_clv_dir AND d.direccionActiva=1 "
+                . "LEFT JOIN " . $PREFIX . "sac.ayunta_subdireccion s ON s.clv_dir = e.expedientes_clv_dir AND s.clv_subdir = e.expedientes_clv_subdir "
+                . "LEFT JOIN " . $PREFIX . "sac.ayunta_departamento dep ON dep.clv_dir = e.expedientes_clv_dir AND dep.clv_subdir = e.expedientes_clv_subdir AND dep.clv_depto = e.expedientes_clv_depto "
+                . "LEFT JOIN " . $PREFIX . "cysa.cat_auditoria a ON a.idAuditoria = e.expedientes_idAuditoria "
+                . "LEFT JOIN " . $PREFIX . "cysa.cat_auditoria_fechas af ON af.idAuditoria = e.expedientes_idAuditoria "
+                . "WHERE " . $where . " LIMIT 1";
+        $dbExpedientes = $this->EXPEDIENTES_model->get_proto_expedientes();
+        $result = $dbExpedientes->query($strSQL);
+        if ($result && $result->num_rows() == 1) {
+            $row = $result->row_array();
+            $filenameTemplate = "../Expedientes/resources/template.docx";
+            if (!empty($row['expedientes_idAuditoria'])) {
+                $filenameTemplate = "../Expedientes/resources/portada_legajo_auditoria_ISO002.docx";
+            }
+            $this->load->helper("Expedientes");
+            $this->load->library("Word");
+            $docx = new Word($filenameTemplate);
+            $labelCC = parse_cc($row['expedientes_anio'], $row['expedientes_clv_dir'], $row['expedientes_clv_subdir'], $row['expedientes_clv_depto']);
+            $label_clv_dir = $label_clv_subdir = $label_clv_depto = "NA";
+            if (is_array($labelCC) && count($labelCC) > 0) {
+                $label_clv_dir = $labelCC['label_clv_dir'];
+                $label_clv_subdir = $labelCC['label_clv_subdir'];
+                $label_clv_depto = $labelCC['label_clv_depto'];
+            }
+            $row['label_clv_dir'] = $label_clv_dir;
+            $row['label_clv_subdir'] = $label_clv_subdir;
+            $row['label_clv_depto'] = $label_clv_depto;
+            if (!isset($row['anio'])) {
+                $row['anio'] = NULL;
+            }
+            if (empty($row['anio'])) {
+                $row['anio'] = $row['expedientes_anio'];
+            }
+            $folio = get_folio($row);
+            $folioDocto = $folio;
+            if (!empty($row['expedientes_idAuditoria'])) {
+                $datosAudit = $this->Auditorias_model->get_Auditoria($row['expedientes_idAuditoria']);
+                $fechaOEA = mysqlDate2OnlyDate($row['fechaSelloOEA']);
+                $fechaARA = mysqlDate2OnlyDate($row['fechaLectura']);
+                if (empty($row['fechaLectura'])) {
+                    $fechaARR = '';
+                };
+                $fechaARR = mysqlDate2OnlyDate($row['fechaLecturaRev1']);
+                if (empty($row['fechaLecturaRev1'])) {
+                    $fechaARR = '';
+                };
+                // Verificamos que tenga el OSI
+                if (!empty($row['fechas_envios_osi']) && empty($row['expedientes_fecha_apertura'])) {
+                    $row['expedientes_fecha_apertura'] = $row['fechas_envios_osi'];
+                    $strSQL = "UPDATE expedientes SET expedientes_fecha_apertura = '" . $row['fechas_envios_osi'] . "' WHERE expedientes_idAuditoria = " . $row['expedientes_idAuditoria'] . " LIMIT 1";
+                    $dbExpedientes->ejecutaQuery($strSQL);
+                }
+
+                $equipoAuditoria = $this->Auditorias_model->get_equipo_auditoria($row['expedientes_idAuditoria']);
+                $equipoNombres = $equipoPuestos = array();
+                array_push($equipoNombres, $datosAudit['empleados_nombre_titulado_siglas']);
+                array_push($equipoPuestos, 'AUDITOR LÍDER');
+                foreach ($equipoAuditoria as $index => $e) {
+                    array_push($equipoNombres, $e['empleados_nombre_titulado_siglas']);
+                    array_push($equipoPuestos, strtoupper($e['puestos_nombre']));
+                }
+                $auditoriaEquipoNombres = implode("\n", $equipoNombres);
+                $auditoriaEquipoPuestos = implode("\n", $equipoPuestos);
+                $numeroRevision = "NO APLICA";
+                if (!empty($datosAudit['auditorias_origen_id'])) {
+                    $datosAudit2 = $this->Auditorias_model->get_Auditoria($datosAudit['auditorias_origen_id']);
+                    $numeroRevision = $datosAudit2['numero_auditoria'];
+                }
+                //$folioDocto .= "            " . $datosAudit['num'];
+                $docx->set('AUDITORIA_NUMERO', "  " . $datosAudit['numero_auditoria'] . "  ");
+                $docx->set('AUDITORIA_DIRECCION_AUDITADA', $datosAudit['direcciones_nombre']);
+                $docx->set('AUDITORIA_SUBDIRECCION_AUDITADA', $datosAudit['subdirecciones_nombre']);
+                $docx->set('AUDITORIA_DEPARTAMENTO_AUDITADA', $datosAudit['departamentos_nombre']);
+                //$docx->set('AUDITORIA_OBJETIVO', $datosAudit['objetivo']);
+                $docx->set('AUDITORIA_NUMERO_REVISION', $numeroRevision);
+                $docx->set('AUDITORIA_EQUIPO_NOMBRES', $auditoriaEquipoNombres);
+                $docx->set('AUDITORIA_EQUIPO_PUESTOS', $auditoriaEquipoPuestos);
+                $docx->set('AUDITORIA_FECHA_OEA', $fechaOEA);
+                $docx->set('AUDITORIA_FECHA_ARA', $fechaARA);
+                $docx->set('AUDITORIA_FECHA_ARR', $fechaARR);
+            }
+            $docx->set('FOLIO', $folioDocto);
+            if ($row['expedientes_anio'] < 2018) {
+                $nombresRealesDeCC = get_nombre_actual_de_mi_cc($row['expedientes_anio'], $row['expedientes_clv_dir'], $row['expedientes_clv_subdir'], $row['expedientes_clv_depto']);
+                $row['denSubdireccion'] = $nombresRealesDeCC['subdireccion'];
+                $row['denDepartamento'] = $nombresRealesDeCC['departamento'];
+            }
+//            $row['denSubdireccion'] = html_entity_decode(Capitalizar(mb_strtolower($row['denSubdireccion'], 'ISO-8859-1')), ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');
+//            $row['denDepartamento'] = html_entity_decode(Capitalizar(mb_strtolower($row['denDepartamento'], 'ISO-8859-1')), ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');
+            $row['subfondos_nombre'] .= " / " . capitalizar($row['denSubdireccion']) . " / " . capitalizar($row['denDepartamento']);
+            if (intval($row['expedientes_subsecciones_numero']) === 0) {
+                $row['expedientes_subsecciones_numero'] = 0;
+                $row['subsecciones_nombre'] = "NO APLICA";
+            }
+            if (intval($row['expedientes_series_numero']) === 0) {
+                $row['expedientes_series_numero'] = 0;
+                $row['series_nombre'] = "NO APLICA";
+            }
+            if (intval($row['expedientes_subseries_numero']) === 0) {
+                $row['expedientes_subseries_numero'] = 0;
+                $row['subseries_nombre'] = "NO APLICA";
+            }
+            if (!empty($row['expedientes_fecha_apertura'])) {
+                list($anio, $mes, $dia) = explode("-", $row['expedientes_fecha_apertura']);
+                $row['expedientes_fecha_apertura'] = implode("-", array($dia, $mes, $anio));
+            }
+            if (!empty($row['expedientes_fecha_cierre'])) {
+                list($anio, $mes, $dia) = explode("-", $row['expedientes_fecha_cierre']);
+                $row['expedientes_fecha_cierre'] = implode("-", array($dia, $mes, $anio));
+            }
+            if (!empty($row['expedientes_fecha_desclasificacion'])) {
+                list($anio, $mes, $dia) = explode("-", $row['expedientes_fecha_desclasificacion']);
+                $row['expedientes_fecha_desclasificacion'] = implode("-", array($dia, $mes, $anio));
+            }
+            $docx->set('CD_1', ($row['expedientes_contenido_documentos'] == "original" ? 'X' : ''));
+            $docx->set('CD_2', ($row['expedientes_contenido_documentos'] == "copia" ? 'X' : ''));
+            $docx->set('CD_3', ($row['expedientes_contenido_documentos'] == "acuse" ? 'X' : ''));
+            $docx->set('FECHA_DESCLASIFICACION', ($row['expedientes_isReservada'] == 1 ? '' : 'NO APLICA'));
+            $row['expedientes_isReservada'] = ""; //($row['expedientes_isReservada'] == 1 ? 'X' : '   ');
+            $row['expedientes_isConfidencial'] = ($row['expedientes_isConfidencial'] == 1 ? 'X' : '');
+            $fojas = explode(",", $row['expedientes_numero_fojas']);
+            $total_fojas = array_sum($fojas);
+            if ($total_fojas === 0) {
+                $row['expedientes_numero_fojas'] = "";
+            } else {
+                $row['expedientes_numero_fojas'] = $total_fojas;
+            }
+            $row['expedientes_isPPR'] = empty($row['expedientes_isPPR']) ? 'N/A' : 'X';
+            $row['NT']=$row['expedientes_numero_tomo'];
+            $row['NTT']=$row['expedientes_numero_total_tomos'];
+            foreach ($row as $key => $valor) {
+                $variable = strtoupper(str_replace("expedientes_", "", $key));
+                $docx->set($variable, $valor);
+            }
+            //$docx->downloadAs("Expediente " . $folio . '.docx');
+            $nombreArchivo = "Expediente " . $folio;
+            $directorio = realpath(".");
+            $rutaArchivo = $directorio . DIRECTORY_SEPARATOR . $nombreArchivo . ".docx";
+            // Instrcciones para que por el momento se pueda descargar la portada o guarda exterior
+            $docx->downloadAs("Expediente " . $folio . '.docx');
+            die();
+            // [FINALIZA]
+            $docx->saveAs($rutaArchivo);
+            $rutaArchivoPDF = $directorio . DIRECTORY_SEPARATOR . $nombreArchivo . ".pdf";
+
+            $word = new COM("Word.Application") or die("Could not initialise Object.");
+            // set it to 1 to see the MS Word window (the actual opening of the document)
+            $word->Visible = 0;
+            // recommend to set to 0, disables alerts like "Do you want MS Word to be the default .. etc"
+            $word->DisplayAlerts = 0;
+            // open the word 2007-2013 document
+            $word->Documents->Open($rutaArchivo);
+            // save it as word 2003
+            //$word->ActiveDocument->SaveAs('newdocument.docx');
+            // convert word 2007-2013 to PDF
+            $word->ActiveDocument->ExportAsFixedFormat($rutaArchivoPDF, 17, false, 0, 0, 0, 0, 7, true, true, 2, true, true, false);
+            // quit the Word process
+            $word->Quit(false);
+            // clean up
+            unset($word);
+            // Eliminamos el archio de WORD
+            if (file_exists($rutaArchivo)) {
+                unlink($rutaArchivo);
+            }
+            // Si se creó el PDF, entonces lo descargamos
+            if (file_exists($rutaArchivoPDF)) {
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header("Content-Type: application/force-download");
+                header('Content-Disposition: attachment; filename=' . basename($rutaArchivoPDF));
+                // header('Content-Transfer-Encoding: binary');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($rutaArchivoPDF));
+                ob_clean();
+                flush();
+                // Leemos el archivo PDF para cargarlo en memoria
+                readfile($rutaArchivoPDF);
+                // Como ya esta cargado en memoria, entonces lo eliminamos el disco duro
+                unlink($rutaArchivoPDF);
+                exit;
+            }
+            exit();
+        } else {
+            $error = "Error con el Query: " . $strSQL;
+        }
+        die($error);
     }
 
 }

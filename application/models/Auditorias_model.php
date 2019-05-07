@@ -345,4 +345,65 @@ class Auditorias_model extends MY_Model {
         return $return;
     }
 
+    /**
+     * Obtiene información de las auditoróas origen de una auditoría
+     * @param integer $auditorias_id
+     */
+    function get_auditorias_origen($auditorias_id) {
+//        $return = array();
+//        if (!empty($auditorias_id)) {
+//            $result = $this->db
+//                    ->where("auditorias_id", $auditorias_id)
+//                    ->where("auditorias_origen_id IS NOT NULL")
+//                    ->where("auditorias_status_id >", 0)
+//                    ->get($this->table_name);
+//            if ($result && $result->num_rows() > 0) {
+//                $return = $result->result_array();
+//                foreach ($return as $r) {
+//                    $r = $this->get_auditorias_origen($r['idAuditoriaOrigen']);
+//                    if (is_array($r) && !empty($r)) {
+//                        $return = array_merge($return, $r);
+//                    }
+//                }
+//            }
+//        }
+        $return = $this->get_auditorias_origen_antiguo_cysa($auditorias_id);
+        return $return;
+    }
+
+    function get_auditorias_origen_antiguo_cysa($auditorias_id) {
+        $return = array();
+        if (!empty($auditorias_id)) {
+            $config['hostname'] = APP_DATABASE_HOSTNAME;
+            $config['username'] = APP_DATABASE_USERNAME;
+            $config['password'] = APP_DATABASE_PASSWORD;
+            $config['database'] = 'proto_' . APP_DATABASE_CYSA;
+            $config['dbdriver'] = 'mysqli';
+            $config['dbprefix'] = '';
+            $config['pconnect'] = FALSE;
+            $config['db_debug'] = TRUE;
+            $config['cache_on'] = FALSE;
+            $config['cachedir'] = '';
+            $config['char_set'] = 'utf8';
+            $config['dbcollat'] = 'utf8_general_ci';
+
+            $dbCYSA = $this->load->database($config, TRUE);
+            $result = $dbCYSA
+                    ->where("idAuditoria", $auditorias_id)
+                    ->where("idAuditoriaOrigen IS NOT NULL")
+                    ->where("statusAudit >", 0)
+                    ->get("cat_auditoria");
+            if ($result && $result->num_rows() > 0) {
+                $return = $result->result_array();
+                foreach ($return as $r) {
+                    $r = $this->get_auditorias_origen_antiguo_cysa($r['idAuditoriaOrigen']);
+                    if (is_array($r) && !empty($r)) {
+                        $return = array_merge($return, $r);
+                    }
+                }
+            }
+        }
+        return $return;
+    }
+
 }
