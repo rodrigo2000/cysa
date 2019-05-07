@@ -1,7 +1,7 @@
 <?php
 
 function CI() {
-    $CI = & get_instance();
+    $CI = &get_instance();
     return $CI;
 }
 
