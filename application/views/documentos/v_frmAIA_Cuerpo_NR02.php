@@ -114,7 +114,7 @@ if (count($direcciones) > 1) {
                                         </div>
                                         <div class="col-xs-6 text-xs-center">
                                             <div style="font-size: 15pt; font-weight: bold;">AYUNTAMIENTO DE MÉRIDA</div>
-                                            <div>UNIDAD DE CONTRALORÍA</div>
+                                            <div><?= LABEL_CONTRALORIA; ?></div>
                                             <br>
                                             <div>ACTA DE INICIO DE AUDITORÍA</div>
                                             <br>
