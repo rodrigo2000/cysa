@@ -113,6 +113,7 @@ class Auditoria extends MY_Controller {
                 break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_REVISION:
+                $vista = "documentos/verificar_tipo_acta";
                 $this->module['title_list'] = "Acta de Resultados";
                 break;
             case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:

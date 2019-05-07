@@ -67,3 +67,72 @@ function get_frase_de_ua($a) {
     }
     return $return;
 }
+
+function span_editable($r, $constante, $default_value = 'SIN ESPECIFICAR') {
+    $html = '<span id="' . $constante . '" contenteditable="true" class="editable" default-value="' . $default_value . '">' . (isset($r) && isset($r[$constante]) ? $r[$constante] : '') . '</span>';
+    return $html;
+}
+
+function span_calendario($r, $constante) {
+    $fecha = isset($r) && isset($r[ACTA_RESULTADOS_FECHA]) ? $r[ACTA_RESULTADOS_FECHA] : date('Y-m-d');
+    $html = '<a href="#" class="xeditable" id="' . $constante . '" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="' . $fecha . '">' . mysqlDate2Date($fecha) . '</a>';
+    return $html;
+}
+
+function span_resaltar($texto) {
+    $html = '<span class="resaltar">' . $texto . '</span>';
+    return $html;
+}
+
+function span_agregar_asistencias($asistencias, $tipo_asistencia) {
+    $label = array(
+        TIPO_ASISTENCIA_RESPONSABLE => 'Agregar responsables',
+        TIPO_ASISTENCIA_TESTIGO => 'Agregar testigos',
+        TIPO_ASISTENCIA_INVOLUCRADO => 'Agregar involucrados',
+        TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA => 'Agregar involucrados'
+    );
+    $tipo = array(
+        TIPO_ASISTENCIA_RESPONSABLE => 'responsables',
+        TIPO_ASISTENCIA_TESTIGO => 'testigos',
+        TIPO_ASISTENCIA_INVOLUCRADO => 'involucrados',
+        TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA => 'involucrados_contraloria'
+    );
+    $html = '<span id="seccion_' . $tipo[$tipo_asistencia] . '">';
+    $CI = CI();
+    $CI->load->model("SAC_model");
+    $total_asistentes = 0;
+    foreach ($asistencias as $direcciones_id => $d) {
+        if (isset($d[$tipo_asistencia]) && is_array($d[$tipo_asistencia]) && !empty($d[$tipo_asistencia])) {
+            $aux = $CI->SAC_model->get_direccion($direcciones_id);
+            $html .= '<span class = "resaltar" id = "direcciones_' . $direcciones_id . '">';
+            $aux['nombre_completo_direccion'];
+            $asistentes = array();
+            foreach ($d[$tipo_asistencia] as $e) {
+                $total_asistentes++;
+                $asistentes[] = '<span class="resaltar empleado_' . $e['empleados_id'] . '">'
+                        . ($e['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ')
+                        . $e['empleados_nombre_titulado'] . ", " . $e['empleados_cargo']
+                        . '<input type="hidden" name="' . $tipo[$tipo_asistencia] . '[]" value="' . $e['empleados_id'] . '">'
+                        . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
+                        . '</span>'
+                        . '</span>';
+            }
+            if (count($asistentes) > 1) {
+                $ultimo = array_pop($asistentes);
+                $html .= implode(", ", $asistentes) . '<span class="plural"> y </span>' . $ultimo;
+            } else {
+                $html .= implode(", ", $asistentes);
+            }
+        }
+    }
+
+    $html .= '<span id="autocomplete_' . $tipo[$tipo_asistencia] . '" class="input-group hidden-xs-up hidden-print">
+        <input type="text" class="autocomplete form-control" placeholder="Empleado">
+        <span class="input-group-btn">
+            <button class="btn btn-danger ocultar" type="button"><i class="fa fa-close"></i></button>
+        </span>,
+    </span>
+    </span>
+    <a class="btn btn-sm btn-success hidden-print btn_agregar" href="#" data-tipo="' . $tipo[$tipo_asistencia] . '" data-asistencias-tipo="' . $tipo_asistencia . '">' . $label[$tipo_asistencia] . '</a>';
+    return $html;
+}
