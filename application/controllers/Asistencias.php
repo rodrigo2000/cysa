@@ -27,15 +27,15 @@ class Asistencias extends MY_Controller {
             $empleados_id = $this->input->post("empleados_id");
             $asistencias_tipo = $this->input->post("asistencias_tipo");
             if (empty($documentos_id)) {
-                $message = "No se ha especificado el identificador del documento.";
+                $return['message'] = "No se ha especificado el identificador del documento.";
             } elseif (empty($empleados_id)) {
-                $message = "No se ha especificado el identificador del empleado.";
+                $return['message'] = "No se ha especificado el identificador del empleado. Guarde primero el documento.";
             } else {
                 $r = $this->Asistencias_model->insert_update($documentos_id, $empleados_id, $asistencias_tipo);
                 if ($r === TRUE) {
                     $return['success'] = TRUE;
                     $return['message'] = "OK";
-                } elseif(is_array($r)){
+                } elseif (is_array($r)) {
                     $return = $r;
                 }
             }
