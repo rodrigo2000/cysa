@@ -371,7 +371,7 @@ class Importar_model extends MY_Model {
         $batch = array();
         foreach ($data as $d) {
             $insert = array(
-                'observaciones_id' => NULL,
+                'observaciones_id' => $d['idObservacion'],
                 'observaciones_auditorias_id' => $d['idAuditoria'],
                 'observaciones_numero' => $d['numObservacion'],
                 'observaciones_titulo' => $d['denObservacion'],
@@ -379,12 +379,50 @@ class Importar_model extends MY_Model {
                 'observaciones_comentarios' => $d['comentario'],
                 'observaciones_has_anexos' => $d['bAnexo'],
                 'observaciones_is_eliminada' => $d['bEliminada'],
+                'fecha_insert' => ahora(),
                 'fecha_delete' => ($d['bEliminada'] == 1 ? $ahora : NULL),
             );
             array_push($batch, $insert);
         }
         $this->dbNuevoCYSA->insert_batch('observaciones', $batch);
-        $return = "Catálogo de observaciones importado.";
+        $return = "Catálogo de observaciones y recomendaciones importado.";
+        if ($flush) {
+            echo $return . "<br>";
+            ob_flush();
+            flush();
+            $return = TRUE;
+        }
+        return $return;
+    }
+
+    function importar_recomendaciones($flush = FALSE) {
+        $this->dbNuevoCYSA->truncate('recomendaciones');
+        $data = $this->dbProtoCYSA
+                ->order_by("idObservacion", "ASC")
+                ->get("recomendacion")
+                ->result_array();
+        $ahora = ahora();
+        $batch = array();
+        foreach ($data as $d) {
+            $empleados_id = NULL;
+            $e = $this->SAC_model->get_empleado($d['idEmpleado'], TRUE, TRUE);
+            if (!empty($e) && isset($e['empleados_id'])) {
+                $empleados_id = $empleados_id['empleados_id'];
+            }
+            $insert = array(
+                'recomendaciones_id' => $d['idRecomendacion'],
+                'recomendaciones_numero' => $d['numRecomendacion'],
+                'recomendaciones_observaciones_id' => $d['idObservacion'],
+                'recomendaciones_clasificaciones_id' => $d['idClasificacion'],
+                'recomendaciones_status_id' => $d['idEstatus'],
+                'recomendaciones_empleados_id' => $empleados_id,
+                'recomendaciones_descripcion' => $d['descRecomendacion'],
+                'fecha_insert' => $ahora
+            );
+            array_push($batch, $insert);
+        }
+        $this->dbNuevoCYSA->insert_batch('recomendaciones', $batch);
+        $return = "Catálogo de recomendaciones importado.";
         if ($flush) {
             echo $return . "<br>";
             ob_flush();
