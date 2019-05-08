@@ -327,12 +327,13 @@ function get_cargo_de_empleado(&$row) {
             $cargo = $row['puestos_nombre'] . " DE " . $row['direcciones_nombre'];
         } elseif ($row['empleados_puestos_id'] == PUESTO_SUBDIRECTOR) {
             if (substr($row['departamentos_nombre'], -3) === "ICA") {
-                $row['departamentos_nombre'] = str_replace("ICA", "ICO", $row['departamentos_nombre']);
+                $row['departamentos_nombre'] = preg_replace("/ica/i", "ico", $row['departamentos_nombre']);
             }
-            $cargo = str_replace('DIRECCIÓN', 'DIRECTOR', $row['departamentos_nombre']);
+            $patrones = array('/direccion/i', '/dirección/i');
+            $cargo = preg_replace($patrones, 'DIRECTOR', $row['departamentos_nombre']);
         } elseif ($row['empleados_puestos_id'] == PUESTO_JEFE_DEPARTAMENTO) {
             $cargo = $row['puestos_nombre'] . ($row['departamentos_nombre'] === "ADMINISTRATIVO" ? ' ' : ' DE ') . $row['departamentos_nombre'];
-            $cargo = str_replace("DEPARTAMENTO DE DEPARTAMENTO", "DEPARTAMENTO", $cargo);
+            $cargo = preg_replace("/departamento de departamento/i", "departamento", $cargo);
         } elseif ($row['empleados_puestos_id'] == PUESTO_AUDITOR) {
             switch ($row['empleados_numero_empleado']) {
                 case 9790: // Janelle Polanco
@@ -357,7 +358,8 @@ function get_cargo_de_empleado(&$row) {
                     $cargo = $row['puestos_nombre'];
                     break;
                 default:
-                    $cargo = str_ireplace('auditoría', 'auditor', $row['departamentos_nombre']);
+                    $patrones = array('/auditoria/i', '/auditoría/i');
+                    $cargo = preg_replace($patrones, 'auditor', $row['departamentos_nombre']);
             }
         } elseif ($row['empleados_puestos_id'] == PUESTO_COORDINADOR_AUDITORIA) {
             $cargo = "COORDINADOR DE ";
