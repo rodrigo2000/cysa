@@ -407,7 +407,7 @@ class Importar_model extends MY_Model {
             $empleados_id = NULL;
             $e = $this->SAC_model->get_empleado($d['idEmpleado'], TRUE, TRUE);
             if (!empty($e) && isset($e['empleados_id'])) {
-                $empleados_id = $empleados_id['empleados_id'];
+                $empleados_id = $e['empleados_id'];
             }
             $insert = array(
                 'recomendaciones_id' => $d['idRecomendacion'],
