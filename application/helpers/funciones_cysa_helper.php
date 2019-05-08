@@ -68,22 +68,65 @@ function get_frase_de_ua($a) {
     return $return;
 }
 
+/**
+ * Crea una etiqueta SPAN para editar texto
+ * @param array $r Arreglo con los valores del documento
+ * @param integer $constante Constante del documento a utilizar
+ * @param string $default_value Cadena de texto que tendrá el SPAN de forma predeterminada
+ * @return string Código HTML de la etiqueta SPAN
+ */
 function span_editable($r, $constante, $default_value = SIN_ESPECIFICAR) {
     $html = '<span id="' . $constante . '" contenteditable="true" class="editable" default-value="' . $default_value . '">' . (isset($r) && isset($r[$constante]) ? $r[$constante] : '') . '</span>';
     return $html;
 }
 
+/**
+ * Permite crear una etiqueta SPAN para seleccionar una fecha de calendario
+ * @param array $r Arreglo con los valores del documento
+ * @param integer $constante Constante del documento a utilizar
+ * @return string Código HTML de la etiqueta SPAN
+ */
 function span_calendario($r, $constante) {
     $fecha = isset($r) && isset($r[ACTA_RESULTADOS_FECHA]) ? $r[ACTA_RESULTADOS_FECHA] : date('Y-m-d');
     $html = '<a href="#" class="xeditable" id="' . $constante . '" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="' . $fecha . '">' . mysqlDate2Date($fecha) . '</a>';
     return $html;
 }
 
+/**
+ * Función para generar un párrafo que se muestra y oculta
+ * @param array $r Arreglo con los valores del documento
+ * @param integer $constante Constante del documento a utilizar
+ * @param string $texto_parrafo Cadena de texto que se mostrará en el párrafo
+ * @param string $etiqueta_boton Cadena de texto que tendrá el botón
+ * @return string Código HTML del párrafo
+ */
+function agregar_parrafo_show_hide($r, $constante, $texto_parrafo = SIN_ESPECIFICAR, $etiqueta_boton = 'Agregar párrafo') {
+    $html = '<p class="text-justify ' . (isset($r) && isset($r[$constante]) && $r[$constante] == 1 ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center') . ' show-hide">'
+            . '<span id="parrafo'.$constante.'" class="bg-white ' . (isset($r) && isset($r[$constante]) && $r[$constante] == 1 ? '' : 'hidden-xs-up') . '">'
+            . $texto_parrafo . '</span>'
+            . '<button type="button" onclick="ocultar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-danger btn-hide hidden-print ' . (!isset($r) || !isset($r[$constante]) || empty($r[$constante]) || $r[$constante] == 0 ? 'hidden-xs-up' : '') . '"><i class="fa fa-close"></i></button>'
+            . '<button type="button" onclick="mostrar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-success btn-show hidden-print ' . (isset($r) && isset($r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])) ? 'hidden-xs-up' : '') . '">' . $etiqueta_boton . '</button>'
+            . '<input type="hidden" name="constantes[' . $constante . ']" value="' . (isset($r) && isset($r[$constante]) ? $r[$constante] : 0) . '">'
+            . '</p>';
+    return $html;
+}
+
+/**
+ * Crea una etiqueta SPAN con la clase CSS "resaltar", la cual hace destacar el texto en modo pantalla
+ * @param string $texto Cadena de texto a mostrar dentro de la etiqueta
+ * @return string Código HTML de la etiqueta SPAN
+ */
 function span_resaltar($texto) {
     $html = '<span class="resaltar">' . $texto . '</span>';
     return $html;
 }
 
+/**
+ * Crea un etiqueta SPAN con las funcionalidades para asignar asistencias al documento
+ * @param array $asistencias Arreglo con los empleados que asisten al documento
+ * @param integer $tipo_asistencia Identificador de la asistencia
+ * @return string Código HTML de la etiqueta SPAN
+ */
 function span_agregar_asistencias($asistencias, $tipo_asistencia) {
     $label = array(
         TIPO_ASISTENCIA_RESPONSABLE => 'Agregar responsables',
