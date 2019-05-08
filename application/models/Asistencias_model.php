@@ -83,6 +83,7 @@ class Asistencias_model extends MY_Model {
                     } else {
                         $tipos = array(
                             TIPO_ASISTENCIA_INVOLUCRADO => 'involucrado', // 3
+                            TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA => 'involucrado_contraloria', // 4
                             TIPO_ASISTENCIA_RESPONSABLE => 'responsable', // 1
                             TIPO_ASISTENCIA_TESTIGO => 'testigo' // 2
                         );
