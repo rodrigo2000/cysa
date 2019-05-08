@@ -81,6 +81,20 @@ define('TIPO_ASISTENCIA_TESTIGO', 2);
 define('TIPO_ASISTENCIA_INVOLUCRADO', 3);
 define('TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA', 4);
 
+/* Dias habiles para el plazo de solventacion de la auditoria */
+@define('PLAZO_SOLV_AP', 25);
+/* Dias habiles para el plazo de solventacion de la auditoria Operativa */
+@define('PLAZO_SOLV_AP_OP', 35);
+/* Dias habiles para el plazo de solventacion de las observaciones */
+@define('PLAZO_SOLV_PRO', 15);
+/* Dias habiles para el plazo de solventacion de la auditoria */
+@define('PLAZO_SOLV_RES', 36);
+/* Dias habiles para el plazo de solventacion de la auditoria Operativa */
+@define('PLAZO_SOLV_RESPO', 39);
+
+define('LABEL_CONTRALORIA', 'Unidad de Contraloría Municipal');
+define('SIN_ESPECIFICAR', '<b>[SIN ESPECIFICAR]</b>');
+
 /*
   |--------------------------------------------------------------------------
   | Display Debug backtrace
