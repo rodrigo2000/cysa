@@ -68,7 +68,7 @@ function get_frase_de_ua($a) {
     return $return;
 }
 
-function span_editable($r, $constante, $default_value = 'SIN ESPECIFICAR') {
+function span_editable($r, $constante, $default_value = SIN_ESPECIFICAR) {
     $html = '<span id="' . $constante . '" contenteditable="true" class="editable" default-value="' . $default_value . '">' . (isset($r) && isset($r[$constante]) ? $r[$constante] : '') . '</span>';
     return $html;
 }
@@ -135,4 +135,23 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia) {
     </span>
     <a class="btn btn-sm btn-success hidden-print btn_agregar" href="#" data-tipo="' . $tipo[$tipo_asistencia] . '" data-asistencias-tipo="' . $tipo_asistencia . '">' . $label[$tipo_asistencia] . '</a>';
     return $html;
+}
+
+/*
+ * Devuelve la cadena con el método de identificación de un empleado
+ * @param array $empleado Arreglo con la información del empleado
+ * @return Cadena con el método de identificación
+ */
+
+function get_identificacion($empleado) {
+    $return = SIN_ESPECIFICAR;
+    if (isset($empleado['empleados_licencia_manejo']) && !empty($empleado['empleados_licencia_manejo'])) {
+        $return = "licencia de conducir con folio " . $empleado['empleados_licencia_manejo'];
+    } elseif (isset($empleado['empleados_credencial_elector_delante'])) {
+        $return = 'credencial para votar con clave de elector '
+                . (!empty($empleado['empleados_credencial_elector_delante']) ? $empleado['empleados_credencial_elector_delante'] : SIN_ESPECIFICAR)
+                . ' y número identificador '
+                . (!empty($empleado['empleados_credencial_elector_detras']) ? $empleado['empleados_credencial_elector_detras'] : SIN_ESPECIFICAR);
+    }
+    return $return;
 }
