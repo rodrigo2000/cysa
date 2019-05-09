@@ -1,5 +1,4 @@
 <?php
-$sinEspecificar = '<b>[SIN ESPECIFICAR]</b>';
 $fecha_notificacion_OE = NULL;
 $fecha_cumplimiento = NULL;
 
@@ -150,63 +149,103 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                             <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO); ?>,
                                             por la <?= LABEL_CONTRALORIA; ?>
                                             <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA) ?>
-                                            y en calidad de testigos 
+                                            y en calidad de testigos
                                             <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_TESTIGO) ?>, a efecto de dar a conocer el resultado de la auditoría
                                             <?= span_resaltar($auditoria['numero_auditoria']); ?>
                                             que tiene por objetivo
                                             <?= span_resaltar($auditoria['auditorias_objetivo']); ?>,
-                                            iniciada el
-                                            <?= span_resaltar(mysqlDate2OnlyDate($auditoria['auditorias_fechas_inicio_real'])) . ($auditoria['auditorias_tipo'] == 1 ? " de acuerdo al Programa Anual de Auditoría de la " . LABEL_CONTRALORIA : '') . ", "; ?>
-                                            obteniéndose lo siguiente:
+                                            <span class="bg-white">
+                                                iniciada el
+                                                <?= span_resaltar(mysqlDate2OnlyDate($auditoria['auditorias_fechas_inicio_real'])) . ($auditoria['auditorias_tipo'] == 1 ? " de acuerdo al Programa Anual de Auditoría de la " . LABEL_CONTRALORIA : '') . ", "; ?>
+                                                obteniéndose lo siguiente:
+                                            </span>
                                         </span>
                                     </p>
                                     <p class="text-xs-center bg-punteado">
-                                        <span class="bg-white" style="padding-left:5px; padding-right: 5px; font-weight: bolder;">RESULTADOS DE AUDITORÍA</span>
+                                        <span class="bg-white" style="padding-left:5px; padding-right: 5px; font-weight: bolder;">RESULTADO DE LA AUDITORÍA</span>
                                     </p>
-                                    <table class="table table-bordered">
-                                        <tr>
-                                            <th class="text-xs-center">Cédulas número</th>
-                                            <th class="text-xs-center">Recomendación número</th>
-                                            <th class="text-xs-center">Responsable</th>
-                                            <th class="text-xs-center">Clasificación</th>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
+                                    <table id="resultados_auditoria" class="table table-bordered table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-xs-center">Cédulas<br>número</th>
+                                                <th class="text-xs-center">Recomendación<br>número</th>
+                                                <th class="text-xs-center">Responsable</th>
+                                                <th class="text-xs-center">Clasificación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php $servidores_publicos = array(); ?>
+                                            <?php $contador_recomendaciones = 0; ?>
+                                            <?php foreach ($auditoria['observaciones'] as $o): ?>
+                                                <?php $recomendaciones = $this->Auditorias_model->get_recomendaciones_de_observacion($o['observaciones_id']); ?>
+                                                <?php foreach ($recomendaciones as $recom): $contador_recomendaciones++; ?>
+                                                    <?php $empleado = $this->SAC_model->get_empleado($recom['recomendaciones_empleados_id']); ?>
+                                                    <?php $servidores_publicos[$empleado['empleados_id']] = $empleado; ?>
+                                                    <tr>
+                                                        <td class="text-xs-center"><?= $o['observaciones_numero']; ?></td>
+                                                        <td class="text-xs-center"><?= $o['observaciones_numero'] . "." . $recom['recomendaciones_numero']; ?></td>
+                                                        <td><?= $empleado['empleados_nombre_titulado_siglas'] . ", " . $empleado['empleados_cargo']; ?></td>
+                                                        <td class="text-xs-center"><?= $recom['recomendaciones_clasificaciones_nombre']; ?></td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endforeach; ?>
+                                        </tbody>
                                     </table>
+                                    <?php $plural = $contador_recomendaciones > 0 ? TRUE : FALSE; ?>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            Se anexa(n) copia(s) de la(s) cédula(s) de observación(es) en la(s) cual(es) se detalla(n) entre otros, los hallazgos, recomendación(es) correctiva(s) y preventiva(s), misma(s) que forman parte integrante de la presente.
+                                            Se anexa<?= $plural ? 'n' : ''; ?> copia<?= $plural ? 's' : ''; ?> de la<?= $plural ? 's' : ''; ?>
+                                            cédula<?= $plural ? 's' : ''; ?> de observaci<?= $plural ? 'ones' : 'ón'; ?> en la<?= $plural ? 's' : ''; ?>
+                                            cual<?= $plural ? 'es' : ''; ?> se detalla<?= $plural ? 'n' : ''; ?> entre otros,
+                                            los hallazgos, recomendaci<?= $plural ? 'ones' : 'ón'; ?> correctiva<?= $plural ? 's' : ''; ?> y
+                                            preventiva<?= $plural ? 's' : ''; ?>, misma<?= $plural ? 's' : ''; ?> que forman parte integrante de la
+                                            presente.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            Se hace del conocimiento al Titular de la Unidad Administrativa auditada y de los servidores públicos responsables de solventar, el contenido de las cédulas de observaciones, según el artículo 114 de la Ley de Responsabilidades Administrativas del Estado de Yucatán.
+                                            Se hace del conocimiento al Titular de la Unidad Administrativa auditada y de los servidores públicos
+                                            responsables de solventar, el contenido de las cédulas de observaciones, según el artículo 114 de la Ley de
+                                            Responsabilidades Administrativas del Estado de Yucatán.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            El (los) responsable de solventar la(s) observación(es) planteada(s) tendrá un plazo de (12) días hábiles, contados a partir del día hábil siguiente a la notificación del Acta de Resultados de Auditoría para poner a disposición de la Unidad de Contraloría en el domicilio indicado al inicio de la presente, la documentación e información que solvente lo observado.
+                                            <?= $plural ? "Los" : "El"; ?> responsable de solventar la<?= $plural ? 's' : ''; ?> observaci<?= $plural ? 'ón' : 'ones'; ?>
+                                            planteada<?= $plural ? 's' : ''; ?> tendrá un plazo de
+                                            <?= span_editable($r, ACTA_RESULTADOS_DIAS_SOLVENTA, PLAZO_SOLV_AP); ?>
+                                            días hábiles, contados a partir del día hábil siguiente a la notificación del Acta de Resultados de Auditoría
+                                            para poner a disposición de la Unidad de Contraloría en el domicilio indicado al inicio de la presente,
+                                            la documentación e información que solvente lo observado.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            Para efectos del proceso de solventación, el auditor citará a los responsables de solventar a partir del día (13)[treinta y seis] y hasta el día (13)[treinta y nueve] posterior al día hábil siguiente a la notificación del Acta de Resultados de Auditoría, a fin que le proporcionen la documentación e información que acredite los avances de solventación.
+                                            Para efectos del proceso de solventación, el auditor citará a los responsables de solventar a partir del día
+                                            <?= span_editable($r, ACTA_RES_DIAS_SOLVENTA_RESPON, PLAZO_SOLV_RES); ?>
+                                            y hasta el día
+                                            <?= span_editable($r, ACTA_RES_DIAS_SOLVENTA_RESPONSS, PLAZO_SOLV_RESPO); ?>
+                                            posterior al día hábil siguiente a la notificación del Acta de Resultados de Auditoría, a fin que le
+                                            proporcionen la documentación e información que acredite los avances de solventación.
                                         </span>
                                     </p>
-                                    <p class="text-justify bg-punteado">
-                                        <span class=" bg-white">
-                                            (14)[El servidor público (11) quien manifiesta ser de nacionalidad mexicana y con domicilio particular en (16), se identifica con (15), (el/la) cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en (el/la) que se aprecia su firma, que reconoce como suya por ser  la misma que utiliza para validar todos sus actos tanto públicos como privados, con relación a los resultados de la auditoría que le fueron dados a conocer, declara:(18).]
-                                        </span>
-                                    </p>
-                                    <p class="text-justify bg-punteado">
-                                        <span class=" bg-white">
-                                            (19)[ACLARACIONES]
-                                        </span>
-                                    </p>
+                                    <?php foreach ($servidores_publicos as $sr): $declaracion = $this->Asistencias_declaraciones_model->get_declaracion($documento['documentos_id'], $sr['empleados_id']); ?>
+                                        <p class="text-justify bg-punteado">
+                                            <span class=" bg-white">
+                                                El servidor público <?= span_resaltar($sr['empleados_nombre_titulado'] . ", " . $sr['empleados_cargo']); ?>
+                                                quien manifiesta ser de nacionalidad mexicana y con domicilio particular en
+                                                <?= span_resaltar($sr['empleados_domicilio']); ?>,
+                                                de la localidad de <?= span_resaltar($sr['empleados_localidad']); ?> se identifica con
+                                                <?= span_resaltar(get_identificacion($sr)); ?>,
+                                                la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia su firma,
+                                                que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos como privados,
+                                                con relación a los resultados de la auditoría que le fueron dados a conocer, declara:
+                                                <span id="<?= $sr['empleados_id']; ?>" name="declaraciones[]" contenteditable="true" class="editable" default-value="[TECLEAR LOS COMENTARIOS DEL FUNCIONARIO]"><?= !empty($declaracion) ? $declaracion : ''; ?></span>.
+                                            </span>
+                                        </p>
+                                    <?php endforeach; ?>
+                                    <?php $span = span_editable($r, ACTA_RESULTADOS_ACLARA_FUNC, '[ACLARACIONES]'); ?>
+                                    <?= agregar_parrafo_show_hide($r, ACTA_RESULTADOS_ACLARA_FUNC, $span, 'Agregar párrafo de declaraciones'); ?>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
                                             Habiendo escuchado al (a los) responsable(s) de solventar la(s) observación(es), se le(s) notifica, que deberá(n) entregar la documentación e información que solvente la(s) observación(es) dentro del plazo establecido, advirtiéndole(s) que su incumplimiento podrá derivar en faltas administrativas e incluso hacerse acreedor(es) a las sanciones estipuladas en la Ley de Gobierno de los Municipios del Estado de Yucatán y la Ley de Responsabilidades Administrativas del Estado de Yucatán.
@@ -214,19 +253,24 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            Se le comunica al Titular de la Unidad Administrativa auditada que por razones debidamente justificadas, podrá solicitar ampliación al plazo originalmente otorgado por una sola ocasión, dentro de los primeros (20) días hábiles del plazo otorgado para solventar la(s) observación(es).
+                                            Se le comunica al Titular de la Unidad Administrativa auditada que por razones debidamente justificadas,
+                                            podrá solicitar ampliación al plazo originalmente otorgado por una sola ocasión, dentro de los primeros
+                                            <?= span_editable($r, ACTA_REV_DIAS_PLAZO_OBS, '20'); ?>
+                                            días hábiles del plazo otorgado para solventar la<?= $plural ? 's' : ''; ?> observaci<?= $plural ? 'ón' : 'ones'; ?>.
                                         </span>
                                     </p>
-                                    <p class="text-justify bg-punteado">
-                                        <span class=" bg-white">
-                                            (21)[Se hace del conocimiento de los presentes que la omisión o negativa de firma no afecta la validez y efectos legales de la presente acta].
-                                        </span>
-                                    </p>
+                                    <?php $txt_parrafo_omision = 'Se hace del conocimiento de los presentes que la omisión o negativa de firma no afecta la validez y efectos legales de la presente acta'; ?>
+                                    <?= agregar_parrafo_show_hide($sr, ACTA_RESULTADOS_OMI_FIR, $txt_parrafo_omision, 'Agregar párrafo de omisión de firmas'); ?>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
                                             Leída la presente acta y no habiendo más hechos que plasmar se da por concluida la diligencia siendo las
                                             <?= span_editable($r, ACTA_RESULTADOS_HORA_FIN, 'HH:MM'); ?>
-                                            horas de la misma fecha en que fue iniciada. Asimismo, previa lectura de lo asentado, los que en ella intervinieron la firman al margen y al calce de todas y cada una de las fojas, haciéndose constar que este documento fue elaborado en (23) ejemplares originales, de los cuales se hace entrega de uno al servidor público con quien se entendió la diligencia.
+                                            horas de la misma fecha en que fue iniciada. Asimismo, previa lectura de lo asentado, los que en ella
+                                            intervinieron la firman al margen y al calce de todas y cada una de las fojas, haciéndose constar que
+                                            este documento fue elaborado en
+                                            <?= span_editable($sr, ACTA_RESULTADOS_NUMERO_EJEMPLARES, 2); ?>
+                                            ejemplares originales, de los cuales se hace entrega de uno al
+                                            servidor público con quien se entendió la diligencia.
                                         </span>
                                     </p>
                                     <p class="text-xs-center firmas_firmas">FIRMAS</p>

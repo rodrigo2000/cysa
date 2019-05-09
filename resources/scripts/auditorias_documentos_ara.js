@@ -1,14 +1,15 @@
-function agregar_involucrado($this, suggestion) {
+function agregar_involucrado($this, suggestion, tipo_asistencia) {
+    var seccion = "involucrados" + (tipo_asistencia == 4 ? '_contraloria' : '');
     if ($("#direccion_" + suggestion.direcciones_id).length == 0) {
         html = '<span class="resaltar" id="direcciones' + suggestion.direcciones_id + '">' + suggestion.nombre_completo_direccion + ', </span>';
-        $("#seccion_involucrados").append(html);
+        $("#seccion_" + seccion).append(html);
     }
     var html = '<span class="resaltar" id="empleado_' + suggestion.empleados_id + '">' +
             suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
-            '<input type="hidden" name="involucrados[]" value="' + suggestion.empleados_id + '">' +
+            '<input type="hidden" name="' + seccion + '[]" value="' + suggestion.empleados_id + '">' +
             ' <span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span>, ' +
             '</span>';
-    if ($("span.resaltar", "#seccion_involucrados").length > 0 && $("span.plural", "#seccion_involucrados").length == 0) {
+    if ($("span.resaltar", "#seccion_" + seccion).length > 0 && $("span.plural", "#seccion_involucrados").length == 0) {
         html = '<span class="plural"> y ' + (suggestion.empleados_genero == 1 ? 'del' : 'de la') + ' </span>' + html;
     }
     $($this).parent('span').parent('span').before(html);
@@ -34,6 +35,8 @@ function agregar_testigo($this, suggestion) {
     var html = '<span class="resaltar empleado_' + suggestion.empleados_id + '">' +
             (suggestion.empleados_genero == GENERO_MASCULINO ? ' el ' : ' la ') +
             suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
+            '<input type="hidden" name="testigos[]" value="' + suggestion.empleados_id + '">' +
+            '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span> ' +
             '</span>';
     if ($("span.resaltar", "#seccion_testigos").length > 0 && $("span.plural", "#seccion_testigos").length == 0) {
         html = '<span class="plural"> y </span>' + html;

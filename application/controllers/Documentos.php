@@ -30,18 +30,21 @@ class Documentos extends MY_Controller {
         $documentos_versiones_id = intval($this->input->post('documentos_versiones_id'));
         $html = $this->input->post('html');
         $this->Documentos_model->get_template($documentos_tipos_id);
+        // Involucrados
         $involucrados = $this->input->post('involucrados[]');
         if (is_array($involucrados)) {
             foreach ($involucrados as $empleados_id) {
                 $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO);
             }
         }
+        // Involucrados de la Contraloria
         $involucrados_contraloria = $this->input->post('involucrados_contraloria[]');
         if (is_array($involucrados_contraloria)) {
             foreach ($involucrados_contraloria as $empleados_id) {
                 $this->Asistencias_model->insert_update($documentos_id, $empleados_id, TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA);
             }
         }
+        // Testigos
         $testigos = $this->input->post("testigos[]");
         if (is_array($testigos)) {
             foreach ($testigos as $empleados_id) {
@@ -60,6 +63,12 @@ class Documentos extends MY_Controller {
                     $constantes[ACEI_PARRAFO_U2] = str_ireplace(array('</p>', '<br>'), "\n", $constantes[ACEI_PARRAFO_U2]);
                     $constantes[ACEI_PARRAFO_U2] = strip_tags($constantes[ACEI_PARRAFO_U2]);
                     $constantes[ACEI_PARRAFO_U2] = html_entity_decode($constantes[ACEI_PARRAFO_U2]);
+                }
+                break;
+            case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
+                $declaraciones = $this->input->post('declaraciones');
+                foreach ($declaraciones as $empleados_id => $declaracion) {
+                    $this->Asistencias_declaraciones_model->insert_update($documentos_id, $empleados_id, $declaracion);
                 }
                 break;
             default :
