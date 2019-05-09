@@ -406,4 +406,49 @@ class Auditorias_model extends MY_Model {
         return $return;
     }
 
+    /**
+     * Obtiene las recomendaciones de una observación
+     * @param integer $observaciones_id Identificador de la observación
+     * @param boolean $incluir_eliminados TRUE para incluiir las recomendaciones eliminadas, FALSE en caso contrario.
+     * @return array Arreglo con las recomendaciones de la observación
+     */
+    function get_recomendaciones_de_observacion($observaciones_id, $incluir_eliminados = FALSE) {
+        $return = array();
+        if (!$incluir_eliminados) {
+            $this->db->where("r.fecha_delete IS NULL");
+        }
+        if (!empty($observaciones_id)) {
+            $result = $this->db->select("r.*")
+                    ->join("recomendaciones_status rs", "rs.recomendaciones_status_id = r.recomendaciones_status_id", "INNER")->select("recomendaciones_status_nombre")
+                    ->join("recomendaciones_clasificaciones rc", "rc.recomendaciones_clasificaciones_id = r.recomendaciones_clasificaciones_id", "INNER")->select("recomendaciones_clasificaciones_nombre")
+                    ->where("recomendaciones_observaciones_id", $observaciones_id)
+                    ->get("recomendaciones r");
+            if ($result && $result->num_rows() > 0) {
+                $return = $result->result_array();
+            }
+        }
+        return $return;
+    }
+
+    /**
+     * Obtiene la información de la recomendación
+     * @param integer $recomendaciones_id Identificador de la recomendacion
+     * @return array Arreglo con los datos de la recomendación
+     */
+    function get_recomendacion($recomendaciones_id = NULL) {
+        $return = array();
+        if (!empty($recomendaciones_id)) {
+            $result = $this->db->select("r.*")
+                    ->join("recomendaciones_status rs", "rs.recomendaciones_status_id = r.recomendaciones_status_id", "INNER")->select("recomendaciones_status_nombre")
+                    ->join("recomendaciones_clasificaciones rc", "rc.recomendaciones_clasificaciones_id = r.recomendaciones_clasificaciones_id", "INNER")->select("recomendaciones_clasificaciones_nombre")
+                    ->where("recomendaciones_id", $recomendaciones_id)
+                    ->limit(1)
+                    ->get("recomendaciones r");
+            if ($result && $result->num_rows() > 0) {
+                $return = $result->row_array();
+            }
+        }
+        return $return;
+    }
+
 }
