@@ -95,4 +95,33 @@ class Asistencias_model extends MY_Model {
         return $return;
     }
 
+    function insert_update_declaracion($auditorias_id = NULL, $empleados_id = NULL, $etapa = 1, $txt_declaracion = NULL) {
+        $return = array();
+        if (!empty($auditorias_id) && !empty($empleados_id)) {
+            $data = array(
+                'asistencias_comentarios_auditorias_id' => $auditorias_id,
+                'asistencias_comentarios_empleados_id' => $empleados_id
+            );
+            switch ($etapa) {
+                case 1:
+                    $data['asistencias_comentarios_declaracion_ap'] = $txt_declaracion;
+                    $data['asistencias_comentarios_ap_asistencias_tipo'] = TIPO_ASISTENCIA_INVOLUCRADO;
+                    break;
+                case 2:
+                    $data['asistencias_comentarios_declaracion_rev1'] = $txt_declaracion;
+                    $data['asistencias_comentarios_rev1_asistencias_tipo'] = TIPO_ASISTENCIA_INVOLUCRADO;
+                    break;
+                case 3:
+                    $data['asistencias_comentarios_declaracion_rev1'] = $txt_declaracion;
+                    $data['asistencias_comentarios_rev1_asistencias_tipo'] = TIPO_ASISTENCIA_INVOLUCRADO;
+                    break;
+                default:
+                    break;
+            }
+            
+            $this->Asistencias_model->insert($data);
+        }
+        return $return;
+    }
+
 }
