@@ -342,6 +342,7 @@ class Auditoria extends MY_Controller {
         $de_empleados_id = $titular['empleados_id'];
         $accion = "descargar";
         $is_oficio = TRUE;
+        $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
         $vista = "documentos/" . basename($documento['documentos_versiones_archivo_impresion'], ".php");
         switch ($documentos_tipos_id) {
             case TIPO_DOCUMENTO_ORDEN_AUDITORIA:
@@ -351,25 +352,24 @@ class Auditoria extends MY_Controller {
                 break;
             case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
                 $is_oficio = FALSE;
-                $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
                 $this->module['title_list'] = "Acta de Inicio de Auditoría";
                 break;
             case TIPO_DOCUMENTO_CITATORIO:
                 $para_direcciones_id = $documento['valores'][CITATORIO_ID_UA];
                 $de_empleados_id = $documento['valores'][CITATORIO_ID_DIR_CONTRA];
                 $this->module['title_list'] = "Oficio de Citatorio";
-                $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
                 break;
             case TIPO_DOCUMENTO_ENVIO_DOCUMENTOS:
                 $this->module['title_list'] = "Oficio de Envío de Documentos";
                 break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_REVISION:
+                $is_oficio = FALSE;
+                $vista = "documentos/verificar_tipo_acta";
                 $this->module['title_list'] = "Acta de Resultados";
                 break;
             case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:
                 $is_oficio = FALSE;
-                $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
                 $this->module['title_list'] = "Acta de Cierre de Entrega de Información";
                 break;
             case TIPO_DOCUMENTO_ACTA_ADMINISTRATIVA:
@@ -655,8 +655,8 @@ class Auditoria extends MY_Controller {
                 $row['expedientes_numero_fojas'] = $total_fojas;
             }
             $row['expedientes_isPPR'] = empty($row['expedientes_isPPR']) ? 'N/A' : 'X';
-            $row['NT']=$row['expedientes_numero_tomo'];
-            $row['NTT']=$row['expedientes_numero_total_tomos'];
+            $row['NT'] = $row['expedientes_numero_tomo'];
+            $row['NTT'] = $row['expedientes_numero_total_tomos'];
             foreach ($row as $key => $valor) {
                 $variable = strtoupper(str_replace("expedientes_", "", $key));
                 $docx->set($variable, $valor);
