@@ -87,7 +87,7 @@ function span_editable($r, $constante, $default_value = SIN_ESPECIFICAR) {
  * @return string Código HTML de la etiqueta SPAN
  */
 function span_calendario($r, $constante) {
-    $fecha = isset($r) && isset($r[ACTA_RESULTADOS_FECHA]) ? $r[ACTA_RESULTADOS_FECHA] : date('Y-m-d');
+    $fecha = isset($r) && isset($r[$constante]) ? $r[$constante] : date('Y-m-d');
     $html = '<a href="#" class="xeditable" id="' . $constante . '" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="' . $fecha . '">' . mysqlDate2Date($fecha) . '</a>';
     return $html;
 }
