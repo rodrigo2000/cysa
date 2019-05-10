@@ -173,9 +173,13 @@ class Importar_model extends MY_Model {
                 }
             }
             $e = $this->SAC_model->get_empleado($a['idEmpleado'], TRUE, TRUE);
-            $empleados_id = NULL;
+            $ed = $this->SAC_model->get_empleado($a['encargadoAudit'], TRUE, TRUE);
+            $empleados_id = $enlace_designado = NULL;
             if (!empty($e)) {
                 $empleados_id = $e['empleados_id'];
+            }
+            if(!empty($ed)){
+                $enlace_designado = $ed['empleados_id'];
             }
             $aa = array(
                 'auditorias_id' => $a['idAuditoria'],
@@ -199,7 +203,7 @@ class Importar_model extends MY_Model {
                 'auditorias_alcance' => $a['alcance'],
                 'auditorias_auditor_lider' => $empleados_id,
                 'auditorias_status_id' => ($a['statusAudit'] >= 0 ? $a['statusAudit'] : 6),
-                'auditorias_enlace_designado' => ($a['encargadoAudit'] > 67000 ? NULL : $a['encargadoAudit']),
+                'auditorias_enlace_designado' => $enlace_designado,
                 'auditorias_is_sin_observaciones' => $a['bSinObservacionAP'],
                 'auditorias_folio_oficio_representante_designado' => $a['folio_oficio_representante_designado'],
                 'auditorias_notificacion_correo_electronico' => $a['bNotificacionIniCorreo'],
