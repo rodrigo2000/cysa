@@ -1,20 +1,4 @@
 <?php
-$fecha_notificacion_OE = NULL;
-$fecha_cumplimiento = NULL;
-
-$OA = $this->Documentos_model->get_documentos_de_auditoria($auditoria['auditorias_id'], TIPO_DOCUMENTO_ORDEN_AUDITORIA);
-foreach ($OA as $oa) {
-    if (isset($oa['documento_is_aprobado']) && $oa['documentos_is_aprobado'] == 1 && isset($oa['valores'])) {
-        $fecha_notificacion_OE = $oa['valores'][ORD_ENT_FECHA_VISITA];
-        $fecha_cumplimiento = $oa['valores'][ORD_ENT_FECHA_SI];
-    }
-}
-$RAP = $this->Documentos_model->get_documentos_de_auditoria($auditoria['auditorias_id'], TIPO_DOCUMENTO_RESOLUCION_AMPLIACION_PLAZO);
-foreach ($RAP as $rap) {
-    if (isset($rap['documento_is_aprobado']) && $rap['documento_is_aprobado'] == 1 && isset($rap['valores'])) {
-        $fecha_cumplimiento = $rap['valores'][RESOL_AMPLI_FECHA_CUMPLIMIENTO];
-    }
-}
 $texto_foja = "";
 $direcciones = array();
 $asistencias = $documentos[$index]['asistencias'];
@@ -341,4 +325,3 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
         <?php endif; ?>
     </div>
 </div>
-<script src="<?= APP_CYSA_URL; ?>resources/scripts/auditorias_documentos_ara.js" type="text/javascript"></script>

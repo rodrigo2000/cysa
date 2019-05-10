@@ -1,22 +1,12 @@
 <?php
-$sinEspecificar = '<b>[SIN ESPECIFICAR]</b>';
-$fecha_notificacion_OE = NULL;
-$fecha_cumplimiento = NULL;
-
-$OA = $this->Documentos_model->get_documentos_de_auditoria($auditoria['auditorias_id'], TIPO_DOCUMENTO_ORDEN_AUDITORIA);
-foreach ($OA as $oa) {
-    if (isset($oa['documento_is_aprobado']) && $oa['documentos_is_aprobado'] == 1 && isset($oa['valores'])) {
-        $fecha_notificacion_OE = $oa['valores'][ORD_ENT_FECHA_VISITA];
-        $fecha_cumplimiento = $oa['valores'][ORD_ENT_FECHA_SI];
-    }
-}
-$RAP = $this->Documentos_model->get_documentos_de_auditoria($auditoria['auditorias_id'], TIPO_DOCUMENTO_RESOLUCION_AMPLIACION_PLAZO);
-foreach ($RAP as $rap) {
-    if (isset($rap['documento_is_aprobado']) && $rap['documento_is_aprobado'] == 1 && isset($rap['valores'])) {
-        $fecha_cumplimiento = $rap['valores'][RESOL_AMPLI_FECHA_CUMPLIMIENTO];
-    }
-}
 $texto_foja = "";
+$txt_documentacion_recibida = "Documentación Recibida:
+<br>1. Organigrama vigente.
+<br>2. Descriptivas y/o manuales vigentes autorizados de los procedimientos aplicados para (objeto de la auditoría)
+<br>3. Reglamento interior.
+<br>4. Programa Operativo Anual.
+<br>5. Copia de la Reglamentación vigente aplicable.
+<br>6. Otros (información adicional requerida para la auditoría).";
 $direcciones = array();
 $asistencias = $documentos[$index]['asistencias'];
 foreach ($asistencias as $direcciones_id => $d) {
@@ -140,119 +130,54 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
                                             En la ciudad de Mérida, capital del Estado de Yucatán, Estados Unidos Mexicanos, siendo las
-                                            <span id="<?= HORA_INI; ?>" contenteditable="true" class="editable" default-value="HH:MM"><?= isset($r) ? $r[HORA_INI] : ''; ?></span>
+                                            <?= span_editable($r, HORA_INI, 'HH:MM') ?>
                                             horas del día
-                                            <a href="#" class="xeditable" id="<?= FECHA_INI; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="<?= $fecha_acto_inicio; ?>"><?= mysqlDate2Date($fecha_acto_inicio); ?></a>,
+                                            <?= span_calendario($r, FECHA_INI); ?>,
                                             reunidos en
-                                            <span id="<?= UBICACION; ?>" contenteditable="true" class="editable" default-value="<?= implode(" ", array($generos[$ubicacion['tipos_ua_genero']], $ubicacion['tipos_ua_nombre'], "de", $ubicacion['direcciones_nombre'])); ?>"><?= isset($r) && isset($r[UBICACION]) ? $r[UBICACION] : ''; ?></span>,
+                                            <?= span_editable($r, UBICACION, implode(" ", array($generos[$ubicacion['tipos_ua_genero']], $ubicacion['tipos_ua_nombre'], "de", $ubicacion['direcciones_nombre']))); ?>,
                                             ubicada en
-                                            <span id="<?= DIRUBICACION; ?>" contenteditable="true" class="editable" default-value="<?= !empty($ubicacion['direcciones_ubicacion']) ? $ubicacion['direcciones_ubicacion'] : 'calle __ número ___ por __ y ___'; ?>"><?= isset($r) && isset($r[DIRUBICACION]) ? $r[DIRUBICACION] : ''; ?></span>;
+                                            <?= span_editable($r, DIRUBICACION, 'calle __ número ___ por __ y ___'); ?>;
                                             por
-                                            <span id="seccion_involucrados">
-                                                <?php foreach ($documento['asistencias'] as $direcciones_id => $d): ?>
-                                                    <?php if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO]) && is_array($d[TIPO_ASISTENCIA_INVOLUCRADO]) && !empty($d[TIPO_ASISTENCIA_INVOLUCRADO])): ?>
-                                                        <?php $aux = $this->SAC_model->get_direccion($direcciones_id); ?>
-                                                        <span class="resaltar" id="direcciones_<?= $direcciones_id; ?>">
-                                                            <?= $aux['nombre_completo_direccion']; ?>
-                                                            <?php foreach ($d[TIPO_ASISTENCIA_INVOLUCRADO] as $e): ?>
-                                                                <span class="resaltar empleado_<?= $e['empleados_id']; ?>">
-                                                                    <?= $e['empleados_nombre_titulado'] . ", " . $e['empleados_cargo']; ?>;
-                                                                    <input type="hidden" name="involucrados[]" value="<?= $e['empleados_id']; ?>">
-                                                                    <span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="<?= $e['empleados_id']; ?>">&times;</span>
-                                                                </span>
-                                                            </span>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                                <span id="autocomplete_involucrados" class="input-group hidden-xs-up hidden-print">
-                                                    <input type="text" class="autocomplete form-control" placeholder="Empleado">
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-danger ocultar" type="button"><i class="fa fa-close"></i></button>
-                                                    </span>,
-                                                </span>
-                                            </span>
-                                            <a class="btn btn-sm btn-success hidden-print btn_agregar" href="#" data-tipo="involucrados" data-asistencias-tipo="<?= TIPO_ASISTENCIA_INVOLUCRADO; ?>">AGREGAR INVOLUCRADOS</a>
+                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO); ?>
                                             y por la <?= LABEL_CONTRALORIA; ?>
                                             <span class="resaltar"><?= $auditoria['empleados_nombre_titulado'] . ", Auditor Líder"; ?></span>,
                                             así como
-                                            <span id="seccion_testigos">
-                                                <?php foreach ($documento['asistencias'] as $direcciones_id => $d): ?>
-                                                    <?php if (isset($d[TIPO_ASISTENCIA_TESTIGO]) && is_array($d[TIPO_ASISTENCIA_TESTIGO])): ?>
-                                                        <?php foreach ($d[TIPO_ASISTENCIA_TESTIGO] as $e): ?>
-                                                            <span class="resaltar empleado_<?= $e['empleados_id']; ?>">
-                                                                <?= ($e['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ') . $e['empleados_nombre_titulado'] . ", " . $e['empleados_cargo']; ?>
-                                                                <input type="hidden" name="testigos[]" value="<?= $e['empleados_id']; ?>">
-                                                                <span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="<?= $e['empleados_id']; ?>">&times;</span>
-                                                            </span>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                                <span id="autocomplete_testigos" class="input-group hidden-xs-up hidden-print">
-                                                    <input type="text" class="autocomplete form-control" placeholder="Empleado">
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-danger ocultar" type="button"><i class="fa fa-close"></i></button>
-                                                    </span>,
-                                                </span>
-                                            </span>
-                                            <a class="btn btn-sm btn-success hidden-print btn_agregar" href="#" data-tipo="testigos" data-asistencias-tipo="<?= TIPO_ASISTENCIA_TESTIGO; ?>">AGREGAR TESTIGO</a>
+                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_TESTIGO); ?>
                                             <span id="seccion_testigos_2">
                                                 est<span class="singular">e</span><span class="plural">os</span> último<span class="plural">s</span> en calidad de testigo<span class="plural">s</span>
                                             </span>
                                             <span class="bg-white">
                                                 a efecto de hacer constar el vencimiento de los plazos acordados entre el auditor líder y la unidad administrativa
                                                 sujeta a revisión para la entrega de la documentación e información correspondiente a la auditoría
-                                                <span class="resaltar"><?= $auditoria['numero_auditoria']; ?></span>
+                                                <?= span_resaltar($auditoria['numero_auditoria']); ?>
                                                 que tiene por objetivo
-                                                <span class="resaltar"><?= $auditoria['auditorias_objetivo']; ?></span>;
+                                                <?= span_resaltar($auditoria['auditorias_objetivo']); ?>;
                                                 y toda vez que
                                                 <span id="<?= CUMPLE_ENTREGA; ?>" name="constantes[<?= CUMPLE_ENTREGA; ?>]" class="resaltar opciones" default-value="se dio total" data-opciones="se dio total|se dio parcial|no se dio"><?= isset($r) && isset($r[CUMPLE_ENTREGA]) && !empty($r[CUMPLE_ENTREGA]) ? $r[CUMPLE_ENTREGA] : ''; ?></span>
                                                 cumplimiento a la solicitud de documentación e información preliminar anexo en el oficio No.
-                                                <span class="resaltar"><?= $auditoria['numero_auditoria']; ?></span>
+                                                <?= span_resaltar($auditoria['numero_auditoria']); ?>
                                                 emitida por la Unidad de Contraloría Municipal, con este documento se efectúa el cierre del plazo otorgado
                                                 para la recepción de la información de la auditoría referida, dejándose constancia que con fecha
                                                 <?php $fecha_cumplimiento = isset($r) && isset($r[FECHA_ENTREGAS]) ? $r[FECHA_ENTREGAS] : date('Y-m-d'); ?>
-                                                <a href="#" class="xeditable" id="<?= FECHA_ENTREGAS; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="<?= $fecha_cumplimiento; ?>"><?= mysqlDate2Date($fecha_cumplimiento); ?></a>,
-                                                <span id="<?= UBICACION; ?>" contenteditable="true" class="editable" default-value="<?= $auditoria['nombre_completo_direccion']; ?>"><?= isset($r) ? $r[UBICACION] : ''; ?></span>,
-                                                <span class="si_no bg-white">no</span>
+                                                <?= span_calendario($r, FECHA_ENTREGAS); ?>,
+                                                <?= span_editable($r, UBICACION, $auditoria['nombre_completo_direccion']); ?>,
+                                                <span class="si_no <?= isset($r) && isset($r[CUMPLE_ENTREGA]) && $r[CUMPLE_ENTREGA] !== "no se dio" ? 'hidden-xs-up' : ''; ?>">no</span>
                                                 entregó la siguiente documentación e información:
-                                            </span><br>
-                                            <div id="<?= ACEI_PARRAFO_U2; ?>" contenteditable="true" class="editable span" aceptar-enter="1" default-value="Documentación Recibida:
-                                                 <br>1.	Organigrama vigente.
-                                                 <br>2.	Descriptivas y/o manuales vigentes autorizados de los procedimientos aplicados para (objeto de la auditoría)
-                                                 <br>3.	Reglamento interior.
-                                                 <br>4.	Programa Operativo Anual.
-                                                 <br>5.	Copia de la Reglamentación vigente aplicable.
-                                                 <br>6.	Otros (información adicional requerida para la auditoría)."><p><?= isset($r) && isset($r[ACEI_PARRAFO_U2]) && !empty($r[ACEI_PARRAFO_U2]) ? nl2br($r[ACEI_PARRAFO_U2]) : ''; ?></p></div>
+                                            </span>
                                         </span>
                                     </p>
-                                    <p class="text-justify <?= isset($r) && isset($r[OMITE_PARRAFO1]) && $r[OMITE_PARRAFO1] == 1 ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center'; ?> show-hide">
-                                        <span id="parrafo1" class="bg-white <?= isset($r) && isset($r[OMITE_PARRAFO1]) && $r[OMITE_PARRAFO1] == 1 ? '' : 'hidden-xs-up'; ?> se_dio_total se_dio_parcial">
-                                            Por lo que la auditoría se delimitará únicamente a la documentación e información presentada oportunamente y descrita con anterioridad.
-                                        </span>
-                                        <button type="button" onclick="ocultar_parrafo('parrafo1', this);" class="btn btn-sm btn-danger btn-hide hidden-print <?= !isset($r) || !isset($r[OMITE_PARRAFO1]) || $r[OMITE_PARRAFO1] == 0 ? 'hidden-xs-up' : ''; ?>"><i class="fa fa-close"></i></button>
-                                        <button type="button" onclick="mostrar_parrafo('parrafo1', this);" class="btn btn-sm btn-success btn-show hidden-print <?= isset($r) && isset($r[OMITE_PARRAFO1]) && $r[OMITE_PARRAFO1] == 1 ? 'hidden-xs-up' : ''; ?>">Agregar párrafo 1</button>
-                                        <input type="hidden" name="constantes[<?= OMITE_PARRAFO1; ?>]" value="<?= isset($r) && isset($r[OMITE_PARRAFO1]) ? $r[OMITE_PARRAFO1] : 0; ?>">
-                                    </p>
-                                    <p class="text-justify <?= isset($r) && isset($r[OMITE_PARRAFO2]) && $r[OMITE_PARRAFO2] == 1 ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center'; ?> show-hide se_dio_parcial no_se_dio">
-                                        <span id="parrafo2" class="bg-white <?= isset($r) && isset($r[OMITE_PARRAFO2]) && $r[OMITE_PARRAFO2] == 1 ? '' : 'hidden-xs-up'; ?>">
-                                            Se hace del conocimiento del/los involucrado(s) que la falta de respuesta oportuna al requerimiento de documentación hecha por la Unidad de Contraloría, podría derivar en alguna responsabilidad por incumplimiento de las obligaciones establecidas en los términos de la Ley de Gobierno de los Municipios del Estado de Yucatán y la Ley de Responsabilidades Administrativa del Estado de Yucatán.
-                                        </span>
-                                        <button type="button" onclick="ocultar_parrafo('parrafo2', this);" class="btn btn-sm btn-danger btn-hide hidden-print <?= !isset($r) || !isset($r[OMITE_PARRAFO2]) || $r[OMITE_PARRAFO2] == 0 ? 'hidden-xs-up' : ''; ?>"><i class="fa fa-close"></i></button>
-                                        <button type="button" onclick="mostrar_parrafo('parrafo2', this);" class="btn btn-sm btn-success btn-show hidden-print <?= isset($r) && isset($r[OMITE_PARRAFO2]) && $r[OMITE_PARRAFO2] == 1 ? 'hidden-xs-up' : ''; ?>">Agregar párrafo 2</button>
-                                        <input type="hidden" name="constantes[<?= OMITE_PARRAFO2; ?>]" value="<?= isset($r) && isset($r[OMITE_PARRAFO2]) ? $r[OMITE_PARRAFO2] : 0; ?>">
-                                    </p>
-                                    <p class="text-justify <?= isset($r) && isset($r[OMITE_FIRMA]) && $r[OMITE_FIRMA] == 1 ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center'; ?> show-hide">
-                                        <span id="parrafo3" class="bg-white <?= isset($r) && isset($r[OMITE_FIRMA]) && $r[OMITE_FIRMA] == 1 ? '' : 'hidden-xs-up'; ?>">
-                                            Se apercibe a los servidores públicos que intervinieron en esta diligencia que la omisión o negativa de firma no afecta la validez y efectos legales de la presente acta.
-                                        </span>
-                                        <button type="button" onclick="ocultar_parrafo('parrafo3', this);" class="btn btn-sm btn-danger btn-hide hidden-print <?= !isset($r) || !isset($r[OMITE_FIRMA]) || $r[OMITE_FIRMA] == 0 ? 'hidden-xs-up' : ''; ?>"><i class="fa fa-close"></i></button>
-                                        <button type="button" onclick="mostrar_parrafo('parrafo3', this);" class="btn btn-sm btn-success btn-show hidden-print <?= isset($r) && isset($r[OMITE_FIRMA]) && $r[OMITE_FIRMA] == 1 ? 'hidden-xs-up' : ''; ?>">Agregar párrafo de omisión de firmas</button>
-                                        <input type="hidden" name="constantes[<?= OMITE_FIRMA; ?>]" value="<?= isset($r) && isset($r[OMITE_FIRMA]) ? $r[OMITE_FIRMA] : 0; ?>">
-                                    </p>
+                                    <div id="<?= ACEI_PARRAFO_U2; ?>" contenteditable="true" class="editable span" aceptar-enter="1" default-value="<?= $txt_documentacion_recibida; ?>">
+                                        <?= isset($r) && isset($r[ACEI_PARRAFO_U2]) && !empty($r[ACEI_PARRAFO_U2]) ? nl2br($r[ACEI_PARRAFO_U2]) : ''; ?>
+                                    </div>
+                                    <?php $parrafo1 = 'Por lo que la auditoría se delimitará únicamente a la documentación e información presentada oportunamente y descrita con anterioridad.'; ?>
+                                    <?= agregar_parrafo_show_hide($r, OMITE_PARRAFO1, $parrafo1, 'Agregar párrafo 1'); ?>
+                                    <?php $parrafo2 = 'Se hace del conocimiento del/los involucrado(s) que la falta de respuesta oportuna al requerimiento de documentación hecha por la Unidad de Contraloría, podría derivar en alguna responsabilidad por incumplimiento de las obligaciones establecidas en los términos de la Ley de Gobierno de los Municipios del Estado de Yucatán y la Ley de Responsabilidades Administrativa del Estado de Yucatán.'; ?>
+                                    <?= agregar_parrafo_show_hide($r, OMITE_PARRAFO2, $parrafo2, 'Agregar párrafo 2'); ?>
+                                    <?php $parrafo3 = 'Se apercibe a los servidores públicos que intervinieron en esta diligencia que la omisión o negativa de firma no afecta la validez y efectos legales de la presente acta.'; ?>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
                                             Leída la presente en presencia de todos los que en ella intervinieron se da por terminada la diligencia siendo las
-                                            <span id="<?= HORA_FIN; ?>" contenteditable="true" class="editable" default-value="HH:MM"><?= isset($r) ? $r[HORA_FIN] : ''; ?></span>
+                                            <?= span_editable($r, HORA_FIN, 'HH:MM'); ?>
                                             horas del mismo día de su inicio, firmándose de conformidad como debida aceptación y constancia.
                                         </span>
                                     </p>

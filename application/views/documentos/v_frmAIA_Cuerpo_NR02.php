@@ -1,5 +1,4 @@
 <?php
-$sinEspecificar = '<b>[SIN ESPECIFICAR]</b>';
 $fecha_notificacion_OE = NULL;
 $fecha_cumplimiento = NULL;
 
@@ -133,44 +132,27 @@ if (count($direcciones) > 1) {
                                     <p class="text-justify bg-punteado">
                                         <span class="bg-white">En la ciudad de Mérida, capital del Estado de Yucatán, Estados Unidos Mexicanos,
                                             siendo las
-                                            <span id="<?= ACTA_INICIO_HORA_INI; ?>" contenteditable="true" class="editable" default-value="HH:MM"><?= isset($r) ? $r[ACTA_INICIO_HORA_INI] : ''; ?></span>
+                                            <?= span_editable($r, ACTA_INICIO_HORA_INI, 'HH:MM'); ?>
                                             horas del día
-                                            <a href="#" class="xeditable" id="<?= ACTA_INICIO_FECHA_ACTO_INICIO; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="<?= $fecha_acto_inicio; ?>"><?= mysqlDate2Date($fecha_acto_inicio); ?></a>,
+                                            <?= span_calendario($r, ACTA_INICIO_FECHA_ACTO_INICIO); ?>,
                                             con fundamento en lo dispuesto en los artículos 210 y 211 fracción II de la Ley de Gobierno de los Municipios del
                                             Estado de Yucatán, artículos 2 fracción XXI, 110, 111, 112 y 113 de la Ley de Responsabilidades Administrativas del
                                             Estado de Yucatán; se reúnen en la oficina que ocupa
-                                            <span id="<?= ACTA_INICIO_REUNIDOS_EN; ?>" contenteditable="true" class="editable" default-value="ESPECIFICAR OFICINA"><?= isset($r) ? $r[ACTA_INICIO_REUNIDOS_EN] : ''; ?></span>,
+                                            <?= span_editable($r, ACTA_INICIO_REUNIDOS_EN, 'ESPECIFICAR OFICINA'); ?>,
                                             ubicada en
-                                            <span id="<?= ACTA_INICIO_UBICACION; ?>" contenteditable="true" class="editable" default-value="EXPEDIFICAR UBICACIÓN"><?= isset($r) ? $r[ACTA_INICIO_UBICACION] : ''; ?></span>,
-                                            <span id="seccion_involucrados">
-                                                por la<span class="plural">s</span> unidad<span class="plural">es</span> administrativa<span class="plural">s</span> sujeta<span class="plural">s</span> a auditoría <span class="singular">el</span><span class="plural">los</span> servidor<span class="plural">es</span> público<span class="plural">s</span>
-                                                <?php foreach ($documento['asistencias'] as $direcciones_id => $d): ?>
-                                                    <?php if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO]) && is_array($d[TIPO_ASISTENCIA_INVOLUCRADO])): ?>
-                                                        <?php foreach ($d[TIPO_ASISTENCIA_INVOLUCRADO] as $e): ?>
-                                                            <span class="resaltar empleado_<?= $e['empleados_id']; ?>">
-                                                                <?= $e['empleados_nombre_titulado'] . ", " . $e['empleados_cargo']; ?>
-                                                                <input type="hidden" name="involucrados[]" value="<?= $e['empleados_id']; ?>">
-                                                                <span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="<?= $e['empleados_id']; ?>">&times;</span>
-                                                            </span>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                                <span id="autocomplete_involucrados" class="input-group hidden-xs-up hidden-print">
-                                                    <input type="text" class="autocomplete form-control" placeholder="Empleado">
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-danger ocultar" type="button"><i class="fa fa-close"></i></button>
-                                                    </span>,
-                                                </span>
-                                            </span>
-                                            <a class="btn btn-sm btn-success hidden-print btn_agregar" href="#" data-tipo="involucrados" data-asistencias-tipo="<?= TIPO_ASISTENCIA_INVOLUCRADO; ?>">AGREGAR INVOLUCRADOS</a>
-                                            y por la Unidad de Contraloría
-                                            <span class="resaltar"><?= $auditoria['empleados_nombre_titulado']; ?></span>, Auditor Líder a efecto de formalizar el inicio de la auditoría número <span class="resaltar"><?= $auditoria['numero_auditoria']; ?></span>
+                                            <?= span_editable($r, ACTA_INICIO_UBICACION, 'ESPECIFICAR UBICACIÓN'); ?>,
+                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO); ?>
+                                            y por la <?= LABEL_CONTRALORIA; ?>
+                                            <?= span_resaltar($auditoria['empleados_nombre_titulado']); ?>,
+                                            Auditor Líder a efecto de formalizar el inicio de la auditoría número
+                                            <?= span_resaltar($auditoria['numero_auditoria']); ?>
                                             que tiene por objetivo
-                                            <span class="resaltar"><?= $auditoria['auditorias_objetivo']; ?></span>,
+                                            <?= span_resaltar($auditoria['auditorias_objetivo']); ?>,
                                             y cuyo inicio  fue notificado en fecha
-                                            <span class="resaltar"><?= !empty($auditoria['auditorias_fechas_inicio_real']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_inicio_real']) : '<b>[CAPTURAR FECHA ORDEN AUDITORIA]</b>'; ?></span>,
+                                            <?php $aux = !empty($auditoria['auditorias_fechas_inicio_real']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_inicio_real']) : '<b>[CAPTURAR FECHA ORDEN AUDITORIA]</b>'; ?>
+                                            <?= span_resaltar($aux); ?>,
                                             por Orden de Auditoría
-                                            <span class="resaltar"><?= $auditoria['numero_auditoria']; ?></span>,
+                                            <?= span_resaltar($auditoria['numero_auditoria']); ?>,
                                             dirigido
                                             <?php
                                             $articulo = " al ";
@@ -179,7 +161,7 @@ if (count($direcciones) > 1) {
                                                 $articulo = " a la ";
                                             }
                                             ?>
-                                            <span class="resaltar"><?= $articulo . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']; ?></span>.
+                                            <?= span_resaltar($articulo . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']); ?>.
                                         </span>
                                     </p>
                                     <p class="text-xs-center bg-punteado"><span class="bg-white">HECHOS</span></p>
@@ -192,18 +174,21 @@ if (count($direcciones) > 1) {
                                         <p class="text-justify bg-punteado">
                                             <span class="bg-white">
                                                 Estando presente el
-                                                <span class="resaltar"><?= $auditoria['empleados_nombre_titulado']; ?></span>, Auditor Líder,
+                                                <?= span_resaltar($auditoria['empleados_nombre_titulado']); ?>, Auditor Líder,
                                                 hace constar que,
-                                                <span class="resaltar"><?= ($director['empleados_genero'] === GENERO_FEMENINO ? ' la ' : ' el ') . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']; ?></span>
+                                                <?php $aux = ($director['empleados_genero'] == GENERO_FEMENINO ? ' la ' : ' el ') . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']; ?>
+                                                <?= span_resaltar($aux); ?>
                                                 Titular de la Unidad Administrativa sujeta a auditaría,
-                                                <span class="resaltar"><?= !empty($auditoria['auditorias_enlace_designado']) ? $enlace_designado['empleados_nombre_titulado'] . ', Enlace Designado, ' : ''; ?></span>
+                                                <?php $aux = !empty($auditoria['auditorias_enlace_designado']) ? $enlace_designado['empleados_nombre_titulado'] . ', Enlace Designado, ' : ''; ?>
+                                                <?= span_resaltar($aux); ?>
                                                 y los testigos
-                                                <span id="<?= ACTA_INICIO_TESTIGOS_NO_ASISTIERON; ?>" contenteditable="true" class="editable" default-value="[Título, nombre y cargo de los servidores públicos nombrados para intervenir como testigo en el acta de inicio de la auditoría, los cuales no asistieron al acto de inicio de auditoría]"><?= isset($r) ? $r[ACTA_INICIO_TESTIGOS_NO_ASISTIERON] : ''; ?></span>,
+                                                <?= span_editable($r, ACTA_INICIO_TESTIGOS_NO_ASISTIERON, '[Título, nombre y cargo de los servidores públicos nombrados para intervenir como testigo en el acta de inicio de la auditoría, los cuales no asistieron al acto de inicio de auditoría]'); ?>,
                                                 no se presentaron en ésta diligencia de inicio de auditoría, no obstante de haber hecho de conocimiento previamente
                                                 mediante la Orden de Auditoría
-                                                <span class="resaltar"><?= $auditoria['numero_auditoria']; ?></span>
+                                                <?= span_resaltar($auditoria['numero_auditoria']); ?>
                                                 recepcionado el
-                                                <span class="resaltar"><?= !empty($fecha_notificacion_OE) ? mysqlDate2OnlyDate($fecha_notificacion_OE) : $sinEspecificar; ?></span>.
+                                                <?php $aux = !empty($fecha_notificacion_OE) ? mysqlDate2OnlyDate($fecha_notificacion_OE) : SIN_ESPECIFICAR; ?>
+                                                <?= span_resaltar($aux); ?>.
                                                 Sirva el presente para manifestar que la omisión anterior podrá ser causal de responsabilidad prevista en el
                                                 Ley de Responsabilidades Administrativas del Estado de Yucatán.
                                             </span>
@@ -211,31 +196,9 @@ if (count($direcciones) > 1) {
                                         <p class="text-justify bg-punteado">
                                             <span class="bg-white">
                                                 Derivado de lo anterior, el suscrito
-                                                <span class="resaltar"><?= $auditoria['empleados_nombre_titulado']; ?></span>, Auditor Líder,
+                                                <?= span_resaltar($auditoria['empleados_nombre_titulado']); ?>, Auditor Líder,
                                                 nombra a los servidores públicos
-                                                <?php
-                                                $testigos = array();
-                                                foreach ($documento['asistencias'] as $d) {
-                                                    if (isset($d[TIPO_ASISTENCIA_TESTIGO])) {
-                                                        foreach ($d[TIPO_ASISTENCIA_TESTIGO]as $e) {
-                                                            $aux = '<span class="resaltar">' . $e['empleados_nombre_titulado'] . '</span>';
-                                                            array_push($testigos, $aux);
-                                                        }
-                                                    }
-                                                }
-                                                $contador_testigos = count($testigos);
-                                                $strTestigos = "";
-                                                if (count($testigos) > 0) {
-                                                    $ultimo = NULL;
-                                                    if (count($testigos) > 1) {
-                                                        $ultimo = array_pop($testigos);
-                                                        $strTestigos = implode("; ", $testigos) . '<span class="plural"> y </span>' . $ultimo;
-                                                    } else {
-                                                        $strTestigos = implode("; ", $testigos);
-                                                    }
-                                                }
-                                                echo (!empty($strTestigos) ? $strTestigos : 'ELIJA LOS TESTIGOS');
-                                                ?>,
+                                                <?= crear_texto_asistencias($documento['asistencias'], FALSE, TIPO_ASISTENCIA_TESTIGO, TRUE); ?>,
                                                 en calidad de testigos a fin de dejar constancia de la presente diligencia, quienes se comprometen a entregar
                                                 un ejemplar del Acta de Inicio de Auditoría al titular de la unidad administrativa sujeta a auditaría.
                                             </span>
@@ -248,7 +211,7 @@ if (count($direcciones) > 1) {
                                                 <span class="bg-white">
                                                     El servidor público <?= Capitalizar($datosDirector['descTitFunc'] . " " . $datosDirector['nomFunc'] . ", " . $datosDirector['puestoFunc']); ?>, quien manifiesta ser de nacionalidad mexicana y
                                                     con domicilio particular en <?= $datosDirector['domAct']; ?>,  se identifica con <?= $datosDirector['docId']; ?> con clave de elector
-                                                    <?= $datosDirector['credEl']; ?> y número de identificador <?= isset($datosDirector['credIden']) ? $datosDirector['credIden'] : $sinEspecificar; ?>, la cual contiene su nombre y fotografía que
+                                                    <?= $datosDirector['credEl']; ?> y número de identificador <?= isset($datosDirector['credIden']) ? $datosDirector['credIden'] : SIN_ESPECIFICAR; ?>, la cual contiene su nombre y fotografía que
                                                     concuerda con sus rasgos fisonómicos y en la que se aprecia su firma, que reconoce como suya por ser la misma
                                                     que utiliza para validar todos sus actos tanto públicos como privados.
                                                 </span>
@@ -258,26 +221,26 @@ if (count($direcciones) > 1) {
                                             <p class="text-justify bg-punteado">
                                                 <span class="bg-white">
                                                     El servidor público
-                                                    <span class="resaltar"><?= $enlace_designado['empleados_nombre_titulado']; ?></span>,
+                                                    <?= span_resaltar($enlace_designado['empleados_nombre_titulado']); ?>,
                                                     manifiesta que ha sido designado por el titular
                                                     de la unidad administrativa auditada para atender la presente auditoría mediante oficio número
-                                                    <span class="resaltar"><?= !empty($auditoria['auditorias_folio_oficio_representante_designado']) ? $auditoria['auditorias_folio_oficio_representante_designado'] : $sinEspecificar; ?></span>,
-                                                    notificada a la
-                                                    <span class="bg-red"><?= LABEL_NOMBRE_CONTRALORIA; ?></span>
-                                                    el
-                                                    <span class="resaltar"><?= !empty($auditoria['auditorias_fechas_sello_oficio_representante_designado']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_oficio_representante_designado']) : $sinEspecificar; ?></span>,
+                                                    <?php $aux = !empty($auditoria['auditorias_folio_oficio_representante_designado']) ? $auditoria['auditorias_folio_oficio_representante_designado'] : SIN_ESPECIFICAR; ?>
+                                                    <?= span_resaltar($aux); ?>,
+                                                    notificada a la <?= LABEL_NOMBRE_CONTRALORIA; ?> el
+                                                    <?php $aux = !empty($auditoria['auditorias_fechas_sello_oficio_representante_designado']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_oficio_representante_designado']) : SIN_ESPECIFICAR; ?>
+                                                    <?= span_resaltar($aux); ?>,
                                                     ser de nacionalidad mexicana y con domicilio particular en
-                                                    <?= $enlace_designado['empleados_domicilio'] . " de la localidad de " . (!empty($enlace_designado['empleados_localidad']) ? Capitalizar($enlace_designado['empleados_localidad']) : $sinEspecificar); ?>,
+                                                    <?= $enlace_designado['empleados_domicilio'] . " de la localidad de " . (!empty($enlace_designado['empleados_localidad']) ? Capitalizar($enlace_designado['empleados_localidad']) : SIN_ESPECIFICAR); ?>,
                                                     se identifica con
                                                     <?php
-                                                    $identificacion = $sinEspecificar;
+                                                    $identificacion = SIN_ESPECIFICAR;
                                                     if (!empty($enlace_designado['empleados_credencial_elector_delante'])) {
-                                                        $identificacion = ' credencial para votar con clave de elector ' . $enlace_designado['empleados_credencial_elector_delante'] . ' y número identificador ' . (!empty($enlace_designado['empleados_credencial_elector_detras']) ? $enlace_designado['empleados_credencial_elector_detras'] : $sinEspecificar);
+                                                        $identificacion = ' credencial para votar con clave de elector ' . $enlace_designado['empleados_credencial_elector_delante'] . ' y número identificador ' . (!empty($enlace_designado['empleados_credencial_elector_detras']) ? $enlace_designado['empleados_credencial_elector_detras'] : SIN_ESPECIFICAR);
                                                     } elseif (!empty($enlace_designado['empleados_licencia_manejo'])) {
                                                         $identificacion = " licencia de conducir con folio " . $enlace_designado['empleados_licencia_manejo'];
                                                     }
                                                     ?>
-                                                    <span class="resaltar"><?= $identificacion; ?></span>,
+                                                    <?= span_resaltar($identificacion); ?>,
                                                     la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia su firma,
                                                     que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos como privados.
                                                 </span>
@@ -289,44 +252,16 @@ if (count($direcciones) > 1) {
                                             En el presente acto los testigos de asistencia
                                             <span id="seccion_testigos">
                                                 <?php
-                                                $testigos = array();
-                                                foreach ($documento['asistencias'] as $d) {
-                                                    if (isset($d[TIPO_ASISTENCIA_TESTIGO])) {
-                                                        foreach ($d[TIPO_ASISTENCIA_TESTIGO]as $e) {
-                                                            $aux = '<span class="resaltar empleado_' . $e['empleados_id'] . '">el servidor público '
-                                                                    . $e['empleados_nombre_titulado']
-                                                                    . ", quien manifiesta ser de nacionalidad mexicana y con domicilio particular en "
-                                                                    . $e['empleados_domicilio']
-                                                                    . " de la localidad de "
-                                                                    . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : $sinEspecificar)
-                                                                    . " se identifica con ";
-                                                            $identificacion = $sinEspecificar;
-                                                            if (!empty($e['empleados_credencial_elector_delante'])) {
-                                                                $identificacion = ' credencial para votar con clave de elector ' . $e['empleados_credencial_elector_delante'] . ' y número identificador ' . (!empty($e['empleados_credencial_elector_detras']) ? $e['empleados_credencial_elector_detras'] : $sinEspecificar);
-                                                            } elseif (!empty($e['empleados_licencia_manejo'])) {
-                                                                $identificacion = " licencia de conducir con folio " . $e['empleados_licencia_manejo'];
-                                                            }
-                                                            $aux .= $identificacion
-                                                                    . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos como privados'
-                                                                    . '<input type="hidden" name="testigos[]" value="' . $e['empleados_id'] . '">'
-                                                                    . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
-                                                                    . '</span>';
-                                                            array_push($testigos, $aux);
-                                                        }
-                                                    }
-                                                }
-                                                $contador_testigos = count($testigos);
-                                                $strTestigos = "";
-                                                if (count($testigos) > 0) {
-                                                    $ultimo = NULL;
-                                                    if (count($testigos) > 1) {
-                                                        $ultimo = array_pop($testigos);
-                                                        $strTestigos = implode("; ", $testigos) . '<span class="plural"> y </span>' . $ultimo;
-                                                    } else {
-                                                        $strTestigos = implode("; ", $testigos);
-                                                    }
-                                                }
-                                                echo (!empty($strTestigos) ? $strTestigos : 'ELIJA LOS TESTIGOS');
+                                                echo crear_texto_asistencias(
+                                                        $documento['asistencias'], // Asistencias
+                                                        FALSE, // distribuido
+                                                        TIPO_ASISTENCIA_TESTIGO, // Tipo de asistencia
+                                                        FALSE, // solo nombre
+                                                        TRUE, // incluir domicilio
+                                                        TRUE, // incluir articulo
+                                                        $enlace_designado['empleados_id'], // Enlace designado
+                                                        NULL // Post Texto
+                                                );
                                                 ?>
                                                 <span id="autocomplete_testigos" class="input-group hidden-xs-up hidden-print">
                                                     <input type="text" class="autocomplete form-control" placeholder="Empleado">
@@ -341,20 +276,23 @@ if (count($direcciones) > 1) {
                                     <p class="text-justify bg-punteado">
                                         <span class="bg-white">
                                             De igual forma,
-                                            <span class="resaltar"><?= ($auditoria['empleados_genero'] === GENERO_FEMENINO ? ' la ' : ' el ') . $auditoria['empleados_nombre_titulado']; ?></span>,
-                                            se identifica con credencial vigente que lo acredita como servidor público del Municipio de Mérida, expedida por la Dirección de Administración y en la que se exhiben sus datos personales, la cual se pone a la vista de las personas que intervienen en el presente acto.
+                                            <?php $aux = ($auditoria['empleados_genero'] === GENERO_FEMENINO ? ' la ' : ' el ') . $auditoria['empleados_nombre_titulado']; ?>
+                                            <?= span_resaltar($aux); ?>,
+                                            se identifica con credencial vigente que lo acredita como servidor público del Municipio de Mérida, expedida
+                                            por la Dirección de Administración y en la que se exhiben sus datos personales, la cual se pone a la vista
+                                            de las personas que intervienen en el presente acto.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class="bg-white">
                                             Acto seguido, se declara que a partir de la fecha en que se notificó el Oficio de Orden de Auditoría dieron
                                             inicio los trabajos de la auditoría número
-                                            <span class="resaltar"><?= $auditoria['numero_auditoria']; ?></span>.
-                                            En dicho documento se establece el objetivo y se notifica el
+                                            <?= span_resaltar($auditoria['numero_auditoria']); ?>. En dicho documento se establece el objetivo y se notifica el
                                             equipo de auditoría que participará en la auditoría. Adicionalmente, con relación al requerimiento de
                                             documentación e información preliminar formulada en el Anexo del Oficio de Orden de Auditoría, se establece
                                             que ésta deberá entregarse el
-                                            <span class="resaltar"><?= !empty($fecha_cumplimiento) ? mysqlDate2OnlyDate($fecha_cumplimiento) : $sinEspecificar; ?></span>
+                                            <?php $aux = !empty($fecha_cumplimiento) ? mysqlDate2OnlyDate($fecha_cumplimiento) : SIN_ESPECIFICAR; ?>
+                                            <?= span_resaltar($aux); ?>
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
@@ -364,35 +302,41 @@ if (count($direcciones) > 1) {
                                             proporcionarse dentro de los cinco días hábiles contados a partir del día siguiente de notificada la solicitud.
                                         </span>
                                     </p>
-                                    <p id="seccion_involucrados_2" class="text-justify bg-punteado">
+                                    <p id="seccion_testigos_2" class="text-justify bg-punteado">
                                         <span class="bg-white">
                                             <!-- Opcional -->
                                             Por último, <span class="singular">el</span><span class="plural">los</span> servidor<span class="plural">es</span> público<span class="plural">s</span>
-                                            <?php foreach ($documento['asistencias'] as $direcciones_id => $d): ?>
-                                                <?php if (isset($d[TIPO_ASISTENCIA_TESTIGO])): ?>
-                                                    <?php foreach ($d[TIPO_ASISTENCIA_TESTIGO] as $e): ?>
-                                                        <span class="resaltar empleado_<?= $e['empleados_id']; ?>"><?= $e['empleados_nombre_titulado'] . ", " . $e['empleados_cargo']; ?></span>,
-                                                    <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            <?php endforeach; ?>
+                                            <?=
+                                            crear_texto_asistencias(
+                                                    $documento['asistencias'], // Asistencias
+                                                    FALSE, // distribuido
+                                                    TIPO_ASISTENCIA_TESTIGO, // Tipo de asistencia
+                                                    FALSE, // solo nombre
+                                                    FALSE, // incluir domicilio
+                                                    FALSE, // incluir articulo
+                                                    NULL, // Enlace designado
+                                                    NULL, // Post Texto
+                                                    "," // Separador
+                                            );
+                                            ?>
                                             manifiesta<span class="plural">n</span> que le fueron explicados los trabajos de la auditoría.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class="bg-white">
                                             Leída la presente acta y no habiendo más hechos que plasmar se da por concluida la diligencia siendo las
-                                            <span id="<?= ACTA_INICIO_HORA_FIN; ?>" contenteditable="true" class="editable" default-value="HH:MM"><?= isset($r) ? $r[ACTA_INICIO_HORA_FIN] : ''; ?></span> horas
+                                            <?= span_editable($r, ACTA_INICIO_HORA_FIN, 'HH:MM'); ?> horas
                                             de la misma fecha en que fue iniciada. Asimismo, previa lectura de lo asentado, los que en ella intervinieron
                                             la firman al margen y al calce de todas y cada una de las fojas, haciéndose constar que este documento fue
-                                            elaborado en
-                                            <span id="<?= ACTA_INICIO_NUMERO_EJEMPLARES; ?>" contenteditable="true" class="editable" default-value="dos"><?= isset($r) ? $r[ACTA_INICIO_NUMERO_EJEMPLARES] : ''; ?></span>
+                                            elaborado en <?= span_editable($r, ACTA_INICIO_NUMERO_EJEMPLARES, 'dos'); ?>
                                             ejemplares originales, de los cuales se hace entrega de uno al servidor público con quien
                                             se entendió la diligencia.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class="bg-white">
-                                            Se hace del conocimiento de los presentes que la omisión o negativa de firma no afecta la validez y efectos legales de la presente acta.
+                                            Se hace del conocimiento de los presentes que la omisión o negativa de firma no afecta la validez y efectos
+                                            legales de la presente acta.
                                         </span>
                                     </p>
                                     <p class="text-xs-center firmas_firmas">FIRMAS</p>
@@ -463,18 +407,4 @@ if (count($direcciones) > 1) {
         <?php endif; ?>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        $("input#chkAsistencia").change(function () {
-            if ($("input#chkAsistencia").prop("checked")) {
-                $("#noAsistencia").fadeOut('slow', function () {
-                    $("#siAsistencia").fadeIn('slow');
-                });
-            } else {
-                $("#siAsistencia").fadeOut('slow', function () {
-                    $("#noAsistencia").fadeIn('slow');
-                });
-            }
-        });
-    });
-</script>
+<script src="<?= base_url(); ?>resources/scripts/auditorias_documentos_aia.js" type="text/javascript"></script>
