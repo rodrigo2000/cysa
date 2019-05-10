@@ -126,9 +126,10 @@ function span_resaltar($texto, $css_class = NULL) {
  * Crea un etiqueta SPAN con las funcionalidades para asignar asistencias al documento
  * @param array $asistencias Arreglo con los empleados que asisten al documento
  * @param integer $tipo_asistencia Identificador de la asistencia
+ * @param array $auditoria Arreglo que contiene las variables de la auditoría
  * @return string Código HTML de la etiqueta SPAN
  */
-function span_agregar_asistencias($asistencias, $tipo_asistencia) {
+function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = NULL) {
     $label = array(
         TIPO_ASISTENCIA_RESPONSABLE => 'Agregar responsables',
         TIPO_ASISTENCIA_TESTIGO => 'Agregar testigos',
@@ -156,6 +157,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia) {
                 $asistentes[] = '<span class="resaltar empleado_' . $e['empleados_id'] . '">'
                         . ($e['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ')
                         . $e['empleados_nombre_titulado'] . ", " . $e['empleados_cargo']
+                        . (!empty($auditoria) && isset($auditoria['auditorias_enlace_designado']) && $e['empleados_id'] == $auditoria['auditorias_enlace_designado'] ? ', Enlace Designado' : '')
                         . '<input type="hidden" name="' . $tipo[$tipo_asistencia] . '[]" value="' . $e['empleados_id'] . '">'
                         . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
                         . '</span>'
