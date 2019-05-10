@@ -262,15 +262,8 @@ if (count($direcciones) > 1) {
                                                         $enlace_designado['empleados_id'], // Enlace designado
                                                         NULL // Post Texto
                                                 );
+                                                echo genera_boton_autocomplete(TIPO_ASISTENCIA_TESTIGO);
                                                 ?>
-                                                <span id="autocomplete_testigos" class="input-group hidden-xs-up hidden-print">
-                                                    <input type="text" class="autocomplete form-control" placeholder="Empleado">
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-danger ocultar" type="button"><i class="fa fa-close"></i></button>
-                                                    </span>,
-                                                </span>
-                                            </span>
-                                            <a class="btn btn-sm btn_agregar btn-success hidden-print" href="#" data-tipo="testigos" data-asistencias-tipo="<?= TIPO_ASISTENCIA_TESTIGO; ?>" style="margin-left:5px;">AGREGAR TESTIGOS</a>
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
