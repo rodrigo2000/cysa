@@ -1,33 +1,19 @@
-function agregar_involucrado($this, suggestion) {
-    var html = '<span class="resaltar" id="empleado_' + suggestion.empleados_id + '">' +
-            suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
-            '<input type="hidden" name="involucrados[]" value="' + suggestion.empleados_id + '">' +
-            ' <span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span>, ' +
-            '</span>';
-    if ($("span.resaltar", "#seccion_involucrados").length > 0 && $("span.plural", "#seccion_involucrados").length == 0) {
-        html = '<span class="plural"> y ' + (suggestion.empleados_genero == 1 ? 'del' : 'de la') + ' </span>' + html;
-    }
-    $($this).parent('span').parent('span').before(html);
-    $($this).val('').focus();
+$(document).ready(function () {
     actualizar_plurales();
-    // Agregamos la direccion
-    if ($(".direccion_" + suggestion.cc_direcciones_id, ".firmas_involucrados").length == 0) {
-        html = '<div class="direccion_' + suggestion.cc_direcciones_id + '">' +
-                '<p class="firmas_ua_nombre">' + suggestion.direcciones_nombre + '</p>' +
-                '</div>';
-        $(".firmas_involucrados").prepend(html);
-    }
-    html = '<div class="firmas_empleado">' +
-            '<div class="firmas_empleado_nombre">' + suggestion.empleados_nombre_titulado_siglas + '</div>' +
-            '<div class="firmas_empleado_cargo">' + suggestion.empleados_cargo + '</div>' +
-            '<div class="firmas_empleado_enlace">ENLACE DESIGNADO</div>' +
-            '</div>';
-    // Agregamos el empleado
-    $(".direccion_" + suggestion.cc_direcciones_id, ".firmas_involucrados").append(html);
-}
+    $("input#chkAsistencia").change(function () {
+        if ($("input#chkAsistencia").prop("checked")) {
+            $("#noAsistencia").fadeOut('slow', function () {
+                $("#siAsistencia").fadeIn('slow');
+            });
+        } else {
+            $("#siAsistencia").fadeOut('slow', function () {
+                $("#noAsistencia").fadeIn('slow');
+            });
+        }
+    });
+});
 
-function agregar_testigo($this, suggestion) {
-    var sinEspecificar = '<b>[SIN ESPECIFICAR]</b>';
+function agregar_testigo($this, suggestion, tipo_asistencia, documentos_tipos_id) {
     var identificacion = sinEspecificar;
     if (!isEmpty(suggestion.empleados_credencial_elector_delante)) {
         identificacion = ' credencial para votar con clave de elector ' + suggestion.empleados_credencial_elector_delante + ' y número identificador ' + (!isEmpty(suggestion.empleados_credencial_elector_detras) ? suggestion.empleados_credencial_elector_detras : sinEspecificar);
@@ -35,7 +21,10 @@ function agregar_testigo($this, suggestion) {
         identificacion = " licencia de conducir con folio " + suggestion.empleados_licencia_manejo;
     }
     var html = '<span class="resaltar empleado_' + suggestion.empleados_id + '">el servidor público ' +
-            suggestion.empleados_nombre_titulado + ', ' +
+            suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
+            /// Aqui verificar si es enlace designado
+            /// (suggestion.empleados_id == enlace_designado ? ',Enlace Designado':'')+
+            ////
             ', quien manifiesta ser de nacionalidad mexicana y con domicilio particular en ' +
             suggestion.empleados_domicilio +
             ' de la localidad de ' +
@@ -46,8 +35,18 @@ function agregar_testigo($this, suggestion) {
             '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span>' +
             '</span>';
     if ($("span.resaltar", "#seccion_testigos").length > 0 && $("span.plural", "#seccion_testigos").length == 0) {
-        html = '<span class="plural"> y </span>' + html;
+        html = '<span class="plural conjuncion"> y </span>' + html;
     }
+
+    if (parseInt(documentos_tipos_id) == 29) {
+        var html2 = '<span class="plural conjuncion"> y </span>' +
+                '<span class="resaltar empleado_' + suggestion.empleados_id + '">' +
+                suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
+                '</span>';
+        $("span.conjuncion", "p#seccion_testigos_2").html(', ');
+        $("span.resaltar:last", "p#seccion_testigos_2").after(html2);
+    }
+
     $($this).parent('span').parent('span').before(html);
     $($this).val('').focus();
     actualizar_plurales();
@@ -56,5 +55,5 @@ function agregar_testigo($this, suggestion) {
             '<div class="firmas_empleado_cargo">' + suggestion.empleados_cargo + '</div>' +
             '</div>';
     // Agregamos el empleado
-    $(".direccion_" + suggestion.cc_direcciones_id, ".firmas_testigos").append(html);
+    $(".firmas_testigos", ".firmas").append(html);
 }

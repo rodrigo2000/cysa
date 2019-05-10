@@ -102,19 +102,21 @@ $(document).ready(function () {
 //        limit: 100
         }).bind('typeahead:select', function (ev, suggestion) {
             let url = base_url + "Asistencias/agregar_asistencia";
+            let documentos_id = $("#documentos_id").val();
             let data = {
-                documentos_id: $("#documentos_id").val(),
+                documentos_id: documentos_id,
                 empleados_id: suggestion.empleados_id,
                 asistencias_tipo: $(this).attr("data-asistencias-tipo")
             }
             let $this = this;
             $.post(url, data, function (json) {
                 var a = parseInt($($this).attr("data-asistencias-tipo"));
+                var dt = parseInt($("#documentos_tipos_id").val());
                 if (json.success) {
                     if (a > 2) {
-                        agregar_involucrado($this, suggestion, a);
+                        agregar_involucrado($this, suggestion, a, dt);
                     } else if (a == 2) {
-                        agregar_testigo($this, suggestion);
+                        agregar_testigo($this, suggestion, a, dt);
                     }
                 } else {
                     alert("No se puedo agregar al empleado. " + json.message);
@@ -158,7 +160,8 @@ $(document).ready(function () {
         var span = $(this).parent('span').parent('span');
         span.parent('span').next('a.btn_agregar').removeClass('hidden-xs-up');
         span.addClass('hidden-xs-up');
-    }).on('click', '.opciones', function () {
+    }).on('click', '.opciones', function (event) {
+        event.preventDefault();
         var opciones = $(this).attr("data-opciones").split('|');
         var html = $(this).html();
         var next = null;
@@ -168,7 +171,8 @@ $(document).ready(function () {
             }
         }
         var n = next % opciones.length;
-        $(this).html(opciones[n]).trigger('change');
+        $(this).html(opciones[n]).trigger('change', [n]);
+        event.stopPropagation();
     });
 });
 function get_form_data(async = false) {
@@ -187,18 +191,32 @@ function get_form_data(async = false) {
         div.parent('td').addClass('text-xs-center');
         div.replaceWith(obj);
     });
-    data.html = $(oficio).html();
     data.constantes = $.extend({}, data.constantes);
     $(".editable, span[name^=constantes]", "#frmOficios").each(function (index, element) {
         var id = $(element).prop('id');
         var valor = $(element).html();
-        data.constantes[id] = valor;
+        var name = $(element).attr('name');
+        if (isEmpty(name)) {
+            data.constantes[id] = valor;
+        } else {
+            if (name.indexOf("[") > 0) {
+                name = name.substring(0, name.indexOf("["));
+                if (isEmpty(data[name])) {
+                    data[name] = [];
+                }
+                data[name][id] = valor;
+                data[name] = $.extend({}, data[name]);
+            } else {
+                data[name] = valor;
+            }
+        }
     });
     $(".xeditable").each(function (index, element) {
         var id = $(element).prop("id");
         var arr = $("#" + id).editable('getValue');
         data.constantes[id] = arr[id];
     });
+    data.html = $(oficio).html();
     var url = base_url + 'Documentos/guardar';
     $("button.boton_guardar").prop('disabled', true).addClass('disabled').html('Guardando...');
     $.post(url, data, function (json) {
@@ -251,6 +269,61 @@ String.prototype.capitalize = function () {
         return p1 + p2.toUpperCase();
     });
 };
+
+function agregar_involucrado($this, suggestion, tipo_asistencia, documentos_id) {
+    var seccion = "involucrados" + (tipo_asistencia == 4 ? '_contraloria' : '');
+    if ($("#direccion_" + suggestion.direcciones_id).length == 0) {
+        html = '<span class="resaltar" id="direcciones' + suggestion.direcciones_id + '">' + suggestion.nombre_completo_direccion + ', </span>';
+        $("#seccion_" + seccion).append(html);
+    }
+    var html = '<span class="resaltar" id="empleado_' + suggestion.empleados_id + '">' +
+            suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
+            '<input type="hidden" name="' + seccion + '[]" value="' + suggestion.empleados_id + '">' +
+            ' <span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span>, ' +
+            '</span>';
+    if ($("span.resaltar", "#seccion_" + seccion).length > 0 && $("span.plural", "#seccion_" + seccion).length == 0) {
+        html = '<span class="plural conjuncion"> y ' + (suggestion.empleados_genero == 1 ? 'del' : 'de la') + ' </span>' + html;
+    }
+    $($this).parent('span').parent('span').before(html);
+    $($this).val('').focus();
+    actualizar_plurales();
+    if ($(".direccion_" + suggestion.cc_direcciones_id, ".firmas_involucrados").length == 0) {
+        // Agregamos la direccion
+        html = '<div class="direccion_' + suggestion.cc_direcciones_id + '">' +
+                '<p class="firmas_ua_nombre">' + suggestion.direcciones_nombre + '</p>' +
+                '</div>';
+        $(".firmas_involucrados").prepend(html);
+    }
+    html = '<div class="firmas_empleado">' +
+            '<div class="firmas_empleado_nombre">' + suggestion.empleados_nombre_titulado_siglas + '</div>' +
+            '<div class="firmas_empleado_cargo">' + suggestion.empleados_cargo + '</div>' +
+            '<div class="firmas_empleado_enlace">ENLACE DESIGNADO</div>' +
+            '</div>';
+    // Agregamos el empleado
+    $(".direccion_" + suggestion.cc_direcciones_id, ".firmas_involucrados").append(html);
+}
+
+function agregar_testigo($this, suggestion, tipo_asistencia, documentos_tipos_id) {
+    var html = '<span class="resaltar empleado_' + suggestion.empleados_id + '">' +
+            (suggestion.empleados_genero == GENERO_MASCULINO ? ' el ' : ' la ') +
+            suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
+            '<input type="hidden" name="testigos[]" value="' + suggestion.empleados_id + '">' +
+            '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span> ' +
+            '</span>';
+    if ($("span.resaltar", "#seccion_testigos").length > 0 && $("span.plural", "#seccion_testigos").length == 0) {
+        html = '<span class="plural conjuncion"> y </span>' + html;
+    }
+    $($this).parent('span').parent('span').before(html);
+    $($this).val('').focus();
+    actualizar_plurales();
+    html = '<div class="firmas_empleado">' +
+            '<div class="firmas_empleado_nombre">' + suggestion.empleados_nombre_titulado_siglas + '</div>' +
+            '<div class="firmas_empleado_cargo">' + suggestion.empleados_cargo + '</div>' +
+            '</div>';
+    // Agregamos el empleado
+    $(".firmas_testigos", ".firmas").append(html);
+}
+
 function mostrar_parrafo(id, obj) {
     if ($("#" + id).length > 0) {
         $("#" + id).removeClass('hidden-xs-up');
