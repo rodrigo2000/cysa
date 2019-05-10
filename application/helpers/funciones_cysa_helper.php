@@ -122,6 +122,30 @@ function span_resaltar($texto, $css_class = NULL) {
     return $html;
 }
 
+function genera_boton_autocomplete($tipo_asistencia, $label_boton=NULL){
+    $label = array(
+        TIPO_ASISTENCIA_RESPONSABLE => 'Agregar responsables',
+        TIPO_ASISTENCIA_TESTIGO => 'Agregar testigos',
+        TIPO_ASISTENCIA_INVOLUCRADO => 'Agregar involucrados',
+        TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA => 'Agregar involucrados'
+    );
+    $tipo = array(
+        TIPO_ASISTENCIA_RESPONSABLE => 'responsables',
+        TIPO_ASISTENCIA_TESTIGO => 'testigos',
+        TIPO_ASISTENCIA_INVOLUCRADO => 'involucrados',
+        TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA => 'involucrados_contraloria'
+    );
+    $html = '<span id="autocomplete_' . $tipo[$tipo_asistencia] . '" class="input-group hidden-xs-up hidden-print">
+        <input type="text" class="autocomplete form-control" placeholder="Empleado">
+        <span class="input-group-btn">
+            <button class="btn btn-sm btn-danger ocultar" type="button" style="padding-top:1px; padding-bottom:2px;"><i class="fa fa-close"></i></button>
+        </span>,
+    </span>
+    </span>
+    <a class="btn btn-sm btn-success hidden-print btn_agregar" href="#" data-tipo="' . $tipo[$tipo_asistencia] . '" data-asistencias-tipo="' . $tipo_asistencia . '">' . $label[$tipo_asistencia] . '</a>';
+    return $html;
+}
+
 /**
  * Crea un etiqueta SPAN con las funcionalidades para asignar asistencias al documento
  * @param array $asistencias Arreglo con los empleados que asisten al documento
@@ -130,12 +154,6 @@ function span_resaltar($texto, $css_class = NULL) {
  * @return string Código HTML de la etiqueta SPAN
  */
 function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = NULL) {
-    $label = array(
-        TIPO_ASISTENCIA_RESPONSABLE => 'Agregar responsables',
-        TIPO_ASISTENCIA_TESTIGO => 'Agregar testigos',
-        TIPO_ASISTENCIA_INVOLUCRADO => 'Agregar involucrados',
-        TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA => 'Agregar involucrados'
-    );
     $tipo = array(
         TIPO_ASISTENCIA_RESPONSABLE => 'responsables',
         TIPO_ASISTENCIA_TESTIGO => 'testigos',
@@ -171,15 +189,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = N
             }
         }
     }
-
-    $html .= '<span id="autocomplete_' . $tipo[$tipo_asistencia] . '" class="input-group hidden-xs-up hidden-print">
-        <input type="text" class="autocomplete form-control" placeholder="Empleado">
-        <span class="input-group-btn">
-            <button class="btn btn-danger ocultar" type="button"><i class="fa fa-close"></i></button>
-        </span>,
-    </span>
-    </span>
-    <a class="btn btn-sm btn-success hidden-print btn_agregar" href="#" data-tipo="' . $tipo[$tipo_asistencia] . '" data-asistencias-tipo="' . $tipo_asistencia . '">' . $label[$tipo_asistencia] . '</a>';
+    $html.= genera_boton_autocomplete($tipo_asistencia);
     return $html;
 }
 
@@ -244,7 +254,9 @@ function crear_texto_asistencias($asistencias = array(), $distribuir = TRUE, $ti
                             . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : SIN_ESPECIFICAR)
                             . " se identifica con "
                             . get_identificacion($e)
-                            . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos como privados'
+                            . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia '
+                            . 'su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos '
+                            . 'como privados'
                             . '<input type="hidden" name="testigos[]" value="' . $e['empleados_id'] . '">'
                             . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
                     ;
