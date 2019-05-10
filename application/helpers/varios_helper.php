@@ -472,8 +472,8 @@ function get_siglas_de_empleado(&$empleado) {
     $siglas = "";
     if (!empty($empleado)) {
         $siglas = $empleado['empleados_nombre'][0]
-                . (isset($empleado['empleados_apellido_paterno'][0]) ? $empleado['empleados_apellido_paterno'][0] : '')
-                . (isset($empleado['empleados_apellido_materno'][0]) ? $empleado['empleados_apellido_materno'][0] : '');
+                . (!empty($empleado['empleados_apellido_paterno']) ? $empleado['empleados_apellido_paterno'][0] : '')
+                . (!empty($empleado['empleados_apellido_materno']) ? $empleado['empleados_apellido_materno'][0] : '');
     }
     $empleado['empleado_siglas'] = $siglas;
     return TRUE;
