@@ -30,6 +30,11 @@ div#oficio-hoja.acta p {
     margin-bottom: 0px;
 }
 
+div#oficio-hoja > table table#resultados_auditoria th,
+div#oficio-hoja > table table#resultados_auditoria td {
+    vertical-align: middle;
+}
+
 #oficio-hoja:not(.acta) .texto-sangria {
     text-indent: 1cm;
 }
@@ -94,6 +99,11 @@ table { font-size: 10pt; }
 
     div#oficio-hoja:not(.autorizado) div.span.editable {
         background: yellow;
+        font-size: 14pt;
+    }
+
+    /** ARA Con observaciones **/
+    div#oficio-hoja > table table#resultados_auditoria {
         font-size: 14pt;
     }
 
@@ -212,7 +222,7 @@ span.autocomplete_empleados_delete,
 }
 
 #oficio-hoja.acta div.firmas div.firmas_testigos div.firmas_empleado {
-    display: inline-block;
+    display: inline-grid;
     margin: 5em 2em 1em 2em;
 }
 
