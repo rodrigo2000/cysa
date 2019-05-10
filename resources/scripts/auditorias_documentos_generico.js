@@ -278,6 +278,7 @@ function agregar_involucrado($this, suggestion, tipo_asistencia, documentos_id) 
     }
     var html = '<span class="resaltar" id="empleado_' + suggestion.empleados_id + '">' +
             suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
+            (documentos_id == 29 && suggestion.empleados_id == $("#auditorias_enlace_designado").val() ? ',Enlace Designado' : '') +
             '<input type="hidden" name="' + seccion + '[]" value="' + suggestion.empleados_id + '">' +
             ' <span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span>, ' +
             '</span>';

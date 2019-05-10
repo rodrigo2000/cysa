@@ -22,9 +22,6 @@ function agregar_testigo($this, suggestion, tipo_asistencia, documentos_tipos_id
     }
     var html = '<span class="resaltar empleado_' + suggestion.empleados_id + '">el servidor público ' +
             suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
-            /// Aqui verificar si es enlace designado
-            /// (suggestion.empleados_id == enlace_designado ? ',Enlace Designado':'')+
-            ////
             ', quien manifiesta ser de nacionalidad mexicana y con domicilio particular en ' +
             suggestion.empleados_domicilio +
             ' de la localidad de ' +
