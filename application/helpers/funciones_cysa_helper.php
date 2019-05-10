@@ -102,7 +102,7 @@ function span_calendario($r, $constante) {
  */
 function agregar_parrafo_show_hide($r, $constante, $texto_parrafo = SIN_ESPECIFICAR, $etiqueta_boton = 'Agregar párrafo') {
     $html = '<p class="text-justify ' . (isset($r) && isset($r[$constante]) && $r[$constante] == 1 ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center') . ' show-hide">'
-            . '<span id="parrafo'.$constante.'" class="bg-white ' . (isset($r) && isset($r[$constante]) && $r[$constante] == 1 ? '' : 'hidden-xs-up') . '">'
+            . '<span id="parrafo' . $constante . '" class="bg-white ' . (isset($r) && isset($r[$constante]) && $r[$constante] == 1 ? '' : 'hidden-xs-up') . '">'
             . $texto_parrafo . '</span>'
             . '<button type="button" onclick="ocultar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-danger btn-hide hidden-print ' . (!isset($r) || !isset($r[$constante]) || empty($r[$constante]) || $r[$constante] == 0 ? 'hidden-xs-up' : '') . '"><i class="fa fa-close"></i></button>'
             . '<button type="button" onclick="mostrar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-success btn-show hidden-print ' . (isset($r) && isset($r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])) ? 'hidden-xs-up' : '') . '">' . $etiqueta_boton . '</button>'
@@ -114,10 +114,11 @@ function agregar_parrafo_show_hide($r, $constante, $texto_parrafo = SIN_ESPECIFI
 /**
  * Crea una etiqueta SPAN con la clase CSS "resaltar", la cual hace destacar el texto en modo pantalla
  * @param string $texto Cadena de texto a mostrar dentro de la etiqueta
+ * @param string $css_class Nombre de las clases adicionales que se incluirán dentro del atriburo CLASS de la etiqueta SPAN
  * @return string Código HTML de la etiqueta SPAN
  */
-function span_resaltar($texto) {
-    $html = '<span class="resaltar">' . $texto . '</span>';
+function span_resaltar($texto, $css_class = NULL) {
+    $html = '<span class="resaltar ' . $css_class . '">' . $texto . '</span>';
     return $html;
 }
 
@@ -162,7 +163,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia) {
             }
             if (count($asistentes) > 1) {
                 $ultimo = array_pop($asistentes);
-                $html .= implode(", ", $asistentes) . '<span class="plural"> y </span>' . $ultimo;
+                $html .= implode(", ", $asistentes) . '<span class="plural conjuncion"> y </span>' . $ultimo;
             } else {
                 $html .= implode(", ", $asistentes);
             }
@@ -195,6 +196,74 @@ function get_identificacion($empleado) {
                 . (!empty($empleado['empleados_credencial_elector_delante']) ? $empleado['empleados_credencial_elector_delante'] : SIN_ESPECIFICAR)
                 . ' y número identificador '
                 . (!empty($empleado['empleados_credencial_elector_detras']) ? $empleado['empleados_credencial_elector_detras'] : SIN_ESPECIFICAR);
+    }
+    return $return;
+}
+
+/**
+ * Genera el texto de asistencias
+ * @param array $asistencias Arreglo con las asistencias al documento
+ * @param boolean $distribuir TRUE indica que se ordenaran por UA, FALSE indica que es indistinto
+ * @param integer $tipo_asistencia Identificador del tipo de asistencia que se considerará para generar el texto
+ * @param boolean $solo_nombre TRUE para indicar que solo muestre el nombre, FALSE indicará nombre + cargo
+ * @param boolean $incluir_domicilio TRUE para agregar el domicilio del empleado, FALSE para cualquier otro caso.
+ * @param boolean $incluir_articulo TRUE indica que se agregarán artículos gramaticales. FALSE no los agrega.
+ * @param boolean $enlade_designado Identificador del empleado que funge como enlace designado para añadirle el texto de "Enlace designado". Por default es NULL
+ * @param string $post_texto_adicional Texto adicional que se incluirá al final de cada empleado.
+ * @param string $separador Caracter por el cual se separan los empleados. Por default es el punto y coma.
+ * @return string Texto completo
+ */
+function crear_texto_asistencias($asistencias = array(), $distribuir = TRUE, $tipo_asistencia = NULL, $solo_nombre = FALSE, $incluir_domicilio = FALSE, $incluir_articulos = FALSE, $enlace_designado = NULL, $post_texto_adicional = NULL, $separador = ";") {
+    $return = "";
+    if (is_array($asistencias) && !empty($asistencias)) {
+        $a = array();
+        $aux = "";
+        foreach ($asistencias as $direcciones_id => $d) {
+            if ($distribuir) {
+                $aux .= '<span class="direcciones_' . $direcciones_id . '">';
+            }
+            foreach ($d[$tipo_asistencia] as $index => $e) {
+                $aux = "";
+                if ($incluir_articulos) {
+                    if ($incluir_domicilio) {
+                        $aux = " el ";
+                    } else {
+                        $aux .= ($e['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ');
+                    }
+                }
+                if ($incluir_domicilio) {
+                    $aux .= ' servidor público ';
+                }
+                $aux .= $e['empleados_nombre_titulado'] . ($solo_nombre ? NULL : ', ' . $e['empleados_cargo']) . (!empty($enlace_designado) && $enlace_designado == $e['empleados_id'] ? ', Enlace Designado' : NULL);
+                if ($incluir_domicilio) {
+                    $aux .= ", quien manifiesta ser de nacionalidad mexicana y con domicilio particular en "
+                            . $e['empleados_domicilio']
+                            . " de la localidad de "
+                            . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : SIN_ESPECIFICAR)
+                            . " se identifica con "
+                            . get_identificacion($e)
+                            . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos como privados'
+                            . '<input type="hidden" name="testigos[]" value="' . $e['empleados_id'] . '">'
+                            . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
+                    ;
+                }
+                $css_class = "empleado_" . $e['empleados_id'];
+                $str = span_resaltar($aux, $css_class);
+                array_push($a, $str);
+            }
+            if ($distribuir) {
+                $aux .= '</span>';
+            }
+        }
+        $cadena = "";
+        if (count($a) > 0) {
+            $ultimo = NULL;
+            if (count($a) > 1) {
+                $ultimo = '<span class="plural conjuncion"> y </span>' . array_pop($a);
+            }
+            $cadena = implode($separador . " ", $a) . $ultimo;
+        }
+        $return = $cadena;
     }
     return $return;
 }
