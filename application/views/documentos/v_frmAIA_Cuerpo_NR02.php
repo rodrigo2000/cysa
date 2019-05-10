@@ -141,7 +141,7 @@ if (count($direcciones) > 1) {
                                             <?= span_editable($r, ACTA_INICIO_REUNIDOS_EN, 'ESPECIFICAR OFICINA'); ?>,
                                             ubicada en
                                             <?= span_editable($r, ACTA_INICIO_UBICACION, 'ESPECIFICAR UBICACIÓN'); ?>,
-                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO); ?>
+                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO, $auditoria); ?>
                                             y por la <?= LABEL_CONTRALORIA; ?>
                                             <?= span_resaltar($auditoria['empleados_nombre_titulado']); ?>,
                                             Auditor Líder a efecto de formalizar el inicio de la auditoría número
