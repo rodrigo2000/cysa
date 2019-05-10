@@ -157,7 +157,7 @@ class Auditorias_model extends MY_Model {
                 get_nombre_titulado($return);
                 $equipo = $this->get_equipo_auditoria($auditorias_id);
                 $return['auditoria_equipo'] = $equipo;
-                $return['enlace_designado'] = $this->SAC_model->get_empleado($return['auditorias_enlace_designado'], TRUE);
+                $return['enlace_designado'] = $this->SAC_model->get_empleado($return['auditorias_enlace_designado']);
                 $return['empleados_involucrados'] = $this->Auditorias_involucrados_model->get_empleados_involucrados_en_auditoria($auditorias_id);
                 $return['observaciones'] = $this->Observaciones_model->get_observaciones($auditorias_id);
             }
