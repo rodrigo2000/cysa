@@ -394,6 +394,7 @@ if (count($direcciones) > 1) {
                         <input type="hidden" name="accion" id="accion" value="<?= $accion; ?>">
                         <input type="hidden" name="documentos_tipos_id" id="documentos_tipos_id" value="<?= $documento['documentos_versiones_documentos_tipos_id']; ?>">
                         <input type="hidden" name="documentos_versiones_id" id="documentos_versiones_id" value="<?= $documento['documentos_versiones_id']; ?>">
+                        <input type="hidden" id="auditorias_enlace_designado" value="<?= $auditoria['auditorias_enlace_designado'];?>">
                     </div>
                 </div>
             </form>
