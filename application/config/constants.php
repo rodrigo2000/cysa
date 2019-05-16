@@ -96,7 +96,7 @@ define('LABEL_CONTRALORIA', 'Unidad de Contraloría Municipal');
 define('SIN_ESPECIFICAR', '<b>[SIN ESPECIFICAR]</b>');
 
 define('TIPO_AUDITORIA_AP',1);
-define('TIPO_AUDITORIA_AR', 2);
+define('TIPO_AUDITORIA_AE', 2);
 define('TIPO_AUDITORIA_SA', 3);
 define('TIPO_AUDITORIA_IC', 4);
 define('TIPO_AUDITORIA_CV', 5);
