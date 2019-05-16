@@ -91,6 +91,8 @@ define('TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA', 4);
 @define('PLAZO_SOLV_RES', 36);
 /* Dias habiles para el plazo de solventacion de la auditoria Operativa */
 @define('PLAZO_SOLV_RESPO', 39);
+/* Cantidad de ejemplares para dar de un acta */
+@define('CONSTANTE_CANTIDAD_EJEMPLARES_ACTA','dos');
 
 define('LABEL_CONTRALORIA', 'Unidad de Contraloría Municipal');
 define('SIN_ESPECIFICAR', '<b>[SIN ESPECIFICAR]</b>');
