@@ -16,8 +16,16 @@ if (isset($cysa['auditorias_anio']) && !empty($cysa['auditorias_anio'])) {
 if (isset($cysa['auditorias_id']) && !empty($cysa['auditorias_id'])) {
     $data['auditoria'] = $this->Auditorias_model->get_auditoria($cysa['auditorias_id']);
 }
-$auditorias = $this->Auditoria_model->get_mis_auditorias(abs($anio));
-$tipo_auditoria_AP = array(1, 2, 3);
+$status = AUDITORIAS_STATUS_EN_PROCESO;
+if ($anio < 0) {
+    $status = array(
+        AUDITORIAS_STATUS_FINALIZADA,
+        AUDITORIAS_STATUS_FINALIZADA_RESERVADA,
+        AUDITORIAS_STATUS_FINALIZADA_MANUAL
+    );
+}
+$auditorias = $this->Auditoria_model->get_mis_auditorias(abs($anio), NULL, $status);
+$tipo_auditoria_AP = array(TIPO_AUDITORIA_AP, TIPO_AUDITORIA_AE, TIPO_AUDITORIA_SA);
 $APs = $ICs = array();
 foreach ($auditorias as $a) {
     if (in_array($a['auditorias_tipo'], $tipo_auditoria_AP)) {
@@ -43,7 +51,7 @@ $anio_select = isset($this->session->cysa['auditorias_anio']) ? $this->session->
                 <optgroup label="AUDITORIÁS (AP/AE/SA)">
                     <?php foreach ($aa as $r): ?>
                         <?php if ($r['auditorias_status_id'] > 0): ?>
-                            <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= $r['numero_auditoria']; ?></option>
+                            <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= !empty($r['numero_auditoria']) ? $r['numero_auditoria'] : 'S/N - ' . $r['auditorias_rubro']; ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </optgroup>
@@ -52,7 +60,7 @@ $anio_select = isset($this->session->cysa['auditorias_anio']) ? $this->session->
                 <optgroup label="INTERVENCIÓN DE CONTROL">
                     <?php foreach ($aa as $r): ?>
                         <?php if ($r['auditorias_status_id'] > 0): ?>
-                            <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= $r['numero_auditoria']; ?></option>
+                            <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= !empty($r['numero_auditoria']) ? $r['numero_auditoria'] : 'S/N - ' . $r['auditorias_rubro']; ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </optgroup>

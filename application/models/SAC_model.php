@@ -150,18 +150,54 @@ class SAC_model extends MY_Model {
             if (!empty($departamentos_id)) {
                 $this->dbSAC->where("cc_departamentos_id", $departamentos_id);
             }
+            if (!$incluir_eliminados) {
+                $this->dbSAC->where("e.fecha_delete IS NULL");
+            }
             $result = $this->dbSAC->select("cc.*")
-                    ->where("cc.fecha_delete IS NULL")
-                    ->where("e.fecha_delete IS NULL")
                     ->join("direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "INNER")
                     ->join("subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "INNER")
                     ->join("departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "INNER")
                     ->join("empleados e", "e.empleados_cc_id = cc_id")->select("e.*, CONCAT(empleados_nombre, ' ', e.empleados_apellido_paterno, ' ', e.empleados_apellido_materno) AS 'empleados_nombre_completo'")
+                    ->where("cc.fecha_delete IS NULL")
                     ->order_by("departamentos_nombre", "ASC")
                     ->get("centros_costos cc");
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
             }
+        }
+        return $return;
+    }
+
+    function get_empleados_cc_label($etiqueta_direccion, $etiqueta_subdireccion = NULL, $etiqueta_departamento = NULL, $puestos = array(), $incluir_eliminados = FALSE) {
+        $return = array();
+
+        $this->dbSAC->where('cc_etiqueta_direccion', $etiqueta_direccion);
+        if (!empty($etiqueta_subdireccion)) {
+            $this->dbSAC->where('cc_etiqueta_subdireccion', $etiqueta_subdireccion);
+        }
+        if (!empty($etiqueta_departamento)) {
+            $this->dbSAC->where('cc_etiqueta_departamento', $etiqueta_departamento);
+        }
+        if (!$incluir_eliminados) {
+            $this->dbSAC->where("e.fecha_delete IS NULL");
+        }
+        if (!empty($puestos)) {
+            if (is_array($puestos)) {
+                $this->dbSAC->where_in("e.empleados_puestos_id", $puestos);
+            } elseif (is_scalar($puestos)) {
+                $this->dbSAC->where("e.empleados_puestos_id", $puestos);
+            }
+        }
+        $result = $this->dbSAC->select("cc.*")
+                ->join("direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "INNER")
+                ->join("subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "INNER")
+                ->join("departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "INNER")
+                ->join("empleados e", "e.empleados_cc_id = cc_id")->select("e.*, CONCAT(empleados_nombre, ' ', e.empleados_apellido_paterno, ' ', e.empleados_apellido_materno) AS 'empleados_nombre_completo'")
+                ->where("cc.fecha_delete IS NULL")
+                ->order_by("departamentos_nombre", "ASC")
+                ->get("centros_costos cc");
+        if ($result && $result->num_rows() > 0) {
+            $return = $result->result_array();
         }
         return $return;
     }

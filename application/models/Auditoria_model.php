@@ -13,10 +13,6 @@ class Auditoria_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
-    function get_auditorias_para_select() {
-        return $this->getResultados(NULL, NULL);
-    }
-
     function get_anios_para_select() {
         $return = array();
         $anios = $this->get_anios_de_mis_auditorias();
@@ -36,59 +32,11 @@ class Auditoria_model extends MY_Model {
     }
 
     function getResultados($limit = NULL, $start = NULL) {
-        $empleados_id = $this->session->userdata('empleados_id');
         $this->db
-                ->select($this->table_prefix . ".*")
-                ->select("CONCAT(IF(a.auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas,'/',at.auditorias_tipos_siglas,'/', LPAD(a.auditorias_numero,3,'0'),'/',a.auditorias_anio) AS 'numero_auditoria'")
-                ->select("CASE WHEN a.auditorias_tipo < 4 THEN 1 ELSE 2 END AS 'tipo_auditoria'")
+                ->join("auditorias_status aus", "aus.auditorias_status_id=" . $this->table_prefix . ".auditorias_status_id", "INNER")->select("aus.auditorias_status_nombre")
                 ->join("auditorias_areas aa", "aa.auditorias_areas_id = " . $this->table_prefix . ".auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
                 ->join("auditorias_tipos at", "at.auditorias_tipos_id = " . $this->table_prefix . ".auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
-                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = a.auditorias_auditor_lider", "INNER")//->select("e.empleados_cc_id")
-                ->order_by("a.auditorias_anio", "DESC")
-                ->order_by("tipo_auditoria", "ASC")
-                ->order_by("a.auditorias_segundo_periodo", "DESC")
-                ->order_by("a.auditorias_numero", "ASC");
-        switch ($this->session->userdata('perfiles_id')) {
-            case USUARIO_PERFIL_ADMNISTRADOR:
-                break;
-            case USUARIO_PERFIL_RESGUARDANTE_BODEGA:
-                break;
-            case USUARIO_PERFIL_EMPLEADO_CONTRALORIA:
-                $puestos_id = intval($this->session->userdata('puestos_id'));
-                $cc_id = intval($this->session->userdata('cc_id'));
-                switch ($puestos_id) {
-                    case PUESTO_SUBDIRECTOR:
-                    case PUESTO_JEFE_DEPARTAMENTO:
-                        $this->db
-                                ->join("auditorias_equipo ae", "ae.auditorias_equipo_auditorias_id = auditorias_id", "INNER")
-                                ->group_start()
-                                ->where("auditorias_auditor_lider", $empleados_id)
-                                ->or_where("ae.auditorias_equipo_empleados_id", $empleados_id)
-                                ->or_where_in("e.empleados_cc_id", array(669))
-                                ->group_end();
-                        break;
-                    case PUESTO_COORDINADOR:
-                    case PUESTO_COORDINADOR_AUDITORIA:
-                        $this->db
-                                ->join("auditorias_equipo ae", "ae.auditorias_equipo_auditorias_id = auditorias_id", "INNER")
-                                ->group_start()
-                                ->where("auditorias_auditor_lider", $empleados_id)
-                                ->or_where("ae.auditorias_equipo_empleados_id", $empleados_id)
-                                ->group_end();
-                        break;
-                    case PUESTO_AUDITOR:
-                    case PUESTO_AUXILIAR_DE_AUDITORIA:
-                        $this->db->where("auditorias_auditor_lider", $empleados_id);
-                        break;
-                    default:
-                }
-                break;
-                break;
-            default:
-                $this->db->where("auditorias_auditor_lider", $empleados_id);
-                break;
-        }
-        $this->db->group_by("auditorias_id");
+                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = a.auditorias_auditor_lider", "INNER");
         $return = parent::getResultados($limit, $start);
         return $return;
     }
@@ -152,26 +100,13 @@ class Auditoria_model extends MY_Model {
      */
     function get_anios_de_mis_auditorias($empleados_id = NULL) {
         $return = array();
-        if (empty($empleados_id)) {
-            $this->db->where($this->table_prefix . ".auditorias_auditor_lider", $this->session->userdata("empleados_id"));
-        }
         $result = $this->db
                 ->select("a.auditorias_anio, COUNT(a.auditorias_id) AS 'total', a.auditorias_status_id")
-                ->join("auditorias_status aus", "aus.auditorias_status_id=" . $this->table_prefix . ".auditorias_status_id", "INNER")->select("aus.auditorias_status_nombre")
-                ->where_in($this->table_prefix . ".auditorias_status_id", array(
-                    AUDITORIAS_STATUS_EN_PROCESO,
-                    AUDITORIAS_STATUS_FINALIZADA,
-                    AUDITORIAS_STATUS_FINALIZADA_RESERVADA,
-                    AUDITORIAS_STATUS_FINALIZADA_MANUAL
-                ))
-                ->group_by($this->table_prefix . ".auditorias_anio")
                 ->group_by("CASE WHEN " . $this->table_prefix . ".auditorias_status_id = 1 THEN 1 ELSE 2 END", FALSE)
+                ->group_by($this->table_prefix . ".auditorias_anio")
                 ->order_by($this->table_prefix . ".auditorias_status_id", "ASC")
-                ->order_by($this->table_prefix . ".auditorias_anio", "DESC")
-                ->get($this->table_name . " " . $this->table_prefix);
-        if ($result && $result->num_rows() > 0) {
-            $return = $result->result_array();
-        }
+                ->order_by($this->table_prefix . ".auditorias_anio", "DESC");
+        $return = $this->get_mis_auditorias(NULL, $empleados_id, NULL, FALSE);
         return $return;
     }
 
@@ -180,25 +115,100 @@ class Auditoria_model extends MY_Model {
      * @param integer $anio Año en que inició la auditoría. Cuando año es vacío se regresan las auditorías de todos los años
      * @param integer $empleados_id Identificador del empleado, Cuando es NULL se obtiene el de todos los empleados
      * @param integer|array $status_id Arreglo con los identificadores de los status de auditoria. De forma predeterminada se devuelven todos los status
+     * @param boolean $is_agrupado TRUE Indica que las auditorias que tendrá en GROUP BY a.auditorias_id. FALSE en caso contrario.
      * @return array Devuelve un arreglo con las auditorías
      */
-    function get_mis_auditorias($anio = NULL, $empleados_id = NULL, $status_id = NULL) {
+    function get_mis_auditorias($anio = NULL, $empleados_id = NULL, $status_id = NULL, $is_agrupado = TRUE) {
         $return = array();
         if (!empty($anio)) {
-            $this->db->where("auditorias_anio", $anio);
+            $this->db->where($this->table_prefix . ".auditorias_anio", $anio);
         }
         if (empty($empleados_id)) {
             $empleados_id = $this->session->userdata('empleados_id');
         }
-        $this->db->where($this->table_prefix . ".auditorias_auditor_lider", $empleados_id);
-        if (!empty($status_id)) {
+        if ($is_agrupado) {
+            $this->db->group_by($this->table_prefix . ".auditorias_id");
+        }
+        if (!is_null($status_id)) {
             if (is_array($status_id)) {
-                $this->db->where_in("auditorias_status_id", $status_id);
+                $this->db->where_in($this->table_prefix . ".auditorias_status_id", $status_id);
             } else {
-                $this->db->where("auditorias_status_id", $status_id);
+                $this->db->where($this->table_prefix . ".auditorias_status_id", $status_id);
             }
         } else {
-            $this->db->where("auditorias_status_id >", 0);
+            $this->db->where($this->table_prefix . ".auditorias_status_id >", 0);
+        }
+        $this->db->select($this->table_prefix . ".*")
+                ->select("CONCAT(IF(a.auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas,'/',at.auditorias_tipos_siglas,'/', LPAD(a.auditorias_numero,3,'0'),'/',a.auditorias_anio) AS 'numero_auditoria'")
+                ->select("CASE WHEN a.auditorias_tipo < 4 THEN 1 ELSE 2 END AS 'tipo_auditoria'")
+                ->order_by("a.auditorias_anio", "DESC")
+                ->order_by("tipo_auditoria", "ASC")
+                ->order_by("a.auditorias_segundo_periodo", "DESC")
+                ->order_by("a.auditorias_numero", "ASC");
+        switch ($this->session->userdata('perfiles_id')) {
+            case USUARIO_PERFIL_ADMNISTRADOR:
+                break;
+            case USUARIO_PERFIL_RESGUARDANTE_BODEGA:
+                $this->db->where("auditorias_auditor_lider", $empleados_id);
+                break;
+            case USUARIO_PERFIL_EMPLEADO_CONTRALORIA:
+                $puestos_id = intval($this->session->userdata('puestos_id'));
+                $cc_id = intval($this->session->userdata('cc_id'));
+                switch ($puestos_id) {
+                    case PUESTO_SUBDIRECTOR:
+                    case PUESTO_JEFE_DEPARTAMENTO:
+                        $cc_label = $this->session->userdata('cc_label');
+                        if ($cc_label !== '5.3.3') { // Si es de TI, entonces mostramos todos
+                            list($d, $s, $dd) = explode(".", $cc_label);
+                            $puestos = array(
+                                PUESTO_COORDINADOR,
+                                PUESTO_COORDINADOR_AUDITORIA,
+                                PUESTO_AUDITOR,
+                                PUESTO_AUXILIAR_DE_AUDITORIA
+                            );
+                            $empleados_cc = $this->SAC_model->get_empleados_cc_label($d, $s, $dd, $puestos);
+                            $empleados_ids = array_column($empleados_cc, 'empleados_id', 'empleados_id');
+                            $this->db
+                                    ->join("auditorias_equipo ae", "ae.auditorias_equipo_auditorias_id = auditorias_id", "LEFT")
+                                    ->group_start()
+                                    ->where_in("auditorias_auditor_lider", $empleados_ids)
+                                    ->or_where_in("ae.auditorias_equipo_empleados_id", $empleados_ids)
+                                    ->group_end();
+                        }
+                        break;
+                    case PUESTO_COORDINADOR:
+                    case PUESTO_COORDINADOR_AUDITORIA:
+                        list($d, $s, $dd) = explode(".", $this->session->userdata('cc_label'));
+                        $puestos = array(
+                            PUESTO_COORDINADOR,
+                            PUESTO_COORDINADOR_AUDITORIA,
+                            PUESTO_AUDITOR,
+                            PUESTO_AUXILIAR_DE_AUDITORIA
+                        );
+                        $empleados_cc = $this->SAC_model->get_empleados_cc_label($d, $s, $dd, $puestos);
+                        $empleados_ids = array_column($empleados_cc, 'empleados_id', 'empleados_id');
+                        if (in_array($empleados_id, array(4418, 5358))) {
+                            $empleados_ids = array(4418, 5358);
+                        } else {
+                            unset($empleados_ids[4418], $empleados_ids[5358]);
+                        }
+                        $this->db
+                                ->join("auditorias_equipo ae", "ae.auditorias_equipo_auditorias_id = auditorias_id", "LEFT")
+                                ->group_start()
+                                ->where_in("auditorias_auditor_lider", $empleados_ids)
+                                ->or_where_in("ae.auditorias_equipo_empleados_id", $empleados_ids)
+                                ->group_end();
+                        break;
+                    case PUESTO_AUDITOR:
+                    case PUESTO_AUXILIAR_DE_AUDITORIA:
+                        $this->db->where("auditorias_auditor_lider", $empleados_id);
+                        break;
+                    default:
+                }
+                break;
+            default:
+                $this->db->where("auditorias_auditor_lider", $empleados_id);
+                break;
         }
         $return = $this->getResultados(NULL, NULL);
         return $return;
