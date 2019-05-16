@@ -59,16 +59,18 @@ class Documentos extends MY_Controller {
                 break;
             case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:
                 if (isset($constantes[ACEI_PARRAFO_U2])) {
-                    $constantes[ACEI_PARRAFO_U2] = str_ireplace("\n", "", $constantes[ACEI_PARRAFO_U2]);
-                    $constantes[ACEI_PARRAFO_U2] = str_ireplace(array('</p>', '<br>'), "\n", $constantes[ACEI_PARRAFO_U2]);
-                    $constantes[ACEI_PARRAFO_U2] = strip_tags($constantes[ACEI_PARRAFO_U2]);
-                    $constantes[ACEI_PARRAFO_U2] = html_entity_decode($constantes[ACEI_PARRAFO_U2]);
+                    $constantes[ACEI_PARRAFO_U2] = my_strip_tags($constantes[ACEI_PARRAFO_U2]);
                 }
                 break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
                 $declaraciones = $this->input->post('declaraciones');
-                foreach ($declaraciones as $empleados_id => $declaracion) {
-                    $this->Asistencias_declaraciones_model->insert_update($documentos_id, $empleados_id, $declaracion);
+                if (!empty($declaraciones)) {
+                    foreach ($declaraciones as $empleados_id => $declaracion) {
+                        $this->Asistencias_declaraciones_model->insert_update($documentos_id, $empleados_id, $declaracion);
+                    }
+                }
+                if (isset($constantes[ACTA_RESULTADOS_REDACCION])) {
+                    $constantes[ACTA_RESULTADOS_REDACCION] = my_strip_tags($constantes[ACTA_RESULTADOS_REDACCION]);
                 }
                 break;
             default :
