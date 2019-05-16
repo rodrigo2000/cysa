@@ -73,10 +73,11 @@ function get_frase_de_ua($a) {
  * @param array $r Arreglo con los valores del documento
  * @param integer $constante Constante del documento a utilizar
  * @param string $default_value Cadena de texto que tendrá el SPAN de forma predeterminada
+ * @param boolean $aceptar_enter TRUE para que en la etiqueta se acepte el ENTER dentro del Texto. FALSE para cualquier otro caso.
  * @return string Código HTML de la etiqueta SPAN
  */
-function span_editable($r, $constante, $default_value = SIN_ESPECIFICAR) {
-    $html = '<span id="' . $constante . '" contenteditable="true" class="editable" default-value="' . $default_value . '">' . (isset($r) && isset($r[$constante]) ? $r[$constante] : '') . '</span>';
+function span_editable($r, $constante, $default_value = SIN_ESPECIFICAR, $aceptar_enter = FALSE) {
+    $html = '<span id="' . $constante . '" contenteditable="true" class="editable" ' . ($aceptar_enter ? 'aceptar-enter="1"' : '') . ' default-value="' . $default_value . '">' . (isset($r) && isset($r[$constante]) ? $r[$constante] : '') . '</span>';
     return $html;
 }
 
@@ -101,11 +102,12 @@ function span_calendario($r, $constante) {
  * @return string Código HTML del párrafo
  */
 function agregar_parrafo_show_hide($r, $constante, $texto_parrafo = SIN_ESPECIFICAR, $etiqueta_boton = 'Agregar párrafo') {
-    $html = '<p class="text-justify ' . (isset($r) && isset($r[$constante]) && $r[$constante] == 1 ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center') . ' show-hide">'
-            . '<span id="parrafo' . $constante . '" class="bg-white ' . (isset($r) && isset($r[$constante]) && $r[$constante] == 1 ? '' : 'hidden-xs-up') . '">'
+    $con_valor = (isset($r) && isset($r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])));
+    $html = '<p class="text-justify ' . ($con_valor ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center') . ' show-hide">'
+            . '<span id="parrafo' . $constante . '" class="bg-white ' . ($con_valor ? '' : 'hidden-xs-up') . '">'
             . $texto_parrafo . '</span>'
-            . '<button type="button" onclick="ocultar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-danger btn-hide hidden-print ' . (!isset($r) || !isset($r[$constante]) || empty($r[$constante]) || $r[$constante] == 0 ? 'hidden-xs-up' : '') . '"><i class="fa fa-close"></i></button>'
-            . '<button type="button" onclick="mostrar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-success btn-show hidden-print ' . (isset($r) && isset($r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])) ? 'hidden-xs-up' : '') . '">' . $etiqueta_boton . '</button>'
+            . '<button type="button" onclick="ocultar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-danger btn-hide hidden-print ' . (!$con_valor ? 'hidden-xs-up' : '') . '"><i class="fa fa-close"></i></button>'
+            . '<button type="button" onclick="mostrar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-success btn-show hidden-print ' . ($con_valor ? 'hidden-xs-up' : '') . '">' . $etiqueta_boton . '</button>'
             . '<input type="hidden" name="constantes[' . $constante . ']" value="' . (isset($r) && isset($r[$constante]) ? $r[$constante] : 0) . '">'
             . '</p>';
     return $html;
@@ -122,7 +124,13 @@ function span_resaltar($texto, $css_class = NULL) {
     return $html;
 }
 
-function genera_boton_autocomplete($tipo_asistencia, $label_boton=NULL){
+/**
+ *
+ * @param type $tipo_asistencia
+ * @param type $label_boton
+ * @return string
+ */
+function genera_boton_autocomplete($tipo_asistencia, $label_boton = NULL) {
     $label = array(
         TIPO_ASISTENCIA_RESPONSABLE => 'Agregar responsables',
         TIPO_ASISTENCIA_TESTIGO => 'Agregar testigos',
@@ -189,7 +197,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = N
             }
         }
     }
-    $html.= genera_boton_autocomplete($tipo_asistencia);
+    $html .= genera_boton_autocomplete($tipo_asistencia);
     return $html;
 }
 
@@ -280,4 +288,20 @@ function crear_texto_asistencias($asistencias = array(), $distribuir = TRUE, $ti
         $return = $cadena;
     }
     return $return;
+}
+
+/**
+ * Conviernte una cadena HTML a su representación en texto plano
+ * @param string $html Cadena que contiene etiquetas HTML
+ * @return string Cadena sin etiquetas HTML
+ */
+function my_strip_tags($html = NULL) {
+    $txt = '';
+    if (!empty($html)) {
+        $txt = str_ireplace("\n", "", $html);
+        $txt = str_ireplace(array('</p>', '<br>'), "\n", $txt);
+        $txt = strip_tags($txt);
+        $txt = html_entity_decode($txt);
+    }
+    return $txt;
 }
