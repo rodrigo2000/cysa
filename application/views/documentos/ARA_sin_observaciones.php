@@ -1,24 +1,12 @@
 <?php
-$sinEspecificar = '<b>[SIN ESPECIFICAR]</b>';
-$fecha_notificacion_OE = NULL;
-$fecha_cumplimiento = NULL;
-
-$OA = $this->Documentos_model->get_documentos_de_auditoria($auditoria['auditorias_id'], TIPO_DOCUMENTO_ORDEN_AUDITORIA);
-foreach ($OA as $oa) {
-    if (isset($oa['documento_is_aprobado']) && $oa['documentos_is_aprobado'] == 1 && isset($oa['valores'])) {
-        $fecha_notificacion_OE = $oa['valores'][ORD_ENT_FECHA_VISITA];
-        $fecha_cumplimiento = $oa['valores'][ORD_ENT_FECHA_SI];
-    }
-}
-$RAP = $this->Documentos_model->get_documentos_de_auditoria($auditoria['auditorias_id'], TIPO_DOCUMENTO_RESOLUCION_AMPLIACION_PLAZO);
-foreach ($RAP as $rap) {
-    if (isset($rap['documento_is_aprobado']) && $rap['documento_is_aprobado'] == 1 && isset($rap['valores'])) {
-        $fecha_cumplimiento = $rap['valores'][RESOL_AMPLI_FECHA_CUMPLIMIENTO];
-    }
-}
 $texto_foja = "";
 $direcciones = array();
 $asistencias = $documentos[$index]['asistencias'];
+if (empty($asistencias)) {
+    $asistencias[$auditoria['auditorias_direcciones_id']] = array(
+        TIPO_ASISTENCIA_INVOLUCRADO => 0
+    );
+}
 foreach ($asistencias as $direcciones_id => $d) {
     if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
         $aux = $this->SAC_model->get_direccion($direcciones_id);
@@ -138,48 +126,81 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                 <td>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            En la ciudad de Mérida, capital del Estado de Yucatán, Estados Unidos Mexicanos, con fundamento en lo dispuesto en el tercer párrafo del artículo 113 de la Ley de Responsabilidades Administrativas del Estado de Yucatán, siendo las (1) horas del día (2), se reúnen en la (2ª)[Unidad de Contraloría], ubicada en (2b)[la calle 50 número 471 por 51 y 53 de la Colonia Centro]; (3)[por (4), el servidor público (4ª), por la Unidad de Contraloría (5) y en calidad de testigos los servidores públicos (6); a efecto de dar a conocer el resultado de la auditoría (7) que tiene por objetivo (7a), iniciada el (8) *[de acuerdo al Programa Anual de Auditoría de la Unidad de Contraloría], obteniéndose lo siguiente:
+                                            En la ciudad de Mérida, capital del Estado de Yucatán, Estados Unidos Mexicanos, con fundamento en lo
+                                            dispuesto en el tercer párrafo del artículo 113 de la Ley de Responsabilidades Administrativas del Estado
+                                            de Yucatán, siendo las
+                                            <?= span_editable($r, ACTA_RESULTADOS_HORA_INI, 'HH:MM'); ?>
+                                            horas del día
+                                            <?= span_calendario($r, ACTA_RESULTADOS_FECHA) ?>,
+                                            se reúnen en la
+                                            <?= span_editable($r, ACTA_RESULTADOS_UBICACION, 'Lugar donde se realiza la lectura') ?>,
+                                            ubicada en
+                                            <?= span_editable($r, ACTA_RESULTADOS_DIRUBICACION, 'calle ___ número ___ por __ y __'); ?>;
+                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO); ?>,
+                                            por la <?= LABEL_CONTRALORIA; ?>
+                                            y en calidad de testigos
+                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_TESTIGO) ?>;
+                                            a efecto de dar a conocer el resultado de la auditoría
+                                            <?= span_resaltar($auditoria['numero_auditoria']); ?>
+                                            que tiene por objetivo
+                                            <?= span_resaltar($auditoria['auditorias_objetivo']); ?>,
+                                            <span class="bg-white">
+                                                iniciada el
+                                                <?= span_resaltar(mysqlDate2OnlyDate($auditoria['auditorias_fechas_inicio_real'])) . ($auditoria['auditorias_tipo'] == 1 ? " de acuerdo al Programa Anual de Auditoría de la " . LABEL_CONTRALORIA : '') . ", "; ?>,
+                                                obteniéndose lo siguiente:
+                                            </span>
                                         </span>
                                     </p>
                                     <p class="text-xs-center bg-punteado">
                                         <span class="bg-white" style="padding-left:5px; padding-right: 5px; font-weight: bolder;">RESULTADOS DE AUDITORÍA</span>
                                     </p>
-                                    <div>
-
+                                    <?php $con_valor = (isset($r) && isset($r[ACTA_RESULTADOS_REDACCION]) && ($r[ACTA_RESULTADOS_REDACCION] == 1 || !empty($r[ACTA_RESULTADOS_REDACCION]))); ?>
+                                    <div class="show-hide">
+                                        <div id="parrafo<?= ACTA_RESULTADOS_REDACCION; ?>" contenteditable="true" class="editable span <?= $con_valor ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center'; ?>" aceptar-enter="1" default-value="[Redacción de información de inexistencia de Observaciones]" style="border: 1px solid black;">
+                                            <?= $con_valor ? nl2br($r[ACTA_RESULTADOS_REDACCION]) : ''; ?>
+                                        </div>
+                                        <button type="button" onclick="ocultar_parrafo('parrafo<?= ACTA_RESULTADOS_REDACCION; ?>', this);" class="btn btn-sm btn-danger btn-hide hidden-print <?= !$con_valor ? 'hidden-xs-up' : ''; ?>"><i class="fa fa-close"></i></button>
+                                        <button type="button" onclick="mostrar_parrafo('parrafo<?= ACTA_RESULTADOS_REDACCION; ?>', this);" class="btn btn-sm btn-success btn-show hidden-print <?= $con_valor ? 'hidden-xs-up' : ''; ?>">Agregar redacción</button>
                                     </div>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            9ª[Como resultado de lo anterior, en función del objetivo de la auditoría y de la aplicación de pruebas basadas en un muestreo de los controles operantes, la normatividad vigente y la documentación proporcionada por el área auditada, concluimos la inexistencia de observaciones.
+                                            <span><?= !isset($r[ACTA_RESULTADOS_REDACCION]) ? "E" : "Como resultado de lo anterior, e"; ?></span>n
+                                            función del objetivo de la auditoría y de la aplicación de pruebas basadas en un muestreo sobre los controles
+                                            operantes, la normatividad vigente y la documentación proporcionada por el área auditada, concluimos la inexistencia
+                                            de observaciones.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            9b[En función del objetivo de la auditoría y de la aplicación de pruebas basadas en un muestreo de los controles operantes, la normatividad vigente y la documentación proporcionada por el área auditada, concluimos la inexistencia de observaciones.
+                                            Asimismo, es importante establecer que el adecuado ambiente de control es responsabilidad de la unidad
+                                            administrativa sujeta a revisión.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            Asimismo, es importante establecer que el adecuado ambiente de control es responsabilidad de la unidad administrativa sujeta a revisión.
+                                            Por lo anterior, con el presente acto, se hace constar formalmente la conclusión de la auditoría <?= $auditoria['numero_auditoria']; ?>.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            Por lo anterior, con el presente acto, se hace constar formalmente la conclusión de la auditoría (7).
+                                            De igual forma, le exhortamos a que todo el personal de
+                                            <?= $texto_foja; ?>
+                                            continúe realizando sus funciones de acuerdo a la normatividad vigente, con el fin de promover la
+                                            optimización y transparencia en el manejo de los recursos para beneficio de la ciudadanía.
                                         </span>
                                     </p>
+                                    <?php $txt = 'Se hace del conocimiento de los presentes que la omisión o negativa de firma dará lugar al levantamiento del acta correspondiente y que dicha circunstancia no afecta la validez y efectos legales de la presente acta.'; ?>
+                                    <?= agregar_parrafo_show_hide($r, ACTA_RESULTADOS_OMI_FIR, $txt, 'Agregar en caso de omitirse alguna firma'); ?>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
-                                            De igual forma, le exhortamos a que todo el personal de la (del) (4) continúe realizando sus funciones de acuerdo a la normatividad vigente, con el fin de promover la optimización y transparencia en el manejo de los recursos para beneficio de la ciudadanía.
-                                        </span>
-                                    </p>
-                                    <p class="text-justify bg-punteado">
-                                        <span class=" bg-white">
-                                            (10)[Se hace del conocimiento de los presentes que la omisión o negativa de firma dará lugar al levantamiento del acta correspondiente y que dicha circunstancia no afecta la validez y efectos legales de la presente acta].
-                                        </span>
-                                    </p>
-                                    <p class="text-justify bg-punteado">
-                                        <span class=" bg-white">
-                                            Leída la presente acta y no habiendo más hechos que plasmar se da por concluida la diligencia siendo las (11) horas de la misma fecha en que fue iniciada. Asimismo, previa lectura de lo asentado, los que en ella intervinieron la firman al margen y calce de todas y cada una de las fojas, haciéndose constar que este documento fue elaborado en (12) ejemplares originales, de los cuales se hace entrega de uno al servidor público con quien se entendió la diligencia.
+                                            Leída la presente acta y no habiendo más hechos que plasmar se da por concluida la diligencia siendo las
+                                            <?= span_editable($r, ACTA_RESULTADOS_HORA_FIN, 'HH:MM'); ?>
+                                            horas de la misma fecha en que fue iniciada. Asimismo, previa lectura de lo asentado, los que en ella
+                                            intervinieron la firman al margen y calce de todas y cada una de las fojas, haciéndose constar que este
+                                            documento fue elaborado en
+                                            <?= span_editable($r, ACTA_RESULTADOS_NUMERO_EJEMPLARES, CONSTANTE_CANTIDAD_EJEMPLARES_ACTA); ?>
+                                            ejemplares originales, de los cuales se hace entrega de uno al servidor público con quien se entendió
+                                            la diligencia.
                                         </span>
                                     </p>
                                     <p class="text-xs-center firmas_firmas">FIRMAS</p>
@@ -250,4 +271,3 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
         <?php endif; ?>
     </div>
 </div>
-<script src="<?= APP_CYSA_URL; ?>resources/scripts/auditorias_documentos_ara.js" type="text/javascript"></script>

@@ -18,7 +18,7 @@ if ($auditoria['auditorias_anio'] < 2018) {
         // SI TIENE seguimiento, por lo tanto es una SA
     }
 } else { // Entonces es auditoría 2018 en adelante
-    if ($auditoria['auditorias_is_sin_observaciones'] == 1 || count($auditoria['observaciones']) == 0 || count($auditoria['observaciones']) == 1) {
+    if ($auditoria['auditorias_is_sin_observaciones'] == 1 || count($auditoria['observaciones']) == 0) {
         $this->load->view($ARA_sin_observaciones);
     } else {
         $this->load->view($ARA_con_observaciones);

@@ -9,6 +9,11 @@ $txt_documentacion_recibida = "Documentación Recibida:
 <br>6. Otros (información adicional requerida para la auditoría).";
 $direcciones = array();
 $asistencias = $documentos[$index]['asistencias'];
+if (empty($asistencias)) {
+    $asistencias[$auditoria['auditorias_direcciones_id']] = array(
+        TIPO_ASISTENCIA_INVOLUCRADO => 0
+    );
+}
 foreach ($asistencias as $direcciones_id => $d) {
     if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
         $aux = $this->SAC_model->get_direccion($direcciones_id);

@@ -17,7 +17,13 @@ foreach ($RAP as $rap) {
 }
 $texto_foja = "";
 $direcciones = array();
-foreach ($documentos[$index]['asistencias'] as $direcciones_id => $d) {
+$asistencias = $documentos[$index]['asistencias'];
+if (empty($asistencias)) {
+    $asistencias[$auditoria['auditorias_direcciones_id']] = array(
+        TIPO_ASISTENCIA_INVOLUCRADO => 0
+    );
+}
+foreach ($asistencias as $direcciones_id => $d) {
     if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
         $aux = $this->SAC_model->get_direccion($direcciones_id);
         array_push($direcciones, $aux['nombre_completo_direccion']);
@@ -321,7 +327,7 @@ if (count($direcciones) > 1) {
                                             <?= span_editable($r, ACTA_INICIO_HORA_FIN, 'HH:MM'); ?> horas
                                             de la misma fecha en que fue iniciada. Asimismo, previa lectura de lo asentado, los que en ella intervinieron
                                             la firman al margen y al calce de todas y cada una de las fojas, haciéndose constar que este documento fue
-                                            elaborado en <?= span_editable($r, ACTA_INICIO_NUMERO_EJEMPLARES, 'dos'); ?>
+                                            elaborado en <?= span_editable($r, ACTA_INICIO_NUMERO_EJEMPLARES, CONSTANTE_CANTIDAD_EJEMPLARES_ACTA); ?>
                                             ejemplares originales, de los cuales se hace entrega de uno al servidor público con quien
                                             se entendió la diligencia.
                                         </span>

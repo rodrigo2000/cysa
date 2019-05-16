@@ -2,6 +2,11 @@
 $texto_foja = "";
 $direcciones = array();
 $asistencias = $documentos[$index]['asistencias'];
+if (empty($asistencias)) {
+    $asistencias[$auditoria['auditorias_direcciones_id']] = array(
+        TIPO_ASISTENCIA_INVOLUCRADO => 0
+    );
+}
 foreach ($asistencias as $direcciones_id => $d) {
     if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
         $aux = $this->SAC_model->get_direccion($direcciones_id);
@@ -134,7 +139,8 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                             por la <?= LABEL_CONTRALORIA; ?>
                                             <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA) ?>
                                             y en calidad de testigos
-                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_TESTIGO) ?>, a efecto de dar a conocer el resultado de la auditoría
+                                            <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_TESTIGO) ?>,
+                                            a efecto de dar a conocer el resultado de la auditoría
                                             <?= span_resaltar($auditoria['numero_auditoria']); ?>
                                             que tiene por objetivo
                                             <?= span_resaltar($auditoria['auditorias_objetivo']); ?>,
@@ -244,7 +250,7 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                         </span>
                                     </p>
                                     <?php $txt_parrafo_omision = 'Se hace del conocimiento de los presentes que la omisión o negativa de firma no afecta la validez y efectos legales de la presente acta'; ?>
-                                    <?= agregar_parrafo_show_hide($sr, ACTA_RESULTADOS_OMI_FIR, $txt_parrafo_omision, 'Agregar párrafo de omisión de firmas'); ?>
+                                    <?= agregar_parrafo_show_hide($r, ACTA_RESULTADOS_OMI_FIR, $txt_parrafo_omision, 'Agregar párrafo de omisión de firmas'); ?>
                                     <p class="text-justify bg-punteado">
                                         <span class=" bg-white">
                                             Leída la presente acta y no habiendo más hechos que plasmar se da por concluida la diligencia siendo las
@@ -252,7 +258,7 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                             horas de la misma fecha en que fue iniciada. Asimismo, previa lectura de lo asentado, los que en ella
                                             intervinieron la firman al margen y al calce de todas y cada una de las fojas, haciéndose constar que
                                             este documento fue elaborado en
-                                            <?= span_editable($sr, ACTA_RESULTADOS_NUMERO_EJEMPLARES, 2); ?>
+                                            <?= span_editable($r, ACTA_RESULTADOS_NUMERO_EJEMPLARES, CONSTANTE_CANTIDAD_EJEMPLARES_ACTA); ?>
                                             ejemplares originales, de los cuales se hace entrega de uno al
                                             servidor público con quien se entendió la diligencia.
                                         </span>
