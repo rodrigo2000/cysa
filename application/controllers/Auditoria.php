@@ -122,9 +122,6 @@ class Auditoria extends MY_Controller {
             case TIPO_DOCUMENTO_ACTA_ADMINISTRATIVA:
                 $this->module['title_list'] = "Acta Administrativa";
                 break;
-            default:
-                $vista = "auditoria/documentos_view";
-                break;
         }
         if (empty($vista)) {
             $vista = "documentos/" . basename($documentos[$index]['documentos_versiones_archivo_impresion'], ".php");
