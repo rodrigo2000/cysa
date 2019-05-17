@@ -51,7 +51,7 @@ class Auditorias extends MY_Controller {
             'tipos' => $this->Auditorias_tipos_model->get_todos(NULL, NULL, TRUE),
             'anios' => range(date("Y"), 2007, -1),
             'status' => $this->Auditorias_status_model->get_todos(NULL, NULL, TRUE),
-            'direcciones' => $this->SAC_model->get_direcciones(),
+            'direcciones' => $this->SAC_model->get_direcciones_de_periodo(),
         );
         $this->listado($data);
     }
@@ -62,9 +62,10 @@ class Auditorias extends MY_Controller {
             'areas' => $this->Auditorias_areas_model->get_todos(),
             'tipos' => $this->Auditorias_tipos_model->get_todos(),
             'anios' => array(date("Y") - 1, date("Y"), date("Y") + 1),
-            'direcciones' => $this->SAC_model->get_direcciones(),
-            'subdirecciones' => $this->SAC_model->get_subdirecciones(),
-            'departamentos' => $this->SAC_model->get_departamentos(),
+            'periodos'=>$this->SAC_model->get_periodos(),
+            'direcciones' => $this->SAC_model->get_direcciones_de_periodo(),
+            'subdirecciones' => array(),//$this->SAC_model->get_subdirecciones(),
+            'departamentos' => array(), //$this->SAC_model->get_departamentos(),
             'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc()
         );
         parent::nuevo($data);
@@ -185,7 +186,7 @@ class Auditorias extends MY_Controller {
                             ->where("auditorias_fechas_sello_orden_entrada IS NULL");
                     break;
                 case 5: // Sin iniciar
-                    $this->db->where("auditorias_status_id", 1);
+                    //$this->db->where("auditorias_status_id", 1);
                     $this->db->group_start()
                             ->where("auditorias_fechas_inicio_programado >", "NOW()", FALSE)
                             ->or_where("auditorias_fechas_sello_orden_entrada IS NULL")

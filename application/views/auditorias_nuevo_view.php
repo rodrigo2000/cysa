@@ -81,13 +81,13 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                 <fieldset class="form-group">
                     <label for="fipa" class="col-sm-2 form-control-label">Fecha de inicio</label>
                     <div class="col-sm-10">
-                        <div class="input-group col-md-6 p-l-0 p-r-0">
+                        <div class="input-group col-xs-12 col-md-6 p-l-0">
                             <span class="input-group-addon">Programada</span>
                             <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_inicio_programado" type="button" datepicker="auditorias_fechas_inicio_programado"><?= isset($r) && !empty($r['auditorias_fechas_inicio_programado']) && $r['auditorias_fechas_inicio_programado'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['auditorias_fechas_inicio_programado']) : '<i class="fa fa-calendar"></i>'; ?></button>
                             <input type="hidden" id="auditorias_fechas_inicio_programado" name="auditorias_fechas_inicio_programado" value="<?= isset($r) && $r['auditorias_fechas_inicio_programado'] !== '0000-00-00' ? $r['auditorias_fechas_inicio_programado'] : ''; ?>">
                             <?= form_error('auditorias_fechas_inicio_programado'); ?>
                         </div>
-                        <div class="input-group col-md-6">
+                        <div class="input-group col-xs-12 col-md-6 p-l-0">
                             <span class="input-group-addon">Real</span>
                             <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_inicio_real" type="button" datepicker="auditorias_fechas_inicio_real"><?= isset($r) && !empty($r['auditorias_fechas_inicio_real']) && $r['auditorias_fechas_inicio_real'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['auditorias_fechas_inicio_real']) : '<i class="fa fa-calendar"></i>'; ?></button>
                             <input type="hidden" id="auditorias_fechas_inicio_real" name="auditorias_fechas_inicio_real" value="<?= isset($r) && $r['auditorias_fechas_inicio_real'] !== '0000-00-00' ? $r['auditorias_fechas_inicio_real'] : ''; ?>">
@@ -98,13 +98,13 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                 <fieldset class="form-group">
                     <label for="ffpa" class="col-sm-2 form-control-label">Fecha de terminación</label>
                     <div class="col-sm-10">
-                        <div class="input-group col-md-6 p-l-0 p-r-0">
+                        <div class="input-group col-xs-12 col-md-6 p-l-0">
                             <span class="input-group-addon">Programada</span>
                             <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_fin_programado" type="button" datepicker="auditorias_fechas_fin_programado"><?= isset($r) && !empty($r['auditorias_fechas_fin_programado']) && $r['auditorias_fechas_fin_programado'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['auditorias_fechas_fin_programado']) : '<i class="fa fa-calendar"></i>'; ?></button>
                             <input type="hidden" id="auditorias_fechas_fin_programado" name="auditorias_fechas_fin_programado" value="<?= isset($r) && $r['auditorias_fechas_fin_programado'] !== '0000-00-00' ? $r['auditorias_fechas_fin_programado'] : ''; ?>">
                             <?= form_error('auditorias_fechas_fin_programado'); ?>
                         </div>
-                        <div class="input-group col-md-6">
+                        <div class="input-group col-xs-12 col-md-6 p-l-0">
                             <span class="input-group-addon">Real</span>
                             <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_fin_real" type="button" datepicker="auditorias_fechas_fin_real"><?= isset($r) && !empty($r['auditorias_fechas_fin_real']) && $r['auditorias_fechas_fin_real'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['auditorias_fechas_fin_real']) : '<i class="fa fa-calendar"></i>'; ?></button>
                             <input type="hidden" id="auditorias_fechas_fin_real" name="auditorias_fechas_fin_real" value="<?= isset($r) && $r['auditorias_fechas_fin_real'] !== '0000-00-00' ? $r['auditorias_fechas_fin_real'] : ''; ?>">
@@ -113,9 +113,21 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
-                    <label for="auditorias_direcciones_id" class="col-sm-2 form-control-label">Dirección</label>
-                    <div class="col-sm-10">
-                        <select id="auditorias_direcciones_id" name="auditorias_direcciones_id" class="form-control">
+                    <label for="cc_periodos_id" class="col-xs-12 col-sm-2 col-md-2 control-label">Período</label>
+                    <div class="col-sm-10 col-md-6">
+                        <select id="cc_periodos_id" name="cc_periodos_id" class="form-control periodos_dependiente">
+                            <option value="0" selected="selected">SELECCIONE UNO</option>
+                            <?php foreach ($periodos as $p): ?>
+                                <option value="<?= $p['periodos_id'] ?>" <?= isset($r) && isset($r['cc_periodos_id']) && $r['cc_periodos_id'] == $p['periodos_id'] ? 'selected="selected"' : ''; ?>>Período <?= $p['periodos_id'] . " (" . mysqlDate2Date($p['periodos_fecha_inicio']) . " al " . mysqlDate2Date($p['periodos_fecha_fin']) . ")"; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <?= form_error('cc_periodos_id'); ?>
+                    </div>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label for="auditorias_direcciones_id" class="col-xs-12 col-sm-2 col-md-2 form-control-label">Dirección</label>
+                    <div class="col-sm-10 col-md-6">
+                        <select id="auditorias_direcciones_id" name="auditorias_direcciones_id" class="form-control direcciones_dependiente">
                             <option value="0">SELECCIONAR</option>
                             <?php foreach ($direcciones as $d): ?>
                                 <option value="<?= $d['direcciones_id']; ?>"<?= isset($r) && $r['auditorias_direcciones_id'] == $d['direcciones_id'] ? ' selected="selected"' : ''; ?>><?= $d['direcciones_nombre']; ?></option>
@@ -125,9 +137,9 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
-                    <label for="auditorias_subdirecciones_id" class="col-sm-2 form-control-label">Subdirección</label>
-                    <div class="col-sm-10">
-                        <select id="auditorias_subdirecciones_id" name="auditorias_subdirecciones_id" class="form-control">
+                    <label for="auditorias_subdirecciones_id" class="col-xs-12 col-sm-2 col-md-2 form-control-label">Subdirección</label>
+                    <div class="col-sm-10 col-md-6">
+                        <select id="auditorias_subdirecciones_id" name="auditorias_subdirecciones_id" class="form-control subdirecciones_dependiente">
                             <option value="0">SELECCIONAR</option>
                             <?php foreach ($subdirecciones as $s): ?>
                                 <option value="<?= $s['subdirecciones_id']; ?>"<?= isset($r) && $r['auditorias_subdirecciones_id'] == $s['subdirecciones_id'] ? ' selected="selected"' : ''; ?>><?= $s['subdirecciones_nombre']; ?></option>
@@ -137,9 +149,9 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
-                    <label for="auditorias_departamentos_id" class="col-sm-2 form-control-label">Departamento</label>
-                    <div class="col-sm-10">
-                        <select id="auditorias_departamentos_id" name="auditorias_departamentos_id" class="form-control">
+                    <label for="auditorias_departamentos_id" class="col-xs-12 col-sm-2 col-md-2 form-control-label">Departamento</label>
+                    <div class="col-sm-10 col-md-6">
+                        <select id="auditorias_departamentos_id" name="auditorias_departamentos_id" class="form-control departamentos_dependiente">
                             <option value="0">SELECCIONAR</option>
                             <?php foreach ($departamentos as $d): ?>
                                 <option value="<?= $d['departamentos_id']; ?>"<?= isset($r) && $r['auditorias_departamentos_id'] == $d['departamentos_id'] ? ' selected="selected"' : ''; ?>><?= $d['departamentos_nombre']; ?></option>
@@ -172,7 +184,7 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                                 <?php if ($depto != $a['departamentos_nombre']): $depto = $a['departamentos_nombre']; ?>
                                     <optgroup label="<?= $a['departamentos_nombre']; ?>">
                                     <?php endif; ?>
-                                    <option value="<?= $a['empleados_id']; ?>"<?= isset($r) && $r['auditorias_auditor_lider'] == $a['empleados_id'] ? ' selected="selected"' : ''; ?>><?= $a['empleados_nombre'] . " " . $a['empleados_apellido_paterno'] . " " . $a['empleados_apellido_materno'] . " (" . $a['empleados_numero_empleado'] . ")"; ?></option>
+                                        <option value="<?= $a['empleados_id']; ?>"<?= isset($r) && $r['auditorias_auditor_lider'] == $a['empleados_id'] ? ' selected="selected"' : ''; ?>><?= $a['empleados_nombre'] . " " . $a['empleados_apellido_paterno'] . " " . $a['empleados_apellido_materno'] . " (" . number_format($a['empleados_numero_empleado']) . ")"; ?></option>
                                     <?php if ($depto != $a['departamentos_nombre']): ?>
                                     </optgroup>
                                 <?php endif; ?>
@@ -208,3 +220,4 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
 <!-- Personalizado -->
 <script src="<?= base_url(); ?>resources/scripts/auditorias_nuevo_view.js" type="text/javascript"></script>
 <link href="<?= base_url(); ?>resources/styles/auditorias_nuevo_view.css" rel="stylesheet" type="text/css"/>
+<script src="<?= APP_SAC_URL; ?>resources/scripts/select_dependientes.js" type="text/javascript"></script>

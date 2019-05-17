@@ -35,7 +35,7 @@ class Auditorias_model extends MY_Model {
                 ->select("direcciones_nombre, direcciones_is_descentralizada, subdirecciones_nombre, departamentos_nombre")
                 ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
                 ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
-                ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")
+                ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . $this->table_prefix . ".auditorias_cc_id ", "LEFT")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_is_descentralizada, direcciones_ubicacion")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("subdirecciones_nombre")
