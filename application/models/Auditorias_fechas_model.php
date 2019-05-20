@@ -8,7 +8,7 @@ class Auditorias_fechas_model extends MY_Model {
     function __construct() {
         parent::__construct();
         $this->table_name = strtolower(str_replace("_model", "", __CLASS__));
-        $this->id_field = $this->table_name . "_id";
+        $this->id_field = $this->table_name . "_auditorias_id";
         $this->table_prefix = "af";
         $this->model_name = __CLASS__;
     }
@@ -59,6 +59,24 @@ class Auditorias_fechas_model extends MY_Model {
             }
         }
         return $return;
+    }
+
+    function insert($data) {
+        foreach ($data as $index => $d) {
+            if (empty($d) || $d === '0000-00-00') {
+                $data[$index] = NULL;
+            }
+        }
+        parent::insert($data);
+    }
+
+    function update($id, $data) {
+        foreach ($data as $index => $d) {
+            if (empty($d) || $d === '0000-00-00') {
+                $data[$index] = NULL;
+            }
+        }
+        return parent::update($id, $data);
     }
 
 }
