@@ -268,6 +268,7 @@ class MY_Controller extends CI_Controller {
                     $this->session->set_flashdata("informacion", $s);
                     redirect(base_url() . $this->module['name'] . "/");
                 } else {
+                    $data['r'] = $r;
                     $s['state'] = $s['state'] === "duplicate" ? "danger" : $s['state'];
                     $this->session->set_flashdata("informacion", $s);
                 }
@@ -328,6 +329,10 @@ class MY_Controller extends CI_Controller {
                 $this->session->set_flashdata("informacion", $s);
                 if ($s['state'] === 'success' && $ss === TRUE) {
                     redirect(base_url() . $this->module['name'] . "/");
+                } else {
+                    $data['r'] = $r;
+                    $s['state'] = $s['state'] === "duplicate" ? "danger" : $s['state'];
+                    $this->session->set_flashdata("informacion", $s);
                 }
             }
         }
