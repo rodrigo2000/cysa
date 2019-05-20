@@ -19,6 +19,9 @@ class Auditorias_status_model extends MY_Model {
         switch ($status_id) {
             case 0:
                 $valor = 1;
+                if (empty($data['auditorias_fechas_inicio_programado']) || empty($data['auditorias_fechas_sello_orden_entrada'])) {
+                    $valor = 5;
+                }
                 break;
             case 1:
                 $valor = 2;
