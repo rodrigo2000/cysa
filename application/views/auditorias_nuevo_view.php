@@ -15,6 +15,15 @@ $is_asignar_consecutivo = FALSE;
 if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asignar_consecutivo') == 1) {
     $is_asignar_consecutivo = TRUE;
 }
+if ($accion === 'nuevo' && isset($r)) {
+    $periodos_id = intval($r['auditorias_periodos_id']);
+    $direcciones_id = intval($r['auditorias_direcciones_id']);
+    $subdirecciones_id = intval($r['auditorias_subdirecciones_id']);
+    $departamentos_id = intval($r['auditorias_departamentos_id']);
+    $subdirecciones = $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id);
+    $departamentos = $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id);
+}
+echo validation_errors();
 ?><div class="card">
     <div class="card-header no-bg1 b-a-0">
         <h3><?= $tituloModulo; ?></h3>
@@ -33,7 +42,7 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                                 <?php endforeach; ?>
                             </select>
                             <div class="input-group-addon">/</div>
-                            <select id="tipo" name="auditorias_tipo" class="form-control">
+                            <select id="auditorias_tipo" name="auditorias_tipo" class="form-control">
                                 <option value="0">Tipo</option>
                                 <?php foreach ($tipos as $t): ?>
                                     <option value="<?= $t['auditorias_tipos_id']; ?>"<?= isset($r) && $r['auditorias_tipo'] === $t['auditorias_tipos_id'] ? ' selected="selected"' : ''; ?>><?= $t['auditorias_tipos_nombre']; ?></option>
@@ -43,7 +52,7 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                             <input type="text" id="numero_auditoria" class="form-control" value="<?= isset($r) ? $r['auditorias_numero'] : ''; ?>" placeholder="Número" <?= $is_asignar_consecutivo ? 'disabled="disabled"' : ''; ?>>
                             <input type="hidden" id="auditorias_numero" name="auditorias_numero" value="<?= isset($r) ? $r['auditorias_numero'] : ''; ?>">
                             <div class="input-group-addon">/</div>
-                            <select id="anio" name="anio" class="form-control">
+                            <select id="auditorias_anio" name="auditorias_anio" class="form-control">
                                 <?php foreach ($anios as $a): ?>
                                     <option value="<?= $a; ?>" <?= isset($r) ? ($r['auditorias_anio'] == $a ? 'selected="selected"' : '') : ($a == date("Y") ? 'selected="selected"' : ''); ?>><?= $a; ?></option>
                                 <?php endforeach; ?>
@@ -113,24 +122,24 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
-                    <label for="cc_periodos_id" class="col-xs-12 col-sm-2 col-md-2 control-label">Período</label>
+                    <label for="auditorias_periodos_id" class="col-xs-12 col-sm-2 col-md-2 control-label">Período</label>
                     <div class="col-sm-10 col-md-6">
-                        <select id="cc_periodos_id" name="cc_periodos_id" class="form-control periodos_dependiente">
+                        <select id="auditorias_periodos_id" name="auditorias_periodos_id" class="form-control periodos_dependiente">
                             <option value="0" selected="selected">SELECCIONE UNO</option>
                             <?php foreach ($periodos as $p): ?>
-                                <option value="<?= $p['periodos_id'] ?>" <?= isset($r) && isset($r['cc_periodos_id']) && $r['cc_periodos_id'] == $p['periodos_id'] ? 'selected="selected"' : ''; ?>>Período <?= $p['periodos_id'] . " (" . mysqlDate2Date($p['periodos_fecha_inicio']) . " al " . mysqlDate2Date($p['periodos_fecha_fin']) . ")"; ?></option>
+                                <option value="<?= $p['periodos_id'] ?>" <?= (isset($r) && isset($r['auditorias_periodos_id']) && $r['auditorias_periodos_id'] == $p['periodos_id']) || ($accion === 'nuevo' && $p['periodos_id'] == $periodo_actual['periodos_id']) ? 'selected="selected"' : ''; ?>>Período <?= $p['periodos_id'] . " (" . mysqlDate2Date($p['periodos_fecha_inicio']) . " al " . mysqlDate2Date($p['periodos_fecha_fin']) . ")"; ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <?= form_error('cc_periodos_id'); ?>
+                        <?= form_error('auditorias_periodos_id'); ?>
                     </div>
                 </fieldset>
                 <fieldset class="form-group">
                     <label for="auditorias_direcciones_id" class="col-xs-12 col-sm-2 col-md-2 form-control-label">Dirección</label>
                     <div class="col-sm-10 col-md-6">
-                        <select id="auditorias_direcciones_id" name="auditorias_direcciones_id" class="form-control direcciones_dependiente">
+                        <select id="auditorias_direcciones_id" name="auditorias_direcciones_id" class="form-control direcciones_dependiente" <?= $accion === 'nuevo' && count($direcciones) == 0 ? 'disabled' : NULL; ?>>
                             <option value="0">SELECCIONAR</option>
                             <?php foreach ($direcciones as $d): ?>
-                                <option value="<?= $d['direcciones_id']; ?>"<?= isset($r) && $r['auditorias_direcciones_id'] == $d['direcciones_id'] ? ' selected="selected"' : ''; ?>><?= $d['direcciones_nombre']; ?></option>
+                                <option value="<?= $d['direcciones_id']; ?>"<?= isset($r) && $r['auditorias_direcciones_id'] == $d['direcciones_id'] ? ' selected="selected"' : ''; ?>><?= $d['direcciones_nombre_cc']; ?></option>
                             <?php endforeach; ?>
                         </select>
                         <?= form_error('auditorias_direcciones_id'); ?>
@@ -139,10 +148,10 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                 <fieldset class="form-group">
                     <label for="auditorias_subdirecciones_id" class="col-xs-12 col-sm-2 col-md-2 form-control-label">Subdirección</label>
                     <div class="col-sm-10 col-md-6">
-                        <select id="auditorias_subdirecciones_id" name="auditorias_subdirecciones_id" class="form-control subdirecciones_dependiente">
+                        <select id="auditorias_subdirecciones_id" name="auditorias_subdirecciones_id" class="form-control subdirecciones_dependiente" <?= $accion === 'nuevo' && count($subdirecciones) == 0 ? 'disabled' : NULL; ?>>
                             <option value="0">SELECCIONAR</option>
                             <?php foreach ($subdirecciones as $s): ?>
-                                <option value="<?= $s['subdirecciones_id']; ?>"<?= isset($r) && $r['auditorias_subdirecciones_id'] == $s['subdirecciones_id'] ? ' selected="selected"' : ''; ?>><?= $s['subdirecciones_nombre']; ?></option>
+                                <option value="<?= $s['subdirecciones_id']; ?>"<?= isset($r) && $r['auditorias_subdirecciones_id'] == $s['subdirecciones_id'] ? ' selected="selected"' : ''; ?>><?= $s['subdirecciones_nombre_cc']; ?></option>
                             <?php endforeach; ?>
                         </select>
                         <?= form_error('auditorias_subdirecciones_id'); ?>
@@ -151,10 +160,10 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                 <fieldset class="form-group">
                     <label for="auditorias_departamentos_id" class="col-xs-12 col-sm-2 col-md-2 form-control-label">Departamento</label>
                     <div class="col-sm-10 col-md-6">
-                        <select id="auditorias_departamentos_id" name="auditorias_departamentos_id" class="form-control departamentos_dependiente">
+                        <select id="auditorias_departamentos_id" name="auditorias_departamentos_id" class="form-control departamentos_dependiente" <?= $accion === 'nuevo' && count($departamentos) == 0 ? 'disabled' : NULL; ?>>
                             <option value="0">SELECCIONAR</option>
                             <?php foreach ($departamentos as $d): ?>
-                                <option value="<?= $d['departamentos_id']; ?>"<?= isset($r) && $r['auditorias_departamentos_id'] == $d['departamentos_id'] ? ' selected="selected"' : ''; ?>><?= $d['departamentos_nombre']; ?></option>
+                                <option value="<?= $d['departamentos_id']; ?>"<?= isset($r) && $r['auditorias_departamentos_id'] == $d['departamentos_id'] ? ' selected="selected"' : ''; ?>><?= $d['departamentos_nombre_cc']; ?></option>
                             <?php endforeach; ?>
                         </select>
                         <?= form_error('auditorias_departamentos_id'); ?>
@@ -184,7 +193,7 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                                 <?php if ($depto != $a['departamentos_nombre']): $depto = $a['departamentos_nombre']; ?>
                                     <optgroup label="<?= $a['departamentos_nombre']; ?>">
                                     <?php endif; ?>
-                                        <option value="<?= $a['empleados_id']; ?>"<?= isset($r) && $r['auditorias_auditor_lider'] == $a['empleados_id'] ? ' selected="selected"' : ''; ?>><?= $a['empleados_nombre'] . " " . $a['empleados_apellido_paterno'] . " " . $a['empleados_apellido_materno'] . " (" . number_format($a['empleados_numero_empleado']) . ")"; ?></option>
+                                    <option value="<?= $a['empleados_id']; ?>"<?= isset($r) && $r['auditorias_auditor_lider'] == $a['empleados_id'] ? ' selected="selected"' : ''; ?>><?= $a['empleados_nombre'] . " " . $a['empleados_apellido_paterno'] . " " . $a['empleados_apellido_materno'] . " (" . number_format($a['empleados_numero_empleado']) . ")"; ?></option>
                                     <?php if ($depto != $a['departamentos_nombre']): ?>
                                     </optgroup>
                                 <?php endif; ?>
@@ -198,7 +207,7 @@ if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asi
                         <a href="<?= base_url() . $this->uri->segment(1); ?>" class="btn btn-default">Cancelar</a>
                         <button type="submit" class="btn btn-primary"><?= $etiquetaBoton; ?></button>
                         <input type="hidden" name="accion" value="<?= $accion; ?>">
-                        <input type="hidden" name="auditorias_cc_id" value="<?= $accion === 'modificar' && isset($r) ? $r['auditorias_cc_id'] : ''; ?>">
+                        <input type="hidden" name="<?= $this->module['id_field']; ?>" value="<?= isset($r) && $r[$this->module['id_field']] ? $r[$this->module['id_field']] : ''; ?>">
                     </div>
                 </fieldset>
             </form>

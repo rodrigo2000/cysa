@@ -13,6 +13,82 @@ class Auditorias_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
+    function insert($data) {
+        $data2 = $fechas = array();
+        foreach ($data as $index => $d) {
+            if (strstr($index, 'auditorias_fechas_') === FALSE) {
+                $data2[$index] = $d;
+            } else {
+                $fechas[$index] = $d;
+            }
+        }
+        $data2['auditorias_is_programada'] = 0;
+        if (isset($data['auditorias_is_programada'])) {
+            $data2['auditorias_is_programada'] = intval($data['auditorias_is_programada']);
+        }
+        $data2['auditorias_segundo_periodo'] = 0;
+        if (isset($data['auditorias_segundo_periodo'])) {
+            $data2['auditorias_segundo_periodo'] = intval($data['auditorias_segundo_periodo']);
+        }
+        $periodos_id = $data['auditorias_periodos_id'];
+        $direcciones_id = $data['auditorias_direcciones_id'];
+        $subdirecciones_id = $data['auditorias_subdirecciones_id'];
+        $departamentos_id = $data['auditorias_departamentos_id'];
+        if (!empty($periodos_id) && !empty($direcciones_id) && !empty($subdirecciones_id) && !empty($departamentos_id)) {
+            $data2['auditorias_cc_id'] = $this->SAC_model->get_cc2($periodos_id, $direcciones_id, $subdirecciones_id, $departamentos_id);
+        }
+        $return = parent::insert($data2);
+        if ($return['state'] === 'success') {
+            $fechas['auditorias_fechas_etapa'] = 1;
+            $fechas['auditorias_fechas_auditorias_id'] = $return['data']['inser_id'];
+            $this->Auditorias_fechas_model->insert($fechas);
+        }
+        return $return;
+    }
+
+    function update($id, $data) {
+        $data2 = $fechas = array();
+        foreach ($data as $index => $d) {
+            if (strstr($index, 'auditorias_fechas_') === FALSE) {
+                $data2[$index] = $d;
+            } else {
+                $fechas[$index] = $d;
+            }
+        }
+        $data2['auditorias_is_programada'] = 0;
+        if (isset($data['auditorias_is_programada'])) {
+            $data2['auditorias_is_programada'] = intval($data['auditorias_is_programada']);
+        }
+        $data2['auditorias_segundo_periodo'] = 0;
+        if (isset($data['auditorias_segundo_periodo'])) {
+            $data2['auditorias_segundo_periodo'] = intval($data['auditorias_segundo_periodo']);
+        }
+        $data2['auditorias_cc_id'] = NULL;
+        $periodos_id = $data['auditorias_periodos_id'];
+        $direcciones_id = $data['auditorias_direcciones_id'];
+        $subdirecciones_id = $data['auditorias_subdirecciones_id'];
+        $departamentos_id = $data['auditorias_departamentos_id'];
+        if (!empty($periodos_id) && !empty($direcciones_id) && !empty($subdirecciones_id) && !empty($departamentos_id)) {
+            $cc = $this->SAC_model->get_cc_por_datos($periodos_id, $direcciones_id, $subdirecciones_id, $departamentos_id);
+            if (!empty($cc)) {
+                $data2['auditorias_cc_id'] = intval($cc['cc_id']);
+            }
+        }
+        $return = parent::update($id, $data2);
+        if ($return['state'] === 'success') {
+            $this->Auditorias_fechas_model->update($id, $fechas);
+        }
+        return $return;
+    }
+
+    function delete($id) {
+        $return = parent::delete($id);
+        if ($return['state'] === 'success') {
+            $this->Auditorias_fechas_model->delete($id);
+        }
+        return $return;
+    }
+
     function get_auditorias_ajax($search = NULL, $columns = NULL, $order = NULL, $incluirEliminados = FALSE) {
         $where = array();
         $return = FALSE;
@@ -270,7 +346,7 @@ class Auditorias_model extends MY_Model {
                     ->get("auditorias");
             if ($result && $result->num_rows() == 1) {
                 $aux = $result->row_array();
-                $return = intval($aux['consecutivo']);
+                $return = intval($aux['consecutivo']) + 1;
             }
         }
         return $return;

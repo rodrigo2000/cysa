@@ -19,20 +19,21 @@ class Auditorias extends MY_Controller {
         $this->rulesForm = array(
             array('field' => 'auditorias_area', 'label' => 'Área', 'rules' => 'required|trim|is_natural_no_zero', 'errors' => array('is_natural_no_zero' => 'Debe seleccionar un %s')),
             array('field' => 'auditorias_tipo', 'label' => 'Tipo', 'rules' => 'required|trim|is_natural_no_zero', 'errors' => array('is_natural_no_zero' => 'Debe seleccionar un %s')),
-            array('field' => 'auditorias_numero', 'label' => 'Número', 'rules' => 'required|trim|numeric|is_natural_no_zero'),
+            array('field' => 'auditorias_numero', 'label' => 'Número', 'rules' => 'trim|numeric'),
             array('field' => 'auditorias_anio', 'label' => 'Año', 'rules' => 'required|trim'),
-            array('field' => 'auditorias_segundo_periodo', 'label' => 'Tipo', 'rules' => 'required|trim'),
-            array('field' => 'auditorias_is_programada', 'label' => 'Tipo', 'rules' => 'required|trim'),
+            array('field' => 'auditorias_segundo_periodo', 'label' => 'Segundo período', 'rules' => 'trim'),
+            array('field' => 'auditorias_is_programada', 'label' => 'Programada', 'rules' => 'trim'),
             array('field' => 'auditorias_fechas_inicio_programado', 'label' => 'Fecha de inicio programado', 'rules' => 'required|trim'),
-            array('field' => 'auditorias_fechas_inicio_real', 'label' => 'Fecha de inicio real', 'rules' => 'required|trim'),
-            array('field' => 'auditorias_fechas_fin_programado', 'label' => 'Fecha de fin programado', 'rules' => 'required|trim'),
-            array('field' => 'auditorias_fechas_fin_real', 'label' => 'Fecha de fin real', 'rules' => 'required|trim'),
+            array('field' => 'auditorias_fechas_inicio_real', 'label' => 'Fecha de inicio real', 'rules' => 'trim'),
+            array('field' => 'auditorias_fechas_fin_programado', 'label' => 'Fecha de fin programado', 'rules' => 'trim'),
+            array('field' => 'auditorias_fechas_fin_real', 'label' => 'Fecha de fin real', 'rules' => 'trim'),
             array('field' => 'auditorias_rubro', 'label' => 'Rubro', 'rules' => 'required|trim'),
             array('field' => 'auditorias_objetivo', 'label' => 'Objetivo', 'rules' => 'required|trim'),
-            array('field' => 'auditorias_auditor_lider', 'label' => 'Auditor_lider', 'rules' => 'required|trim|is_natural_no_zero', 'errors' => array('is_natural_no_zero' => 'Debe seleccionar una %s')),
-            array('field' => 'auditorias_direcciones_id', 'label' => 'Dirección', 'rules' => 'required|trim|is_natural_no_zero', 'errors' => array('is_natural_no_zero' => 'Debe seleccionar una %s')),
-            array('field' => 'auditorias_subdirecciones_id', 'label' => 'Subdirección', 'rules' => 'required|trim|is_natural_no_zero', 'errors' => array('is_natural_no_zero' => 'Debe seleccionar una %s')),
-            array('field' => 'auditorias_departamentos_id', 'label' => 'Departamento', 'rules' => 'required|trim|is_natural_no_zero', 'errors' => array('is_natural_no_zero' => 'Debe seleccionar un %s')),
+            array('field' => 'auditorias_auditor_lider', 'label' => 'Auditor_lider', 'rules' => 'trim'),
+            array('field' => 'auditorias_periodos_id', 'label' => 'Período', 'rules' => 'trim'),
+            array('field' => 'auditorias_direcciones_id', 'label' => 'Dirección', 'rules' => 'trim'),
+            array('field' => 'auditorias_subdirecciones_id', 'label' => 'Subdirección', 'rules' => 'trim'),
+            array('field' => 'auditorias_departamentos_id', 'label' => 'Departamento', 'rules' => 'trim'),
         );
         $accion = $this->input->post('accion');
         if ($accion === "modificar") {
@@ -58,28 +59,41 @@ class Auditorias extends MY_Controller {
 
     function nuevo($data = array(), $modal = FALSE) {
         $this->module['function'] = ucfirst(__FUNCTION__);
+        $periodo_actual = $this->SAC_model->get_ultimo_periodo();
         $data = array(
             'areas' => $this->Auditorias_areas_model->get_todos(),
             'tipos' => $this->Auditorias_tipos_model->get_todos(),
             'anios' => array(date("Y") - 1, date("Y"), date("Y") + 1),
-            'periodos'=>$this->SAC_model->get_periodos(),
-            'direcciones' => $this->SAC_model->get_direcciones_de_periodo(),
-            'subdirecciones' => array(),//$this->SAC_model->get_subdirecciones(),
-            'departamentos' => array(), //$this->SAC_model->get_departamentos(),
-            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc()
+            'periodos' => $this->SAC_model->get_periodos(),
+            'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodo_actual['periodos_id']),
+            'subdirecciones' => array(),
+            'departamentos' => array(),
+            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc(),
+            'periodo_actual' => $periodo_actual
         );
         parent::nuevo($data);
     }
 
     function modificar($id = NULL, $data = array()) {
+        $res = $this->db
+                ->select($this->module['prefix'] . ".*")
+                ->where($this->module['prefix'] . "." . $this->module['id_field'], $id)
+                ->get($this->module['tabla'] . " " . $this->module['prefix']);
+        $r = $res->row_array();
+        $periodos_id = intval($r['auditorias_periodos_id']);
+        $direcciones_id = intval($r['auditorias_direcciones_id']);
+        $subdirecciones_id = intval($r['auditorias_subdirecciones_id']);
+        $departamentos_id = intval($r['auditorias_departamentos_id']);
         $data = array(
             'areas' => $this->Auditorias_areas_model->get_todos(),
             'tipos' => $this->Auditorias_tipos_model->get_todos(),
             'anios' => array(date("Y") - 1, date("Y"), date("Y") + 1),
-            'direcciones' => $this->SAC_model->get_direcciones(),
-            'subdirecciones' => $this->SAC_model->get_subdirecciones(),
-            'departamentos' => $this->SAC_model->get_departamentos(),
+            'periodos' => $this->SAC_model->get_periodos(),
+            'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodos_id),
+            'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
+            'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
             'auditores' => $this->SAC_model->get_auditores(),
+            'r' => $r
         );
         parent::modificar($id, $data);
     }
@@ -188,8 +202,9 @@ class Auditorias extends MY_Controller {
                 case 5: // Sin iniciar
                     //$this->db->where("auditorias_status_id", 1);
                     $this->db->group_start()
-                            ->where("auditorias_fechas_inicio_programado >", "NOW()", FALSE)
+                            ->where("af.auditorias_fechas_inicio_programado >", "NOW()", FALSE)
                             ->or_where("auditorias_fechas_sello_orden_entrada IS NULL")
+                            ->or_where("af.auditorias_fechas_inicio_programado IS NULL")
                             ->group_end();
                     break;
                 case 6: // Suistutida
@@ -223,7 +238,6 @@ class Auditorias extends MY_Controller {
         $status = array(NULL, "Cancelada", "En proceso", "Finalizada", "Reprogramada", "Sin iniciar", "Sustituída");
         $className = array(NULL, 'text-danger', 'text-info', 'text-success', 'text-warning', 'text-purple', 'text-purple');
         foreach ($data as $index => $r) {
-            //$datos[$index] = $r;
             $datos[$index]['numero'] = '<span class="text-danger">SIN ASIGNAR</span>';
             if (!empty($r['auditorias_numero'])) {
                 $aux = array(
