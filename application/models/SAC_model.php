@@ -42,12 +42,16 @@ class SAC_model extends MY_Model {
     /**
      * Obtiene las direcciones de un período
      * @param integer $periodos_id Identificador del período
+     * @param integer $is_descentralizadas Cuando es 1 indica que solo devolverá las descentralizadas, cuando es 0 solo las NO descentralizadas, cuando es NULL devolverá todos
      * @param boolean $incluir_eliminados TRUE indica que se incluirán los registros que incluso tiene fecha_delete con valor. FALSE para ocultar esos registros
      * @return array Arreglo que contiene las direcciones
      */
-    function get_direcciones_de_periodo($periodos_id = NULL, $incluir_eliminados = FALSE) {
+    function get_direcciones_de_periodo($periodos_id = NULL, $is_descentralizadas = NULL, $incluir_eliminados = FALSE) {
         $return = array();
         if (!empty($periodos_id)) {
+            if (!is_null($is_descentralizadas)) {
+                $this->db->where("direcciones_is_descentralizada", $is_descentralizadas);
+            }
             if (!$incluir_eliminados) {
                 $this->dbSAC->where("cc.fecha_delete IS NULL");
             }
@@ -312,7 +316,30 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
-    function get_cc2($periodos_id, $direcciones_id, $subdirecciones_id, $departamentos_id) {
+    function get_cc_por_datos($periodos_id, $direcciones_id, $subdirecciones_id, $departamentos_id) {
+        $return = array();
+        if (empty($subdirecciones_id)) {
+            $subdirecciones_id = 1;
+        }
+        if (empty($departamentos_id)) {
+            $departamentos_id = 1;
+        }
+        if (!empty($periodos_id) && !empty($direcciones_id) && !empty($subdirecciones_id) && !empty($departamentos_id)) {
+            $result = $this->dbSAC
+                    ->where("cc_periodos_id", $periodos_id)
+                    ->where("cc_direcciones_id", $direcciones_id)
+                    ->where("cc_subdirecciones_id", $subdirecciones_id)
+                    ->where("cc_departamentos_id", $departamentos_id)
+                    ->get("centros_costos");
+            if ($result && $result->num_rows() == 1) {
+                $return = $result->row_array();
+            }
+        }
+        return $return;
+    }
+
+    // antes se llamaba get_cc2
+    function get_cc_por_etiquetas($periodos_id, $direcciones_id, $subdirecciones_id, $departamentos_id) {
         $return = array();
         if (empty($subdirecciones_id)) {
             $subdirecciones_id = 1;
@@ -327,6 +354,7 @@ class SAC_model extends MY_Model {
                     ->where("cc_etiqueta_subdireccion", $subdirecciones_id)
                     ->where("cc_etiqueta_departamento", $departamentos_id)
                     ->get("centros_costos");
+            echo $this->dbSAC->last_query();
             if ($result && $result->num_rows() == 1) {
                 $return = $result->row_array();
             }
