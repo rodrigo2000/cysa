@@ -78,11 +78,12 @@ class Documentos extends MY_Controller {
                     $constantes[AANP_JUSTIFICACION] = my_strip_tags($constantes[AANP_JUSTIFICACION]);
                 }
             case TIPO_DOCUMENTO_REPROGRAMACION:
-                if (isset($constantes[REPROGRAMACION_MOTIVO])) {
-                    $constantes[REPROGRAMACION_MOTIVO] = my_strip_tags($constantes[REPROGRAMACION_MOTIVO]);
+            case TIPO_DOCUMENTO_AMPLIACION:
+                if (isset($constantes[AMPLIA_REPROG_MOTIVO])) {
+                    $constantes[AMPLIA_REPROG_MOTIVO] = my_strip_tags($constantes[AMPLIA_REPROG_MOTIVO]);
                 }
-                if (isset($constantes[REPROGRAMACION_OBSERVACIONES])) {
-                    $constantes[REPROGRAMACION_OBSERVACIONES] = my_strip_tags($constantes[REPROGRAMACION_OBSERVACIONES]);
+                if (isset($constantes[AMPLIA_REPROG_OBSERVACIONES])) {
+                    $constantes[AMPLIA_REPROG_OBSERVACIONES] = my_strip_tags($constantes[AMPLIA_REPROG_OBSERVACIONES]);
                 }
             default :
                 break;

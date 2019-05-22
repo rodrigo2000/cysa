@@ -28,7 +28,7 @@
                         <div class="list-group">
                             <?php $reprogramaciones = $this->Auditoria_model->get_documentos($auditoria['auditorias_id'], TIPO_DOCUMENTO_REPROGRAMACION); ?>
                             <?php foreach ($reprogramaciones as $r): ?>
-                                <?php if (isset($r['valores']) && !empty($r['valores'])): $folio = $r['valores'][REPROGRAMACION_FOLIO]; ?>
+                                <?php if (isset($r['valores']) && !empty($r['valores'])): $folio = $r['valores'][15]; ?>
                                     <a href="<?= $this->module['documentos_url'] . "/" . TIPO_DOCUMENTO_REPROGRAMACION . "/" . $r['documentos_id']; ?>" class="list-group-item">Reprogramación <?= str_pad($folio, 3, "0", STR_PAD_LEFT); ?></a>
                                 <?php endif; ?>
                             <?php endforeach; ?>
@@ -46,7 +46,7 @@
                         <div class="list-group">
                             <?php $ampliaciones = $this->Auditoria_model->get_documentos($auditoria['auditorias_id'], TIPO_DOCUMENTO_AMPLIACION); ?>
                             <?php foreach ($ampliaciones as $a): ?>
-                                <?php if (isset($a['valores']) && !empty($a['valores'])): $folio = $a['valores'][AMPLICACION_FOLIO]; ?>
+                                <?php if (isset($a['valores']) && !empty($a['valores'])): $folio = $a['valores'][2]; ?>
                                     <a href="<?= $this->module['documentos_url'] . "/" . TIPO_DOCUMENTO_AMPLIACION . "/" . $a['documentos_id']; ?>" class="list-group-item">Ampliación <?= str_pad($folio, 3, "0", STR_PAD_LEFT); ?></a>
                                 <?php endif; ?>
                             <?php endforeach; ?>

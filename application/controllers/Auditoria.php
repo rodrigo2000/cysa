@@ -181,6 +181,7 @@ class Auditoria extends MY_Controller {
             $texto_foja = implode(", ", $direcciones);
         }
         $data = array(
+            'documentos_tipos_id' => $documentos_tipos_id,
             'auditoria' => $auditoria,
             'registros' => array(),
             'documentos' => $documentos,

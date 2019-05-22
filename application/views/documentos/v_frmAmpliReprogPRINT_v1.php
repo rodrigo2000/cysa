@@ -9,7 +9,7 @@ $aux = array(
     $auditoria['departamentos_nombre']
 );
 $unidad_administrativa = implode(" / ", $aux);
-$reprogramacion = array(
+$amplia_reprog = array(
     'etapa' => AUDITORIA_ETAPA_AP
 );
 /*
@@ -18,38 +18,39 @@ $reprogramacion = array(
  *
  */
 $etapas = array('Resultados de Auditoría', 'Solventación de Observaciones', 'Segunda Solventación de Observaciones', 'Auditoría Finalizada');
-$is_reprogramacion = FALSE;
+$is_reprogramacion = TRUE;
+if ($documentos_tipos_id == TIPO_DOCUMENTO_AMPLIACION) {
+    $is_reprogramacion = FALSE;
+}
 if (isset($r) && !empty($r) && is_array($r)) {
     foreach ($r as $constante => $c) {
         switch ($constante) {
-//            case SOLICITUD_AMPLIACION_P_FOLIO:
-            case REPROGRAMACION_FOLIO:
-                $reprogramacion['folio'] = $c;
+            case AMPLIA_REPROG_FOLIO:
+                $amplia_reprog['folio'] = $c;
                 break;
-//            case SOLICITUD_REPROGRAMACION_P_MOTIVO:
-            case REPROGRAMACION_MOTIVO:
-                $reprogramacion['motivo'] = $c;
+//            case SOLICITUD_AMPLIA_REPROG_P_MOTIVO:
+            case AMPLIA_REPROG_MOTIVO:
+                $amplia_reprog['motivo'] = $c;
                 break;
 //            case SOLICITUD_AMPLIACION_P_OBSERVACIONES:
-            case REPROGRAMACION_OBSERVACIONES:
-                $reprogramacion['observaciones'] = $c;
+            case AMPLIA_REPROG_OBSERVACIONES:
+                $amplia_reprog['observaciones'] = $c;
                 break;
 //            case SOLICITUD_AMPLIACION_P_FECHA_SOLICITUD:
-            case REPROGRAMACION_FECHA_SOLICITUD:
-                $reprogramacion['fecha_solicitud'] = $c;
+            case AMPLIA_REPROG_FECHA_SOLICITUD:
+                $amplia_reprog['fecha_solicitud'] = $c;
                 break;
-            case REPROGRAMACION_DIAS_IMPACTO:
-                $reprogramacion['dias_impacto'] = $c;
+            case AMPLIA_REPROG_DIAS_IMPACTO:
+                $amplia_reprog['dias_impacto'] = $c;
                 break;
-            case REPROGRAMACION_FECHA_INICIAL:
-                $reprogramacion['fecha_inicio_programada'] = $c;
-                if (!is_int($reprogramacion['fecha_inicio_programada'])) {
-                    $reprogramacion['fecha_inicio_programada'] = strtotime($reprogramacion['fecha_inicio_programada']);
+            case AMPLIA_REPROG_FECHA_INICIAL:
+                $amplia_reprog['fecha_inicio_programada'] = $c;
+                if (!is_int($amplia_reprog['fecha_inicio_programada'])) {
+                    $amplia_reprog['fecha_inicio_programada'] = strtotime($amplia_reprog['fecha_inicio_programada']);
                 }
-                $is_reprogramacion = TRUE;
                 break;
-            case REPROGRAMACION_FECHA_FINAL:
-                $reprogramacion['fecha_fin_programada'] = $c;
+            case AMPLIA_REPROG_FECHA_FINAL:
+                $amplia_reprog['fecha_fin_programada'] = $c;
                 break;
             default :
                 break;
@@ -143,7 +144,7 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                         <div class="col-xs-6 text-xs-center">
                                             <div style="font-size: 15pt; font-weight: bold;">AYUNTAMIENTO DE MÉRIDA</div>
                                             <div><?= mb_strtoupper(LABEL_CONTRALORIA); ?></div>
-                                            <div>SOLICITUD DE REPROGRAMACIÓN</div>
+                                            <div>SOLICITUD DE <?= $is_reprogramacion ? 'REPROGRAMACIÓN' : 'AMPLIACIÓN'; ?></div>
                                         </div>
                                         <div class="col-xs-3"></div>
                                     </div>
@@ -158,17 +159,17 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                             <tr>
                                                 <th width="300">Folio:</th>
                                                 <td>
-                                                    <?php $aux = isset($reprogramacion['folio']) ? $reprogramacion['folio'] : 1; ?>
+                                                    <?php $aux = isset($r[AMPLIA_REPROG_FOLIO]) ? $r[AMPLIA_REPROG_FOLIO] : 1; ?>
                                                     <?= str_pad($aux, 3, "0", STR_PAD_LEFT); ?>
-                                                    <input type="hidden" name="constantes[<?= REPROGRAMACION_FOLIO; ?>]" value="<?= $aux; ?>">
+                                                    <input type="hidden" name="constantes[<?= AMPLIA_REPROG_FOLIO; ?>]" value="<?= $aux; ?>">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>Fecha de solicitud:</th>
                                                 <td>
-                                                    <?php $aux = isset($reprogramacion['fecha_solicitud']) ? $reprogramacion['fecha_solicitud'] : ahora(); ?>
+                                                    <?php $aux = isset($r[AMPLIA_REPROG_FECHA_SOLICITUD]) ? $r[AMPLIA_REPROG_FECHA_SOLICITUD] : ahora(); ?>
                                                     <?= mysqlDate2OnlyDate($aux); ?>
-                                                    <input type="hidden" name="constantes[<?= REPROGRAMACION_FECHA_SOLICITUD; ?>]" value="<?= $aux; ?>">
+                                                    <input type="hidden" name="constantes[<?= AMPLIA_REPROG_FECHA_SOLICITUD; ?>]" value="<?= $aux; ?>">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -176,20 +177,20 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                                 <td>
                                                     <?php $aux = empty($auditoria['auditorias_numero']) ? $auditoria['numero_auditoria'] : 'Sin asignar'; ?>
                                                     <?= $aux; ?>
-                                                    <input type="hidden" name="constantes[<?= REPROGRAMACION_NUMERO_AUDITORIA; ?>]" value="<?= $aux; ?>">
+                                                    <input type="hidden" name="constantes[<?= AMPLIA_REPROG_NUMERO_AUDITORIA; ?>]" value="<?= $aux; ?>">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>Etapa de auditoría:</th>
                                                 <td>
-                                                    <?= $etapas[$reprogramacion['etapa']]; ?>
+                                                    <?= $etapas[$amplia_reprog['etapa']]; ?>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>Unidad Administrativa:</th>
                                                 <td>
                                                     <?= $auditoria['direcciones_nombre']; ?>
-                                                    <input type="hidden" name="constantes[<?= REPROGRAMACION_UA_AUDITADA; ?>]" value="<?= $auditoria['direcciones_nombre']; ?>">
+                                                    <input type="hidden" name="constantes[<?= AMPLIA_REPROG_UA_AUDITADA; ?>]" value="<?= $auditoria['direcciones_nombre']; ?>">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -202,14 +203,14 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                                 <th>Área auditada:</th>
                                                 <td>
                                                     <?= $auditoria['departamentos_nombre']; ?>
-                                                    <input type="hidden" name="constantes[<?= REPROGRAMACION_AREA_AUDITADA; ?>]" value="<?= $auditoria['departamentos_nombre']; ?>">
+                                                    <input type="hidden" name="constantes[<?= AMPLIA_REPROG_AREA_AUDITADA; ?>]" value="<?= $auditoria['departamentos_nombre']; ?>">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>Área Responsable de Auditoría:</th>
                                                 <td>
                                                     <?= $auditoria['auditorias_areas_nombre']; ?>
-                                                    <input type="hidden" name="constantes[<?= REPROGRAMACION_AREA_RESPONSABLE; ?>]" value="<?= $auditoria['departamentos_nombre']; ?>">
+                                                    <input type="hidden" name="constantes[<?= AMPLIA_REPROG_AREA_RESPONSABLE; ?>]" value="<?= $auditoria['departamentos_nombre']; ?>">
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -217,7 +218,7 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                     <table class="table table-bordered mismo-tamano-fuente-p">
                                         <tbody>
                                             <tr><th colspan="5">Actividad o motivo</th></tr>
-                                            <tr><td colspan="5"><?= span_editable($r, REPROGRAMACION_MOTIVO, NULL, TRUE) ?></td></tr>
+                                            <tr><td colspan="5"><?= span_editable($r, AMPLIA_REPROG_MOTIVO, NULL, TRUE) ?></td></tr>
                                             <tr>
                                                 <th colspan="2" class="text-xs-center">Fecha Inicio</th>
                                                 <th colspan="2" class="text-xs-center">Fecha Final</th>
@@ -228,23 +229,45 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                                 <th class="text-xs-center">Real</th>
                                                 <th class="text-xs-center">Programada</th>
                                                 <th class="text-xs-center">Real</th>
-                                                <td class="text-xs-center v-align-middle" rowspan="2">0</td>
+                                                <td class="text-xs-center v-align-middle" rowspan="2">
+                                                    <?php $aux = isset($r[AMPLIA_REPROG_DIAS_IMPACTO]) ? $r[AMPLIA_REPROG_DIAS_IMPACTO] : '0'; ?>
+                                                    <?php if ($is_reprogramacion): ?>
+                                                        <?= $aux; ?>
+                                                        <input type="hidden" name="constantes[<?= AMPLIA_REPROG_FOLIO; ?>]" value="<?= $aux; ?>">
+                                                    <?php else: ?>
+                                                        <input type="number" id="<?= AMPLIA_REPROG_DIAS_IMPACTO; ?>" name="constantes[<?= AMPLIA_REPROG_DIAS_IMPACTO; ?>]" value="<?= $aux; ?>" class="form-control text-xs-center" min="0" style="width:100px;">
+                                                    <?php endif; ?>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td class="text-xs-center v-align-middle">
                                                     <?php $aux = $auditoria['auditorias_fechas_inicio_programado']; ?>
                                                     <?= mysqlDate2OnlyDate($aux); ?>
-                                                    <input type="hidden" name="constantes[<?= REPROGRAMACION_FECHA_INICIAL; ?>]" value="<?= $aux; ?>">
+                                                    <input type="hidden" name="constantes[<?= AMPLIA_REPROG_FECHA_INICIAL; ?>]" value="<?= $aux; ?>">
                                                 </td>
                                                 <td class="text-xs-center v-align-middle">
-                                                    <button class="btn btn-secondary btn-block component-daterangepicker" id="input_fecha_programada_terminacion" type="button" datepicker="fecha_programada_terminacion"><?= isset($r) && !empty($r['fecha_programada_terminacion']) && $r['fecha_programada_terminacion'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['fecha_programada_terminacion']) : '<i class="fa fa-calendar"></i>'; ?></button>
-                                                    <input type="hidden" id="fecha_programada_terminacion" name="fecha_programada_terminacion" value="<?= isset($r) && isset($r[REPROGRAMACION_FECHA_PROGRAMADA_TERMINACION]) && $r[REPROGRAMACION_FECHA_PROGRAMADA_TERMINACION] !== '0000-00-00' ? $r[REPROGRAMACION_FECHA_PROGRAMADA_TERMINACION] : ''; ?>">
+                                                    <?php if ($is_reprogramacion): ?>
+                                                        <button class="btn btn-secondary btn-block component-daterangepicker" id="input_fecha_programada_terminacion" type="button" datepicker="fecha_programada_terminacion"><?= isset($r) && !empty($r['fecha_programada_terminacion']) && $r['fecha_programada_terminacion'] !== '0000-00-00' ? mysqlDate2OnlyDate($r['fecha_programada_terminacion']) : '<i class="fa fa-calendar"></i>'; ?></button>
+                                                        <input type="hidden" id="fecha_programada_terminacion" name="fecha_programada_terminacion" value="<?= isset($r) && isset($r[AMPLIA_REPROG_FECHA_PROGRAMADA_TERMINACION]) && $r[AMPLIA_REPROG_FECHA_PROGRAMADA_TERMINACION] !== '0000-00-00' ? $r[AMPLIA_REPROG_FECHA_PROGRAMADA_TERMINACION] : ''; ?>">
+                                                    <?php else: ?>
+                                                        <?php $aux = $auditoria['auditorias_fechas_inicio_real']; ?>
+                                                        <?= mysqlDate2OnlyDate($aux); ?>
+                                                        <input type="hidden" name="constantes[<?= AMPLIA_REPROG_FECHA_INICIAL; ?>]" value="<?= $aux; ?>">
+                                                    <?php endif; ?>
                                                 </td>
-                                                <td class="text-xs-center v-align-middle">N/A</td>
-                                                <td class="text-xs-center v-align-middle" class="col-xs-12" style="border-right:1px solid rgba(0,0,0,.1);">N/A</td>
+                                                <td class="text-xs-center v-align-middle">
+                                                    <?php $aux = $is_reprogramacion ? 'N/A' : $auditoria['auditorias_fechas_fin_programado']; ?>
+                                                    <?= mysqlDate2OnlyDate($aux); ?>
+                                                </td>
+                                                <td class="text-xs-center v-align-middle" class="col-xs-12" style="border-right:1px solid rgba(0,0,0,.1);">
+                                                    <?php $aux = $is_reprogramacion ? 'N/A' : $auditoria['auditorias_fechas_fin_programado']; ?>
+                                                    <span id="actualizar<?= AMPLIA_REPROG_FECHA_FINAL; ?>"><?= mysqlDate2OnlyDate($aux); ?></span>
+                                                    <input type="hidden" id="<?= AMPLIA_REPROG_FECHA_FINAL; ?>" name="constantes[<?= AMPLIA_REPROG_FECHA_FINAL; ?>]" value="<?= $aux; ?>">
+                                                    <input type="hidden" id="fecha_final_original" value="<?= $aux; ?>">
+                                                </td>
                                             </tr>
                                             <tr><th colspan="5">Observaciones</td></th>
-                                            <tr><td colspan="5"><?= span_editable($r, REPROGRAMACION_OBSERVACIONES, NULL, TRUE); ?></td></tr>
+                                            <tr><td colspan="5"><?= span_editable($r, AMPLIA_REPROG_OBSERVACIONES, NULL, TRUE); ?></td></tr>
                                         </tbody>
                                     </table>
                                     <div class="firmas row">
@@ -309,3 +332,4 @@ if (isset($r) && !empty($r) && is_array($r)) {
 <link href="<?= APP_SAC_URL; ?>resources/plugins/bootstrap-daterangepicker/daterangepicker_2.css" rel="stylesheet" type="text/css"/>
 <script src="<?= APP_SAC_URL; ?>resources/plugins/bootstrap-daterangepicker/daterangepicker_2.js" type="text/javascript"></script>
 <!-- Personalizados -->
+<script src="<?= base_url(); ?>resources/scripts/auditorias_documento_amplia_reprog.js" type="text/javascript"></script>
