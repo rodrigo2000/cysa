@@ -73,6 +73,17 @@ class Documentos extends MY_Controller {
                     $constantes[ACTA_RESULTADOS_REDACCION] = my_strip_tags($constantes[ACTA_RESULTADOS_REDACCION]);
                 }
                 break;
+            case TIPO_DOCUMENTO_AUTORIZACION_AUDITORIA_NO_PROGRAMADA:
+                if (isset($constantes[AANP_JUSTIFICACION])) {
+                    $constantes[AANP_JUSTIFICACION] = my_strip_tags($constantes[AANP_JUSTIFICACION]);
+                }
+            case TIPO_DOCUMENTO_REPROGRAMACION:
+                if (isset($constantes[REPROGRAMACION_MOTIVO])) {
+                    $constantes[REPROGRAMACION_MOTIVO] = my_strip_tags($constantes[REPROGRAMACION_MOTIVO]);
+                }
+                if (isset($constantes[REPROGRAMACION_OBSERVACIONES])) {
+                    $constantes[REPROGRAMACION_OBSERVACIONES] = my_strip_tags($constantes[REPROGRAMACION_OBSERVACIONES]);
+                }
             default :
                 break;
         }
