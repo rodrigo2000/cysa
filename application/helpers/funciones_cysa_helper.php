@@ -76,7 +76,10 @@ function get_frase_de_ua($a) {
  * @param boolean $aceptar_enter TRUE para que en la etiqueta se acepte el ENTER dentro del Texto. FALSE para cualquier otro caso.
  * @return string Código HTML de la etiqueta SPAN
  */
-function span_editable($r, $constante, $default_value = SIN_ESPECIFICAR, $aceptar_enter = FALSE) {
+function span_editable($r, $constante, $default_value = NULL, $aceptar_enter = FALSE) {
+    if (empty($default_value)) {
+        $default_value = SIN_ESPECIFICAR;
+    }
     $html = '<span id="' . $constante . '" contenteditable="true" class="editable" ' . ($aceptar_enter ? 'aceptar-enter="1"' : '') . ' default-value="' . $default_value . '">' . (isset($r) && isset($r[$constante]) ? $r[$constante] : '') . '</span>';
     return $html;
 }
