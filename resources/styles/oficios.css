@@ -62,6 +62,10 @@ div#oficio-hoja > table table#resultados_auditoria td {
 }
 
 table { font-size: 10pt; }
+table.mismo-tamano-fuente-p tr td,
+table.mismo-tamano-fuente-p tr th {
+    font-size: 12pt;
+}
 
 @media screen{
     div#oficio-hoja:not(.autorizado) .xeditable {
