@@ -41,13 +41,13 @@ class Auditoria_model extends MY_Model {
         return $return;
     }
 
-    function get_documentos($auditorias_id = NULL) {
+    function get_documentos($auditorias_id = NULL, $documentos_tipos_id = NULL) {
         $return = array();
         if (empty($auditorias_id) && isset($this->session->{APP_NAMESPACE}[$this->id_field])) {
             $auditorias_id = $this->session->{APP_NAMESPACE}[$this->id_field];
         }
         if (!empty($auditorias_id)) {
-            $return = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id);
+            $return = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
         }
         return $return;
     }
