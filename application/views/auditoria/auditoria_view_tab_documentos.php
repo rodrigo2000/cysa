@@ -26,7 +26,11 @@
                     </div>
                     <div id="reprogramaciones" class="card-block panel-collapse collapse in" role="tabpanel">
                         <div class="list-group">
-                            <a href="<?= $this->module['documentos_url'] . "/REPROG"; ?>" class="list-group-item">Nueva reprogramación</a>
+                            <?php $reprogramaciones = $this->Auditoria_model->get_documentos($auditoria['auditorias_id'], TIPO_DOCUMENTO_REPROGRAMACION); ?>
+                            <?php foreach ($reprogramaciones as $r): $folio = $r['valores'][REPROGRAMACION_FOLIO]; ?>
+                                <a href="<?= $this->module['documentos_url'] . "/" . TIPO_DOCUMENTO_REPROGRAMACION . "/" . $r['documentos_id']; ?>" class="list-group-item">Reprogramación <?= str_pad($folio, 3, "0", STR_PAD_LEFT); ?></a>
+                            <?php endforeach; ?>
+                            <a href="<?= $this->module['documentos_url'] . "/REPROG/nuevo"; ?>" class="list-group-item">Nueva reprogramación</a>
                         </div>
                     </div>
                 </div>
