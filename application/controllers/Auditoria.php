@@ -162,7 +162,7 @@ class Auditoria extends MY_Controller {
         // Texto que va debajo de cada foja
         $texto_foja = "";
         $direcciones = array();
-        $asistencias = $documentos[$index]['asistencias'];
+        $asistencias = isset($documentos[$index]['asistencias']) ? $documentos[$index]['asistencias'] : array();
         if (empty($asistencias)) {
             $asistencias[$auditoria['auditorias_direcciones_id']] = array(
                 TIPO_ASISTENCIA_INVOLUCRADO => 0
