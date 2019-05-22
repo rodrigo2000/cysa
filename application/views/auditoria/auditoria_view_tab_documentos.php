@@ -27,8 +27,10 @@
                     <div id="reprogramaciones" class="card-block panel-collapse collapse in" role="tabpanel">
                         <div class="list-group">
                             <?php $reprogramaciones = $this->Auditoria_model->get_documentos($auditoria['auditorias_id'], TIPO_DOCUMENTO_REPROGRAMACION); ?>
-                            <?php foreach ($reprogramaciones as $r): $folio = $r['valores'][REPROGRAMACION_FOLIO]; ?>
-                                <a href="<?= $this->module['documentos_url'] . "/" . TIPO_DOCUMENTO_REPROGRAMACION . "/" . $r['documentos_id']; ?>" class="list-group-item">Reprogramación <?= str_pad($folio, 3, "0", STR_PAD_LEFT); ?></a>
+                            <?php foreach ($reprogramaciones as $r): ?>
+                                <?php if (isset($r['valores']) && !empty($r['valores'])): $folio = $r['valores'][REPROGRAMACION_FOLIO]; ?>
+                                    <a href="<?= $this->module['documentos_url'] . "/" . TIPO_DOCUMENTO_REPROGRAMACION . "/" . $r['documentos_id']; ?>" class="list-group-item">Reprogramación <?= str_pad($folio, 3, "0", STR_PAD_LEFT); ?></a>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                             <a href="<?= $this->module['documentos_url'] . "/REPROG/nuevo"; ?>" class="list-group-item">Nueva reprogramación</a>
                         </div>
@@ -41,9 +43,15 @@
                         </h6>
                     </div>
                     <div id="ampliaciones" class="card-block panel-collapse collapse in" role="tabpanel">
-                        <ul>
-                            <li>Ampliación 1</li>
-                        </ul>
+                        <div class="list-group">
+                            <?php $ampliaciones = $this->Auditoria_model->get_documentos($auditoria['auditorias_id'], TIPO_DOCUMENTO_AMPLIACION); ?>
+                            <?php foreach ($ampliaciones as $a): ?>
+                                <?php if (isset($a['valores']) && !empty($a['valores'])): $folio = $a['valores'][AMPLICACION_FOLIO]; ?>
+                                    <a href="<?= $this->module['documentos_url'] . "/" . TIPO_DOCUMENTO_AMPLIACION . "/" . $a['documentos_id']; ?>" class="list-group-item">Ampliación <?= str_pad($folio, 3, "0", STR_PAD_LEFT); ?></a>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                            <a href="<?= $this->module['documentos_url'] . "/AMPLIA/nuevo"; ?>" class="list-group-item">Nueva reprogramación</a>
+                        </div>
                     </div>
                 </div>
                 <div class="card panel panel-default m-b-xs">
