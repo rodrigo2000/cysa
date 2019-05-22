@@ -1,5 +1,4 @@
 <?php
-$texto_foja = "";
 $txt_documentacion_recibida = "Documentación Recibida:
 <br>1. Organigrama vigente.
 <br>2. Descriptivas y/o manuales vigentes autorizados de los procedimientos aplicados para (objeto de la auditoría)
@@ -8,24 +7,6 @@ $txt_documentacion_recibida = "Documentación Recibida:
 <br>5. Copia de la Reglamentación vigente aplicable.
 <br>6. Otros (información adicional requerida para la auditoría).";
 $direcciones = array();
-$asistencias = $documentos[$index]['asistencias'];
-if (empty($asistencias)) {
-    $asistencias[$auditoria['auditorias_direcciones_id']] = array(
-        TIPO_ASISTENCIA_INVOLUCRADO => 0
-    );
-}
-foreach ($asistencias as $direcciones_id => $d) {
-    if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
-        $aux = $this->SAC_model->get_direccion($direcciones_id);
-        array_push($direcciones, $aux['nombre_completo_direccion']);
-    }
-}
-if (count($direcciones) > 1) {
-    $ultimo = array_pop($direcciones);
-    $texto_foja = implode(", ", $direcciones) . " y " . $ultimo;
-} else {
-    $texto_foja = implode(", ", $direcciones);
-}
 $direcciones_id = $auditoria['auditorias_direcciones_id'];
 $ubicacion = $this->SAC_model->get_direccion($direcciones_id);
 $generos = array('la', 'el');
@@ -67,9 +48,6 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
     </div>
     <div class="card-block">
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))) : ?>
-            <?php $documento = $documentos[$index]; ?>
-            <?php $hidden = !isset($documento['documentos_id']) || empty($documento['documentos_id']) ? 'hidden-xs-up' : ''; ?>
-            <?php $documento_autorizado = isset($documento['documentos_is_aprobado']) && $documento['documentos_is_aprobado'] == 1 ? TRUE : FALSE; ?>
             <?php echo validation_errors(); ?>
             <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
                 <div class="text-xs-center m-b-1 hidden-print">

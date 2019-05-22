@@ -82,6 +82,7 @@ class Auditoria extends MY_Controller {
             }
             $documentos[$index]['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
         }
+        $mi_data = array();
         switch ($documentos_tipos_id) {
             case TIPO_DOCUMENTO_ORDEN_AUDITORIA:
                 if ($documentos_id !== "nuevo") {
@@ -96,6 +97,7 @@ class Auditoria extends MY_Controller {
                 break;
             case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
                 $this->module['title_list'] = "Acta de Inicio de Auditoría";
+                $mi_data['asistencias'] = $documentos[$index]['asistencias'];
                 break;
             case TIPO_DOCUMENTO_CITATORIO:
                 if ($documentos_id !== "nuevo") {
@@ -113,6 +115,7 @@ class Auditoria extends MY_Controller {
                 break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_REVISION:
+                $mi_data['asistencias'] = $documentos[$index]['asistencias'];
                 $vista = "documentos/verificar_tipo_acta";
                 $this->module['title_list'] = "Acta de Resultados";
                 break;
@@ -121,6 +124,10 @@ class Auditoria extends MY_Controller {
                 break;
             case TIPO_DOCUMENTO_ACTA_ADMINISTRATIVA:
                 $this->module['title_list'] = "Acta Administrativa";
+                break;
+            case TIPO_DOCUMENTO_AUTORIZACION_AUDITORIA_NO_PROGRAMADA:
+                $this->module['title_list'] = "Autorización de Auditoría No Programada";
+                $mi_data['auditoroas_por_sustituir'] = $this->Auditorias_model->get_auditorias_sin_numero();
                 break;
         }
         if (empty($vista)) {
@@ -150,11 +157,39 @@ class Auditoria extends MY_Controller {
             $de_cargo = $cc_empleado['empleados_cargo'];
             $de_tratamiento = '';
         }
+        $hidden = !isset($documentos[$index]['documentos_id']) || empty($documentos[$index]['documentos_id']) ? 'hidden-xs-up' : '';
+        $documento_autorizado = isset($documento['documentos_is_aprobado']) && $documento['documentos_is_aprobado'] == 1 ? TRUE : FALSE;
+        // Texto que va debajo de cada foja
+        $texto_foja = "";
+        $direcciones = array();
+        $asistencias = $documentos[$index]['asistencias'];
+        if (empty($asistencias)) {
+            $asistencias[$auditoria['auditorias_direcciones_id']] = array(
+                TIPO_ASISTENCIA_INVOLUCRADO => 0
+            );
+        }
+        foreach ($asistencias as $direcciones_id => $d) {
+            if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
+                $aux = $this->SAC_model->get_direccion($direcciones_id);
+                array_push($direcciones, $aux['nombre_completo_direccion']);
+            }
+        }
+        if (count($direcciones) > 1) {
+            $ultimo = array_pop($direcciones);
+            $texto_foja = implode(", ", $direcciones) . " y " . $ultimo;
+        } else {
+            $texto_foja = implode(", ", $direcciones);
+        }
         $data = array(
             'auditoria' => $auditoria,
             'registros' => array(),
             'documentos' => $documentos,
             'index' => $index,
+            'documento' => $documentos[$index],
+            'r' => isset($documentos[$index]['valores']) ? $documentos[$index]['valores'] : array(),
+            'documento_autorizado' => $documento_autorizado,
+            'hidden' => $hidden,
+            'texto_foja' => $texto_foja,
             'urlAction' => $this->module['url'] . "/documento",
             'logotipos' => $this->Logotipos_model->get_todos(),
             'direcciones_select' => $this->SAC_model->get_direcciones_de_periodo($auditoria['auditorias_periodos_id']),
@@ -174,6 +209,7 @@ class Auditoria extends MY_Controller {
                 'tratamiento' => $de_tratamiento
             )
         );
+        $data = array_merge($data, $mi_data);
         $this->visualizar($vista, $data);
     }
 
@@ -369,6 +405,9 @@ class Auditoria extends MY_Controller {
                 break;
             case TIPO_DOCUMENTO_ACTA_ADMINISTRATIVA:
                 $this->module['title_list'] = "Acta Administrativa";
+                break;
+            case TIPO_DOCUMENTO_AUTORIZACION_AUDITORIA_NO_PROGRAMADA:
+                $is_oficio = FALSE;
                 break;
             default :
                 echo "Tipo de documento no encontrado";

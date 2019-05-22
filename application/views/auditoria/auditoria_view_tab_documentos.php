@@ -25,9 +25,9 @@
                         </h6>
                     </div>
                     <div id="reprogramaciones" class="card-block panel-collapse collapse in" role="tabpanel">
-                        <ul>
-                            <li>Reprogramación 1</li>
-                        </ul>
+                        <div class="list-group">
+                            <a href="<?= $this->module['documentos_url'] . "/REPROG"; ?>" class="list-group-item">Nueva reprogramación</a>
+                        </div>
                     </div>
                 </div>
                 <div class="card panel panel-default m-b-xs">

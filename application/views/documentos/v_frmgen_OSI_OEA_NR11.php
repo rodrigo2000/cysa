@@ -34,9 +34,6 @@
     </div>
     <div class="card-block">
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))) : ?>
-            <?php $documento = $documentos[$index]; ?>
-            <?php $hidden = !isset($documento['documentos_id']) || empty($documento['documentos_id']) ? 'hidden-xs-up' : ''; ?>
-            <?php $documento_autorizado = isset($documento['documentos_is_aprobado']) && $documento['documentos_is_aprobado'] == 1 ? TRUE : FALSE; ?>
             <?php echo validation_errors(); ?>
             <form id="frmOficios" name="frmOficios" class="<?= $documento_autorizado ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
                 <div class="text-xs-center m-b-1 hidden-print">
