@@ -43,7 +43,8 @@ $(document).ready(function () {
     $("input.autoresize").on('input', function () {
         this.style.width = this.value.length + "ch";
     }).trigger('input');
-    $("input", ".autorizado").prop("readonly", true).prop("disabled", true);
+    $("input, select, textarea", ".autorizado").prop("readonly", true).prop("disabled", true);
+    $("span.editable", "#oficio-hoja.autorizado").prop('contenteditable', false);
     $('#headers_id.ddslick').ddslick({
         width: '100%',
         imagePosition: "left",
@@ -124,7 +125,31 @@ $(document).ready(function () {
             }, "json");
         });
     }
-
+    if ($('.component-daterangepicker').length > 0) {
+        $('.component-daterangepicker').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+            timePickerIncrement: 5,
+            autoApply: false,
+            autoUpdateInput: false,
+            opens: "center",
+            alwaysShowCalendars: true,
+            locale: {
+                format: 'LL',
+                applyLabel: "Aplicar",
+                cancelLabel: "Cancelar",
+                monthNames: moment.months()
+            }
+        }).on('apply.daterangepicker', function (ev, picker) {
+            var alternativo = $(ev.target).attr("datepicker");
+            if (typeof ev.target.val !== "undefined") {
+                $(ev.target).val(picker.startDate.format("LL"));
+            } else {
+                $(ev.target).html(picker.startDate.format("LL"));
+            }
+            $("#" + alternativo).val(picker.startDate.format("YYYY-MM-DD")).trigger("change");
+        });
+    }
     $(document).on('click', ".btn_agregar", function () {
         $(this).addClass('hidden-xs-up');
         var tipo = $(this).attr("data-tipo");
