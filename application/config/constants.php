@@ -72,6 +72,7 @@ define('TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION', 11);
 define('TIPO_DOCUMENTO_CITATORIO', 12);
 define('TIPO_DOCUMENTO_ENVIO_DOCUMENTOS', 18);
 define('TIPO_DOCUMENTO_ACTA_ADMINISTRATIVA', 21);
+define('TIPO_DOCUMENTO_AUTORIZACION_AUDITORIA_NO_PROGRAMADA', 25);
 define('TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA', 29);
 define('TIPO_DOCUMENTO_RESOLUCION_AMPLIACION_PLAZO', 31);
 
@@ -92,17 +93,21 @@ define('TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA', 4);
 /* Dias habiles para el plazo de solventacion de la auditoria Operativa */
 @define('PLAZO_SOLV_RESPO', 39);
 /* Cantidad de ejemplares para dar de un acta */
-@define('CONSTANTE_CANTIDAD_EJEMPLARES_ACTA','dos');
+@define('CONSTANTE_CANTIDAD_EJEMPLARES_ACTA', 'dos');
 
 define('LABEL_CONTRALORIA', 'Unidad de Contraloría Municipal');
 define('SIN_ESPECIFICAR', '<b>[SIN ESPECIFICAR]</b>');
 
-define('TIPO_AUDITORIA_AP',1);
+define('TIPO_AUDITORIA_AP', 1);
 define('TIPO_AUDITORIA_AE', 2);
 define('TIPO_AUDITORIA_SA', 3);
 define('TIPO_AUDITORIA_IC', 4);
 define('TIPO_AUDITORIA_CV', 5);
 define('TIPO_AUDITORIA_MO', 6);
+
+define('AUDITORIA_ETAPA_AP', 0);
+define('AUDITORIA_ETAPA_REV1', 1);
+define('AUDITORIA_ETAPA_REV2', 2);
 
 /*
   |--------------------------------------------------------------------------
