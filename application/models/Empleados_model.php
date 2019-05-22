@@ -25,4 +25,23 @@ class Empleados_model extends MY_Model {
         return $return;
     }
 
+    /**
+     * Devuelve el jefe inmediato del empleado
+     * @param integer $periodos_id Identificador del período. El valor NULL considera el período actual.
+     * @param integer $empleados_id Identificador del empleado. El valor NULL considera el empleado que tiene sesión iniciada
+     * @return array Arreglo con la información del jefe del empleado
+     */
+    function get_jefe($periodos_id = NULL, $empleados_id = NULL) {
+        $return = array();
+        if (empty($periodos_id)) {
+            $p = $this->SAC_model->get_ultimo_periodo();
+            $periodos_id = intval($p['periodos_id']);
+        }
+        if (empty($empleados_id)) {
+            $empleados_id = $this->session->userdata("empleados_id");
+        }
+        $return = $this->SAC_model->get_jefe_de_empleado($empleados_id);
+        return $return;
+    }
+
 }
