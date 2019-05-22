@@ -212,7 +212,7 @@ class Auditorias_model extends MY_Model {
                     //->select("MATCH (empleados_nombre, empleados_apellido_paterno, empleados_apellido_materno) AGAINST ('" . $search['value'] . "' IN NATURAL LANGUAGE MODE) AS 'relevancia'")
                     ->select($this->table_prefix . ".*")
                     ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_siglas, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
-                    ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
+                    ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas, aa.auditorias_areas_nombre")
                     ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
                     ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = " . $this->table_prefix . ".auditorias_auditor_lider", "LEFT")->select("e.*, CONCAT(e.empleados_nombre, ' ',e.empleados_apellido_paterno, ' ', e.empleados_apellido_materno) AS 'auditor_lider_nombre_completo'")
@@ -523,6 +523,31 @@ class Auditorias_model extends MY_Model {
             if ($result && $result->num_rows() > 0) {
                 $return = $result->row_array();
             }
+        }
+        return $return;
+    }
+
+    /**
+     * Devuelve las auditorias sin número o que también están pendientes por iniciar
+     * @param boolean $incluir_canceladas TRUE para indiciar que también devuelva las auditorias canceladas. FALSE para devolver solo las pendientes por iniciar
+     * @param boolean $incluir_eliminadas TRUE para indicar que se incluyan las eliminadas. FALSE para cualquier otro caso.
+     * @return array Listado de auditorias
+     */
+    function get_auditorias_sin_numero($incluir_canceladas = FALSE, $incluir_eliminadas = FALSE) {
+        $return = array();
+        $status = array(AUDITORIAS_STATUS_EN_PROCESO);
+        if ($incluir_canceladas) {
+            array_push($status, AUDITORIAS_STATUS_CANCELADA);
+        }
+        if (!$incluir_eliminadas) {
+            $this->db->where("fecha_delete IS NULL");
+        }
+        $result = $this->db
+                ->where_in("auditorias_status_id", $status)
+                ->where("auditorias_numero IS NULL")
+                ->get($this->table_name);
+        if ($result && $result->num_rows() > 0) {
+            $return = $result->result_array();
         }
         return $return;
     }
