@@ -105,14 +105,6 @@ if (isset($r) && !empty($r) && is_array($r)) {
             <?php echo validation_errors(); ?>
             <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
                 <div class="text-xs-center m-b-1 hidden-print">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Nuevo</button>
-                        <div class="dropdown-menu" style="height: 300px; overflow: auto;">
-                            <?php foreach ($direcciones_select as $d): ?>
-                                <a class="dropdown-item" href="<?= base_url() . $this->module['controller'] . "/documento/" . $this->uri->segment(3) . "/nuevo/" . $d['direcciones_id']; ?>"><?= $d['direcciones_nombre_cc']; ?></a>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
                     <?php if (!$documento_autorizado): ?>
                         <button type="button" class="btn btn-primary boton_guardar m-l-2"><?= $etiquetaBoton; ?></button>
                         <?php if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_AUTORIZAR_DOCUMENTO)): ?>
