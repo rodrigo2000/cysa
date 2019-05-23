@@ -19,41 +19,20 @@ $amplia_reprog = array(
  */
 $etapas = array('Resultados de Auditoría', 'Solventación de Observaciones', 'Segunda Solventación de Observaciones', 'Auditoría Finalizada');
 $is_reprogramacion = TRUE;
+$folios = array();
 if ($documentos_tipos_id == TIPO_DOCUMENTO_AMPLIACION) {
     $is_reprogramacion = FALSE;
-}
-if (isset($r) && !empty($r) && is_array($r)) {
-    foreach ($r as $constante => $c) {
-        switch ($constante) {
-            case AMPLIA_REPROG_FOLIO:
-                $amplia_reprog['folio'] = $c;
-                break;
-//            case SOLICITUD_AMPLIA_REPROG_P_MOTIVO:
-            case AMPLIA_REPROG_MOTIVO:
-                $amplia_reprog['motivo'] = $c;
-                break;
-//            case SOLICITUD_AMPLIACION_P_OBSERVACIONES:
-            case AMPLIA_REPROG_OBSERVACIONES:
-                $amplia_reprog['observaciones'] = $c;
-                break;
-//            case SOLICITUD_AMPLIACION_P_FECHA_SOLICITUD:
-            case AMPLIA_REPROG_FECHA_SOLICITUD:
-                $amplia_reprog['fecha_solicitud'] = $c;
-                break;
-            case AMPLIA_REPROG_DIAS_IMPACTO:
-                $amplia_reprog['dias_impacto'] = $c;
-                break;
-            case AMPLIA_REPROG_FECHA_INICIAL:
-                $amplia_reprog['fecha_inicio_programada'] = $c;
-                if (!is_int($amplia_reprog['fecha_inicio_programada'])) {
-                    $amplia_reprog['fecha_inicio_programada'] = strtotime($amplia_reprog['fecha_inicio_programada']);
-                }
-                break;
-            case AMPLIA_REPROG_FECHA_FINAL:
-                $amplia_reprog['fecha_fin_programada'] = $c;
-                break;
-            default :
-                break;
+    $ampliaciones = $this->Auditoria_model->get_documentos($auditoria['auditorias_id'], TIPO_DOCUMENTO_AMPLIACION);
+    foreach ($ampliaciones as $amplia) {
+        if (isset($amplia['valores']) && isset($amplia['valores'][AMPLIA_REPROG_FOLIO])) {
+            array_push($folios, $amplia['valores'][AMPLIA_REPROG_FOLIO]);
+        }
+    }
+} else {
+    $reprogramaciones = $this->Auditoria_model->get_documentos($auditoria['auditorias_id'], TIPO_DOCUMENTO_REPROGRAMACION);
+    foreach ($reprogramaciones as $reprog) {
+        if (isset($reprog['valores']) && isset($reprog['valores'][AMPLIA_REPROG_FOLIO])) {
+            array_push($folios, $reprog['valores'][AMPLIA_REPROG_FOLIO]);
         }
     }
 }
@@ -100,9 +79,6 @@ if (isset($r) && !empty($r) && is_array($r)) {
     </div>
     <div class="card-block">
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))) : ?>
-            <?php $documento = $documentos[$index]; ?>
-            <?php $hidden = !isset($documento['documentos_id']) || empty($documento['documentos_id']) ? 'hidden-xs-up' : ''; ?>
-            <?php $documento_autorizado = isset($documento['documentos_is_aprobado']) && $documento['documentos_is_aprobado'] == 1 ? TRUE : FALSE; ?>
             <?php echo validation_errors(); ?>
             <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
                 <div class="text-xs-center m-b-1 hidden-print">
@@ -154,12 +130,12 @@ if (isset($r) && !empty($r) && is_array($r)) {
                         <tbody id="oficio-body">
                             <tr>
                                 <td>
-                                    <table class="table mismo-tamano-fuente-p" style="width: 100%;">
+                                    <table class="table table-sm mismo-tamano-fuente-p table-borderless">
                                         <tbody>
                                             <tr>
                                                 <th width="300">Folio:</th>
                                                 <td>
-                                                    <?php $aux = isset($r[AMPLIA_REPROG_FOLIO]) ? $r[AMPLIA_REPROG_FOLIO] : 1; ?>
+                                                    <?php $aux = isset($r[AMPLIA_REPROG_FOLIO]) ? $r[AMPLIA_REPROG_FOLIO] : count($folios) + 1; ?>
                                                     <?= str_pad($aux, 3, "0", STR_PAD_LEFT); ?>
                                                     <input type="hidden" name="constantes[<?= AMPLIA_REPROG_FOLIO; ?>]" value="<?= $aux; ?>">
                                                 </td>
@@ -215,7 +191,7 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <table class="table table-bordered mismo-tamano-fuente-p">
+                                    <table class="table table-sm table-bordered mismo-tamano-fuente-p">
                                         <tbody>
                                             <tr><th colspan="5">Actividad o motivo</th></tr>
                                             <tr><td colspan="5"><?= span_editable($r, AMPLIA_REPROG_MOTIVO, NULL, TRUE) ?></td></tr>
@@ -231,11 +207,14 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                                 <th class="text-xs-center">Real</th>
                                                 <td class="text-xs-center v-align-middle" rowspan="2">
                                                     <?php $aux = isset($r[AMPLIA_REPROG_DIAS_IMPACTO]) ? $r[AMPLIA_REPROG_DIAS_IMPACTO] : '0'; ?>
-                                                    <?php if ($is_reprogramacion): ?>
-                                                        <?= $aux; ?>
-                                                        <input type="hidden" name="constantes[<?= AMPLIA_REPROG_FOLIO; ?>]" value="<?= $aux; ?>">
+                                                    <?php if ($documento_autorizado): ?>
+                                                        <?php echo $aux; ?>
                                                     <?php else: ?>
-                                                        <input type="number" id="<?= AMPLIA_REPROG_DIAS_IMPACTO; ?>" name="constantes[<?= AMPLIA_REPROG_DIAS_IMPACTO; ?>]" value="<?= $aux; ?>" class="form-control text-xs-center" min="0" style="width:100px;">
+                                                        <?php if ($is_reprogramacion): ?>
+                                                            <?= $aux; ?>
+                                                        <?php else: ?>
+                                                            <input type="number" id="<?= AMPLIA_REPROG_DIAS_IMPACTO; ?>" name="constantes[<?= AMPLIA_REPROG_DIAS_IMPACTO; ?>]" value="<?= $aux; ?>" class="form-control text-xs-center" min="0" default-value="0">
+                                                        <?php endif; ?>
                                                     <?php endif; ?>
                                                 </td>
                                             </tr>
@@ -256,46 +235,48 @@ if (isset($r) && !empty($r) && is_array($r)) {
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="text-xs-center v-align-middle">
-                                                    <?php $aux = $is_reprogramacion ? 'N/A' : $auditoria['auditorias_fechas_fin_programado']; ?>
-                                                    <?= mysqlDate2OnlyDate($aux); ?>
+                                                    <?php $aux = $is_reprogramacion ? NULL : $auditoria['auditorias_fechas_fin_programado']; ?>
+                                                    <?= empty($aux) ? 'N/A' : mysqlDate2OnlyDate($aux); ?>
                                                 </td>
                                                 <td class="text-xs-center v-align-middle" class="col-xs-12" style="border-right:1px solid rgba(0,0,0,.1);">
-                                                    <?php $aux = $is_reprogramacion ? 'N/A' : $auditoria['auditorias_fechas_fin_programado']; ?>
-                                                    <span id="actualizar<?= AMPLIA_REPROG_FECHA_FINAL; ?>"><?= mysqlDate2OnlyDate($aux); ?></span>
-                                                    <input type="hidden" id="<?= AMPLIA_REPROG_FECHA_FINAL; ?>" name="constantes[<?= AMPLIA_REPROG_FECHA_FINAL; ?>]" value="<?= $aux; ?>">
-                                                    <input type="hidden" id="fecha_final_original" value="<?= $aux; ?>">
+                                                    <?php $aux = $is_reprogramacion ? NULL : (!empty($r[AMPLIA_REPROG_FECHA_FINAL]) ? $r[AMPLIA_REPROG_FECHA_FINAL] : $auditoria['auditorias_fechas_fin_programado']); ?>
+                                                    <span id="actualizar<?= AMPLIA_REPROG_FECHA_FINAL; ?>"><?= empty($aux) ? 'N/A' : mysqlDate2OnlyDate($aux); ?></span>
+                                                    <input type="hidden" id="<?= AMPLIA_REPROG_FECHA_FINAL; ?>" name="constantes[<?= AMPLIA_REPROG_FECHA_FINAL; ?>]" value="<?= empty($aux) ? 'N/A' : $aux; ?>">
+                                                    <input type="hidden" id="fecha_final_original" value="<?= empty($aux) ? 'N/A' : $aux; ?>">
                                                 </td>
                                             </tr>
                                             <tr><th colspan="5">Observaciones</td></th>
                                             <tr><td colspan="5"><?= span_editable($r, AMPLIA_REPROG_OBSERVACIONES, NULL, TRUE); ?></td></tr>
                                         </tbody>
                                     </table>
-                                    <div class="firmas row">
-                                        <div class="col-xs-4 col-print-4">
-                                            <?php $e = $this->Empleados_model->get_jefe($auditoria['auditorias_periodos_id'], $auditoria['auditorias_auditor_lider']); ?>
-                                            <div class="firmas_empleado empleado_<?= !empty($e) && isset($e['empleados_id']) ? $e['empleados_id'] : SIN_ESPECIFICAR; ?>">
-                                                <div class="firmas_empleado_nombre"><?= !empty($e) && isset($e['empleados_nombre_titulado_siglas']) ? $e['empleados_nombre_titulado_siglas'] : SIN_ESPECIFICAR; ?></div>
-                                                <div class="firmas_empleado_cargo"><?= !empty($e) && isset($e['empleados_cargo']) ? $e['empleados_cargo'] : SIN_ESPECIFICAR; ?></div>
-                                                <div class="firmas_empleado_cargo">Solicitó</div>
+                                    <?php if ($documento_autorizado): ?>
+                                        <div class="firmas row">
+                                            <div class="col-xs-4 col-print-4">
+                                                <?php $e = $this->Empleados_model->get_jefe($auditoria['auditorias_periodos_id'], $auditoria['auditorias_auditor_lider']); ?>
+                                                <div class="firmas_empleado empleado_<?= !empty($e) && isset($e['empleados_id']) ? $e['empleados_id'] : SIN_ESPECIFICAR; ?>">
+                                                    <div class="firmas_empleado_nombre"><?= !empty($e) && isset($e['empleados_nombre_titulado_siglas']) ? $e['empleados_nombre_titulado_siglas'] : SIN_ESPECIFICAR; ?></div>
+                                                    <div class="firmas_empleado_cargo"><?= !empty($e) && isset($e['empleados_cargo']) ? $e['empleados_cargo'] : SIN_ESPECIFICAR; ?></div>
+                                                    <div class="firmas_empleado_cargo">Solicitó</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4 col-print-4">
+                                                <?php $e = $this->CYSA_model->get_subdirector_de_contraloria($auditoria['auditorias_periodos_id']); ?>
+                                                <div class="firmas_empleado empleado_<?= !empty($e) && isset($e['empleados_id']) ? $e['empleados_id'] : SIN_ESPECIFICAR; ?>">
+                                                    <div class="firmas_empleado_nombre"><?= !empty($e) && isset($e['empleados_nombre_titulado_siglas']) ? $e['empleados_nombre_titulado_siglas'] : SIN_ESPECIFICAR; ?></div>
+                                                    <div class="firmas_empleado_cargo"><?= !empty($e) && isset($e['empleados_cargo']) ? $e['empleados_cargo'] : SIN_ESPECIFICAR; ?></div>
+                                                    <div class="firmas_empleado_cargo">Vo.Bo.</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4 col-print-4-">
+                                                <?php $e = $this->CYSA_model->get_director_de_contraloria($auditoria['auditorias_periodos_id']); ?>
+                                                <div class="firmas_empleado empleado_<?= !empty($e) && isset($e['empleados_id']) ? $e['empleados_id'] : SIN_ESPECIFICAR; ?>">
+                                                    <div class="firmas_empleado_nombre"><?= !empty($e) && isset($e['empleados_nombre_titulado_siglas']) ? $e['empleados_nombre_titulado_siglas'] : SIN_ESPECIFICAR; ?></div>
+                                                    <div class="firmas_empleado_cargo"><?= !empty($e) && isset($e['empleados_cargo']) ? $e['empleados_cargo'] : SIN_ESPECIFICAR; ?></div>
+                                                    <div class="firmas_empleado_cargo">Autorizó</div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-xs-4 col-print-4">
-                                            <?php $e = $this->CYSA_model->get_subdirector_de_contraloria($auditoria['auditorias_periodos_id']); ?>
-                                            <div class="firmas_empleado empleado_<?= !empty($e) && isset($e['empleados_id']) ? $e['empleados_id'] : SIN_ESPECIFICAR; ?>">
-                                                <div class="firmas_empleado_nombre"><?= !empty($e) && isset($e['empleados_nombre_titulado_siglas']) ? $e['empleados_nombre_titulado_siglas'] : SIN_ESPECIFICAR; ?></div>
-                                                <div class="firmas_empleado_cargo"><?= !empty($e) && isset($e['empleados_cargo']) ? $e['empleados_cargo'] : SIN_ESPECIFICAR; ?></div>
-                                                <div class="firmas_empleado_cargo">Vo.Bo.</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-4 col-print-4-">
-                                            <?php $e = $this->CYSA_model->get_director_de_contraloria($auditoria['auditorias_periodos_id']); ?>
-                                            <div class="firmas_empleado empleado_<?= !empty($e) && isset($e['empleados_id']) ? $e['empleados_id'] : SIN_ESPECIFICAR; ?>">
-                                                <div class="firmas_empleado_nombre"><?= !empty($e) && isset($e['empleados_nombre_titulado_siglas']) ? $e['empleados_nombre_titulado_siglas'] : SIN_ESPECIFICAR; ?></div>
-                                                <div class="firmas_empleado_cargo"><?= !empty($e) && isset($e['empleados_cargo']) ? $e['empleados_cargo'] : SIN_ESPECIFICAR; ?></div>
-                                                <div class="firmas_empleado_cargo">Autorizó</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         </tbody>
