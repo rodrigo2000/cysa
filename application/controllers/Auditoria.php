@@ -129,6 +129,21 @@ class Auditoria extends MY_Controller {
                 $this->module['title_list'] = "Autorización de Auditoría No Programada";
                 $mi_data['auditoroas_por_sustituir'] = $this->Auditorias_model->get_auditorias_sin_numero();
                 break;
+            case TIPO_DOCUMENTO_AMPLIACION:
+                $this->module['title_list'] = "Solicitud de Ampliación";
+                break;
+            case TIPO_DOCUMENTO_REPROGRAMACION:
+                $this->module['title_list'] = "Solicitud de Reprogramación";
+                break;
+            case TIPO_DOCUMENTO_RESOLUCION_AMPLIACION_PLAZO:
+                $this->module['title_list'] = "Resolución de Ampliación de Plazo";
+                break;
+            case TIPO_DOCUMENTO_RESOLUCION_PRORROGA:
+                $this->module['title_list'] = "Resolución de Prórroga";
+                break;
+            case TIPO_DOCUMENTO_SOLICITUD_INFORMACION:
+                $this->module['title_list'] = "Oficio de Solicitud de Información";
+                break;
         }
         if (empty($vista)) {
             $vista = "documentos/" . basename($documentos[$index]['documentos_versiones_archivo_impresion'], ".php");
