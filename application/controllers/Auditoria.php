@@ -376,6 +376,8 @@ class Auditoria extends MY_Controller {
         $is_oficio = TRUE;
         $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
         $vista = "documentos/" . basename($documento['documentos_versiones_archivo_impresion'], ".php");
+        $index = 0;
+        $mi_data = array();
         switch ($documentos_tipos_id) {
             case TIPO_DOCUMENTO_ORDEN_AUDITORIA:
                 $para_direcciones_id = $documento['valores'][ORD_ENT_ID_DIR_AUDIT];
@@ -410,6 +412,10 @@ class Auditoria extends MY_Controller {
             case TIPO_DOCUMENTO_AUTORIZACION_AUDITORIA_NO_PROGRAMADA:
                 $is_oficio = FALSE;
                 break;
+            case TIPO_DOCUMENTO_AMPLIACION:
+            case TIPO_DOCUMENTO_REPROGRAMACION:
+                $is_oficio = FALSE;
+                break;
             default :
                 echo "Tipo de documento no encontrado";
                 die();
@@ -427,13 +433,42 @@ class Auditoria extends MY_Controller {
             $de_cargo = $cc_empleado['empleados_cargo'];
             $de_tratamiento = '';
         }
+        $hidden = !isset($documento['documentos_id']) || empty($documento['documentos_id']) ? 'hidden-xs-up' : '';
+        $documento_autorizado = isset($documento['documentos_is_aprobado']) && $documento['documentos_is_aprobado'] == 1 ? TRUE : FALSE;
+        // Texto que va debajo de cada foja
+        $texto_foja = "";
+        $direcciones = array();
+        $asistencias = isset($documento['asistencias']) ? $documento['asistencias'] : array();
+        if (empty($asistencias)) {
+            $asistencias[$auditoria['auditorias_direcciones_id']] = array(
+                TIPO_ASISTENCIA_INVOLUCRADO => 0
+            );
+        }
+        foreach ($asistencias as $direcciones_id => $d) {
+            if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
+                $aux = $this->SAC_model->get_direccion($direcciones_id);
+                array_push($direcciones, $aux['nombre_completo_direccion']);
+            }
+        }
+        if (count($direcciones) > 1) {
+            $ultimo = array_pop($direcciones);
+            $texto_foja = implode(", ", $direcciones) . " y " . $ultimo;
+        } else {
+            $texto_foja = implode(", ", $direcciones);
+        }
         $data = array(
+            'documentos_tipos_id' => $documentos_tipos_id,
             'auditoria' => $auditoria,
             'registros' => array(),
             'documentos' => array(
-                0 => $documento
+                $index => $documento
             ),
-            'index' => 0,
+            'index' => $index,
+            'documento' => $documento,
+            'r' => isset($documento['valores']) ? $documento['valores'] : array(),
+            'documento_autorizado' => $documento_autorizado,
+            'hidden' => $hidden,
+            'texto_foja' => $texto_foja,
             'urlAction' => $this->module['url'] . "/documento",
             'logotipos' => $this->Logotipos_model->get_todos(),
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($auditoria['auditorias_periodos_id']),
@@ -458,6 +493,7 @@ class Auditoria extends MY_Controller {
         if (isset($data['r']['oficios_omisos_is_autorizado']) && intval($data['r']['oficios_omisos_is_autorizado']) === 1) {
             $data["is_autorizado"] = TRUE;
         }
+        $data = array_merge($data, $mi_data);
         $this->visualizar($vista, $data);
     }
 
