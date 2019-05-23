@@ -134,35 +134,16 @@
                                         <div id="firma-titular-contraloria" class="texto-resaltar">
                                             <?= mb_strtoupper($oficio_de['nombre']); ?><br>
                                             <?= mb_strtoupper($oficio_de['cargo']); ?>
-                                            <input type="hidden" name="constantes[<?= ORD_ENT_ID_DIR_CONTRA; ?>]" value="<?= isset($r[ORD_ENT_ID_DIR_CONTRA]) && !empty($r[ORD_ENT_ID_DIR_CONTRA]) ? $r[ORD_ENT_ID_DIR_CONTRA] : $oficio_de['empleados_id']; ?>">
+                                            <input type="hidden" name="constantes[<?= RAP_TITULAR_CONTRALORIA_ID_EMPLEADO; ?>]" value="<?= isset($r[RAP_TITULAR_CONTRALORIA_ID_EMPLEADO]) && !empty($r[RAP_TITULAR_CONTRALORIA_ID_EMPLEADO]) ? $r[RAP_TITULAR_CONTRALORIA_ID_EMPLEADO] : $oficio_de['empleados_id']; ?>">
                                         </div>
-                                        <div id="mision" class="texto-mision">
-                                            <br><b>MISIÓN</b><br>
-                                            Gobernar el Municipio de Mérida, con un enfoque de vanguardia que procure el desarrollo humano sustentable, con
-                                            servicios públicos de calidad, una infraestructura funcional y una administración austera y eficiente, que
-                                            promueva la participación ciudadana y consolide un crecimiento sustentable de su territorio para mejorar la
-                                            calidad de vida y el acceso en igualdad de oportunidades a todos sus habitantes.
-                                        </div>
+                                        <?php if (CONTRALORIA_MOSTRAR_MISION): ?>
+                                            <div id="mision" class="texto-mision">
+                                                <br><b>MISIÓN</b><br>
+                                                <?= $this->CYSA_model->get_mision(); ?>
+                                            </div>
+                                        <?php endif; ?>
                                         <div class="texto-ccp">
-                                            C.c.p.
-                                            <?php
-                                            $ccp_texto_plantilla = "";
-                                            $alcalde = get_presidente_municipal();
-                                            if (!empty($alcalde)) {
-                                                $alcalde = $this->SAC_model->get_empleado($alcalde['empleados_id']);
-                                                $ccp_texto_plantilla = capitalizar($alcalde['nombre_completo']) . " / " . capitalizar($alcalde['puestos_nombre']) . ".";
-                                            } else {
-                                                $ccp_texto_plantilla = "Nombre del Presidente Municipal/ Puesto.";
-                                            }
-                                            $sindico = get_sindico();
-                                            if (!empty($sindico)) {
-                                                $sindico = $this->SAC_model->get_empleado($sindico['empleados_id']);
-                                                $ccp_texto_plantilla .= PHP_EOL . capitalizar($sindico['nombre_completo']) . " / " . capitalizar($sindico['puestos_nombre']) . ".";
-                                            } else {
-                                                $ccp_texto_plantilla .= PHP_EOL . "Nombre del Síndico / Puesto.";
-                                            }
-                                            $ccp_texto_plantilla .= PHP_EOL . "Nombre(s) del Titular(es) involucrado(s) en la auditoría/ Puesto.";
-                                            ?>
+                                            C.c.p. <?php $ccp_texto_plantilla = $this->CYSA_model->get_ccp_template(); ?>
                                             <span id="<?= RESOL_AMPLI_CCP; ?>" contenteditable="true" class="editable" default-value="<?= $ccp_texto_plantilla; ?>" aceptar-enter="1"><?= isset($r) ? nl2br($r[RESOL_AMPLI_CCP]) : nl2br($ccp_texto_plantilla); ?></span><br>
                                             Minutario<br>
                                             Expediente<br><br>
