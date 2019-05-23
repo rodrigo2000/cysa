@@ -59,4 +59,39 @@ class CYSA_model extends MY_Model {
         return $return;
     }
 
+    /**
+     * Devuelve el texto predeterminado que se usa como CCP en los oficios generados por CYSA.
+     */
+    function get_ccp_template() {
+        $ccp_texto_plantilla = "";
+        $alcalde = get_presidente_municipal();
+        if (!empty($alcalde)) {
+            $alcalde = $this->SAC_model->get_empleado($alcalde['empleados_id']);
+            $ccp_texto_plantilla = capitalizar($alcalde['nombre_completo']) . " / " . capitalizar($alcalde['puestos_nombre']) . ".";
+        } else {
+            $ccp_texto_plantilla = "Nombre del Presidente Municipal/ Puesto.";
+        }
+        $sindico = get_sindico();
+        if (!empty($sindico)) {
+            $sindico = $this->SAC_model->get_empleado($sindico['empleados_id']);
+            $ccp_texto_plantilla .= PHP_EOL . capitalizar($sindico['nombre_completo']) . " / " . capitalizar($sindico['puestos_nombre']) . ".";
+        } else {
+            $ccp_texto_plantilla .= PHP_EOL . "Nombre del Síndico / Puesto.";
+        }
+        $ccp_texto_plantilla .= PHP_EOL . "Nombre(s) del Titular(es) involucrado(s) en la auditoría/ Puesto.";
+        return $ccp_texto_plantilla;
+    }
+
+    function get_mision($misiones_id = NULL) {
+        $return = "";
+        if(empty($misiones_id)){
+
+        }
+        $return = "Gobernar el Municipio de Mérida, con un enfoque de vanguardia que procure el desarrollo humano sustentable, con
+        servicios públicos de calidad, una infraestructura funcional y una administración austera y eficiente, que
+        promueva la participación ciudadana y consolide un crecimiento sustentable de su territorio para mejorar la
+        calidad de vida y el acceso en igualdad de oportunidades a todos sus habitantes.";
+        return $return;
+    }
+
 }
