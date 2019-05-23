@@ -113,80 +113,39 @@
                                         me permito solicitar su asistencia para llevar a cabo el acto de notificación de resultados, firma y entrega del
                                         <span id="<?= DOCTO_LECTURA; ?>" contenteditable="true" class="editable" default-value="Acta de Resultados de Auditoría, Cédula de Observación (es), Acta de Resultados de Revisión"><?= isset($r[DOCTO_LECTURA]) ? $r[DOCTO_LECTURA] : ''; ?></span>,
                                         referente a la auditoría número
-                                        <span class="resaltar"><?= $auditoria['numero_auditoria']; ?></span>,
+                                        <?= span_resaltar($auditoria['numero_auditoria']); ?>
                                         que tiene por objetivo
-                                        <span class="resaltar"><?= $auditoria['auditorias_objetivo']; ?></span>,
+                                        <?= span_resaltar($auditoria['auditorias_objetivo']); ?>,
                                         realizada
-                                        <span class="resaltar">
-                                            <?php echo get_frase_de_ua($auditoria); ?>
-                                        </span>,
+                                        <?= span_resaltar(get_frase_de_ua($auditoria)); ?>,
                                         mismo que se llevará a cabo el
-                                        <span class="resaltar"><?= isset($r[FECHA_LECTURA_CITATORIO]) ? mysqlDate2OnlyDate($r[FECHA_LECTURA_CITATORIO]) : 'POR AGENDAR/CAPTURAR EN LÍNEA DE TIEMPO'; ?></span>
+                                        <?php $aux = isset($r[FECHA_LECTURA_CITATORIO]) ? mysqlDate2OnlyDate($r[FECHA_LECTURA_CITATORIO]) : 'POR AGENDAR/CAPTURAR EN LÍNEA DE TIEMPO'; ?>
+                                        <?= span_resaltar($aux); ?>
                                         a las
-                                        <span id="<?= H_LECTURA_CITATORIO; ?>" contenteditable="true" class="editable" default-value="HH:MM"><?= isset($r[H_LECTURA_CITATORIO]) ? $r[H_LECTURA_CITATORIO] : ''; ?></span> horas,
-                                        en
-                                        <span id="<?= CITATORIO_UBICACION_UA; ?>" contenteditable="true" class="editable" default-value="la Dirección de [Unidad Administrativa]"><?= isset($r[CITATORIO_UBICACION_UA]) ? $r[CITATORIO_UBICACION_UA] : ''; ?></span>,
+                                        <?= span_editable($r, H_LECTURA_CITATORIO, 'HH:MM') ?>
+                                        horas, en
+                                        <?= span_editable($r, CITATORIO_UBICACION_UA, "la Dirección de [Unidad Administrativa]"); ?>,
                                         ubicada en
-                                        <span id="<?= CITATORIO_UBICACION; ?>" contenteditable="true" class="editable" default-value="la calle ___ número ___ por ___ y ___ (de la/del) __________ de esta ciudad de Mérida, Yucatán."><?= isset($r[CITATORIO_UBICACION]) ? $r[CITATORIO_UBICACION] : ''; ?></span>
+                                        <?= span_editable($r, CITATORIO_UBICACION, 'la calle ___ número ___ por ___ y ___ (de la/del) __________ de esta ciudad de Mérida, Yucatán.'); ?>
                                     </p>
                                     <?php if (!empty($auditoria['auditorias_enlace_designado'])): ?>
                                         <p class="text-justify texto-sangria">
                                             Asimismo, se le informa que esta diligencia podrá ser atendida por el enlace designado, el cual fue nombrado al
                                             inicio de la auditoría en el Oficio número
-                                            <span class="resaltar"><?= !empty($auditoria['auditorias_folio_oficio_representante_designado']) ? $auditoria['auditorias_folio_oficio_representante_designado'] : $sinEspecificar; ?></span>,
+                                            <?php $aux = !empty($auditoria['auditorias_folio_oficio_representante_designado']) ? $auditoria['auditorias_folio_oficio_representante_designado'] : SIN_ESPECIFICAR; ?>
+                                            ,<?= span_resaltar($aux); ?>
                                             recibido el
-                                            <span class="resaltar"><?= !empty($auditoria['auditorias_fechas_sello_oficio_representante_designado']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_oficio_representante_designado']) : $sinEspecificar; ?></span>.
+                                            <?php $aux = !empty($auditoria['auditorias_fechas_sello_oficio_representante_designado']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_oficio_representante_designado']) : SIN_ESPECIFICAR; ?>
+                                            <?= span_resaltar($aux); ?>.
                                         </p>
                                     <?php endif; ?>
-                                    <p class="<?= $r[ASISTENCIA_PUBLICA] == 1 ? 'text-justify texto-sangria' : 'text-xs-center'; ?> show-hide">
-                                        <span id="parrafo1" class="<?= $r[ASISTENCIA_PUBLICA] == 1 ? '' : 'hidden-xs-up'; ?>">
-                                            Mucho agradeceré se haga acompañar de los servidores públicos
-                                            <span id="seccion_involucrados">
-                                                <?php
-                                                $involucrados = array();
-                                                $strInvolucrados = "";
-                                                foreach ($documento['asistencias'] as $direcciones_id => $d) {
-                                                    if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO]) && is_array($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
-                                                        foreach ($d[TIPO_ASISTENCIA_INVOLUCRADO] as $e) {
-                                                            $html = '<span class="resaltar empleado_' . $e['empleados_id'] . '">'
-                                                                    . $e['empleados_nombre_titulado'] . ", " . trim($e['empleados_cargo'])
-                                                                    . '<input type="hidden" name="involucrados[]" value="' . $e['empleados_id'] . '">'
-                                                                    . '<span type="button" class="autocomplete_empleados_delete label label-danger hidden-print" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
-                                                                    . '</span>';
-                                                            array_push($involucrados, $html);
-                                                        }
-                                                    }
-                                                }
-                                                if (count($involucrados) > 1) {
-                                                    $ultimo = array_pop($involucrados);
-                                                    $strInvolucrados = implode(", ", $involucrados) . ' <span class="plural"> y ' . ($e['empleados_genero'] == GENERO_MASCULINO ? 'del' : 'de la') . ' </span>' . $ultimo;
-                                                } else {
-                                                    $strInvolucrados = implode(", ", $involucrados);
-                                                }
-                                                echo $strInvolucrados;
-                                                ?>
-                                                <span id="autocomplete_involucrados" class="input-group hidden-xs-up hidden-print">
-                                                    <input type="text" class="autocomplete form-control" placeholder="Empleado">
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-danger ocultar" type="button"><i class="fa fa-close"></i></button>
-                                                    </span>
-                                                </span>
-                                            </span>
-                                            <a class="btn btn-sm btn-success hidden-print btn_agregar" href="#" data-tipo="involucrados" data-asistencias-tipo="<?= TIPO_ASISTENCIA_INVOLUCRADO; ?>">AGREGAR INVOLUCRADOS</a>,
-                                            responsable<span class="plural">s</span> de la solventación de la<span class="plural">s</span> observaci<span class="singular">ón</span><span class="plural">ones</span>.
-                                        </span>
-                                        <button type="button" onclick="ocultar_parrafo('parrafo1', this);" class="btn btn-sm btn-danger btn-hide hidden-print <?= $r[ASISTENCIA_PUBLICA] == 0 ? 'hidden-xs-up' : ''; ?>"><i class="fa fa-close"></i></button>
-                                        <button type="button" onclick="mostrar_parrafo('parrafo1', this);" class="btn btn-sm btn-success btn-show hidden-print <?= $r[ASISTENCIA_PUBLICA] == 1 ? 'hidden-xs-up' : ''; ?>">Agregar párrafo</button>
-                                        <input type="hidden" name="constantes[<?= ASISTENCIA_PUBLICA; ?>]" value="<?= $r[ASISTENCIA_PUBLICA]; ?>">
-                                    </p>
-                                    <p class="<?= $r[CITATORIO_MOSTRAR_PARRAFO_4] == 1 ? 'text-justify texto-sangria' : 'text-xs-center'; ?> show-hide">
-                                        <span id="parrafo2" class="<?= $r[CITATORIO_MOSTRAR_PARRAFO_4] == 1 ? '' : 'hidden-xs-up'; ?>">
-                                            Lo que le tengo a bien comunicar en vía de notificación para los efectos correspondientes.
-                                        </span>
-                                        <button type="button" onclick="ocultar_parrafo('parrafo2', this);" class="btn btn-sm btn-danger btn-hide hidden-print <?= $r[CITATORIO_MOSTRAR_PARRAFO_4] == 0 ? 'hidden-xs-up' : ''; ?>"><i class="fa fa-close"></i></button>
-                                        <button type="button" onclick="mostrar_parrafo('parrafo2', this);" class="btn btn-sm btn-success btn-show hidden-print <?= $r[CITATORIO_MOSTRAR_PARRAFO_4] == 1 ? 'hidden-xs-up' : ''; ?>">Agregar párrafo</button>
-                                        <input type="hidden" name="constantes[<?= CITATORIO_MOSTRAR_PARRAFO_4; ?>]" value="1">
-                                    </p>
+                                    <?php
+                                    $aux = "Mucho agradeceré se haga acompañar de los servidores públicos "
+                                            . span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO, $auditoria)
+                                            . ' responsable<span class="plural">s</span> de la solventación de la<span class="plural">s</span> observaci<span class="singular">ón</span><span class="plural">ones</span>.';
+                                    ?>
+                                    <?= agregar_parrafo_show_hide($r, ASISTENCIA_PUBLICA, $aux, 'Mostrar párrafos de involucrados'); ?>
+                                    <?= agregar_parrafo_show_hide($r, CITATORIO_MOSTRAR_PARRAFO_4, 'Lo que le tengo a bien comunicar en vía de notificación para los efectos correspondientes.', 'Agregar párrafo'); ?>
                                     <p class="text-justify texto-sangria">
                                         Sin otro particular, hago propicia la ocasión para enviarle un cordial saludo.
                                     </p>
