@@ -1,10 +1,18 @@
 $(document).ready(function () {
     $("*[default-value]", "#frmOficios").each(function (index, element) {
-        if ($.trim($(this).text()) === "") {
+        if (this.nodeName === 'INPUT' || this.nodeName === 'SELECT' || this.nodeName === 'TEXTAREA') {
+            if ($.trim($(this).val()) === "") {
+                $(this).val($(this).attr("default-value"))
+            }
+        } else if ($.trim($(this).text()) === "") {
             $(this).html($(this).attr("default-value"));
         }
     }).on('blur', function () {
-        if ($(this).html() === "") {
+        if (this.nodeName === 'INPUT' || this.nodeName === 'SELECT' || this.nodeName === 'TEXTAREA') {
+            if ($.trim($(this).val()) === "") {
+                $(this).val($(this).attr("default-value"))
+            }
+        } else if ($.trim($(this).text()) === "") {
             $(this).html($(this).attr("default-value"));
         }
     }).on('keypress', function (event) {
