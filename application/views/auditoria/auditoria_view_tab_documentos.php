@@ -50,7 +50,7 @@
                                     <a href="<?= $this->module['documentos_url'] . "/" . TIPO_DOCUMENTO_AMPLIACION . "/" . $a['documentos_id']; ?>" class="list-group-item">Ampliación <?= str_pad($folio, 3, "0", STR_PAD_LEFT); ?></a>
                                 <?php endif; ?>
                             <?php endforeach; ?>
-                            <a href="<?= $this->module['documentos_url'] . "/AMPLIA/nuevo"; ?>" class="list-group-item">Nueva reprogramación</a>
+                            <a href="<?= $this->module['documentos_url'] . "/AMPLIA/nuevo"; ?>" class="list-group-item">Nueva ampliación</a>
                         </div>
                     </div>
                 </div>
