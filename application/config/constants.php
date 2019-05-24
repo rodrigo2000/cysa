@@ -103,7 +103,8 @@ define('TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA', 4);
 @define('CONSTANTE_CANTIDAD_EJEMPLARES_ACTA', 'dos');
 
 define('LABEL_CONTRALORIA', 'Unidad de Contraloría Municipal');
-define('SIN_ESPECIFICAR', '<b>[SIN ESPECIFICAR]</b>');
+define('SIN_ESPECIFICAR', '[SIN ESPECIFICAR]');
+define('SIN_ESPECIFICAR_BOLD', '<b>'.SIN_ESPECIFICAR.'</b>');
 
 define('TIPO_AUDITORIA_AP', 1);
 define('TIPO_AUDITORIA_AE', 2);
