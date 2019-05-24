@@ -79,7 +79,8 @@ class CYSA_model extends MY_Model {
             $ccp_texto_plantilla .= PHP_EOL . "Nombre del Síndico / Puesto.";
         }
         $ccp_texto_plantilla .= PHP_EOL . "Nombre(s) del Titular(es) involucrado(s) en la auditoría/ Puesto.";
-        return $ccp_texto_plantilla;
+        $return = nl2br($ccp_texto_plantilla);
+        return $return;
     }
 
     function get_mision($misiones_id = NULL) {
