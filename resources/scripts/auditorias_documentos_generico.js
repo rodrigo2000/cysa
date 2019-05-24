@@ -204,6 +204,9 @@ $(document).ready(function () {
             }
         }
         var n = next % opciones.length;
+        while (isEmpty(opciones[n])) {
+            n++;
+        }
         $(this).html(opciones[n]).trigger('change', [n]);
         event.stopPropagation();
     });
