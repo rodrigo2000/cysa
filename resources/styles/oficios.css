@@ -13,7 +13,6 @@ b {
 }
 
 div#oficio-hoja {
-    font-size: 14pt;
     padding-right: 1.5cm;
     padding-left: 1.5cm;
     border: 1px solid gray;
@@ -22,8 +21,13 @@ div#oficio-hoja {
     font-family: 'BarlowLight';
 }
 
-div#oficio-hoja p {
-    font-size: 14pt;
+div#oficio-hoja,
+div#oficio-hoja p,
+div#oficio-hoja table tr th,
+div#oficio-hoja table tr td,
+div#oficio-hoja span,
+div#oficio-hoja input {
+    font-size: 12pt;
 }
 
 div#oficio-hoja.acta p {
@@ -56,8 +60,8 @@ div#oficio-hoja > table table#resultados_auditoria td {
     text-align: justify;
 }
 
-.texto-ccp {
-    font-size: 10pt;
+.texto-ccp, .texto-ccp span {
+    font-size: 8pt !important;
     line-height: 15px;
 }
 
@@ -196,10 +200,6 @@ input.autoresize {
 
 /*********** Orden de Auditoría **************/
 
-#equipo_auditoria, #equipo_auditoria p {
-    font-size: 1rem;
-}
-
 #equipo_auditoria p {
     margin: 0px 5px;
 }
@@ -256,4 +256,9 @@ span.autocomplete_empleados_delete,
 #oficio-hoja.acta.autorizado .autocomplete_empleados_delete,
 #oficio-hoja.acta.autorizado div#checkbox_asistencia {
     display: none;
+}
+
+table.table.table-borderless td,
+table.table.table-borderless th {
+    border: none;
 }

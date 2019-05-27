@@ -48,7 +48,7 @@
         border:none;
         height: 100%;
         overflow: hidden;
-        font-size: 12pt;
+        font-size: 5pt !important;
     }
     .texto-mision {
         font-size: 10pt !important;
@@ -57,15 +57,29 @@
         text-align: justify;
     }
 
-    .texto-ccp {
+    .texto-ccp, .texto-ccp span {
         font-size: 8pt !important;
         line-height: 15px;
+    }
+    div#oficio-hoja,
+    div#oficio-hoja p,
+    div#oficio-hoja table tr th,
+    div#oficio-hoja table tr td,
+    div#oficio-hoja span,
+    div#oficio-hoja input {
+        font-size: 8pt !important;
     }
     div#oficio-hoja.autorizado p,
     div#oficio-hoja.autorizado div:not(.texto-ccp),
     div#oficio-hoja.autorizado div:not(.texto-mision),
     .texto-resaltar {
-        font-size:12pt;
+        /*font-size:12pt;*/
+    }
+    #oficio-hoja.acta .bg-punteado {
+        background-image: url(../../../SAC/resources/images/guion-admnistracion-2018-2021.gif);
+        background-repeat: repeat-x;
+        background-position: bottom;
+        background-size: calc(50%);
     }
     div#oficio-hoja > table > thead td img {
         margin-bottom: 1cm;
@@ -115,7 +129,7 @@
         border-top: 1px solid black;
     }
     table#servidores_publicos {
-        font-size:8px;
+        font-size:8pt;
     }
     table.table-fixed tr th {
         /*height: 35px !important;*/
