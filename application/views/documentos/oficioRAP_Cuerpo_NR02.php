@@ -92,7 +92,7 @@
                                         <?php $hoy = date('Y-m-d'); ?>
                                         <?php $fechaDelOficio = isset($r) && isset($r[RESOL_AMPLI_FECHA]) ? $r[RESOL_AMPLI_FECHA] : $hoy; ?>
                                         Mérida, Yucatán, a <a href="#" class="xeditable" id="<?= RESOL_AMPLI_FECHA; ?>" data-pk="<?= RESOL_AMPLI_FECHA; ?>" data-type="date" data-placement="left" data-format="yyyy-mm-dd" data-title="Fecha del oficio" title="Fecha de emisión del oficio" data-value="<?= $fechaDelOficio; ?>"><?= mysqlDate2Date($fechaDelOficio); ?></a><br>
-                                        OFICIO: No. <?= $auditoria['auditorias_areas_siglas']; ?>/<?= $auditoria['auditorias_segundo_periodo'] == 0 ? '2-' : ''; ?><span contenteditable="true" id="<?= RESOL_AMPLI_NUMERO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[RESOL_AMPLI_NUMERO] : ''; ?></span>/<?= date("Y"); ?><br>
+                                        OFICIO: No. <?= $auditoria['auditorias_areas_siglas']; ?>/<?= $auditoria['auditorias_segundo_periodo'] == 0 ? '2-' : ''; ?><span contenteditable="true" id="<?= RESOL_AMPLI_NUMERO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[RESOL_AMPLI_NUMERO] : ''; ?></span>/<?= $auditoria['auditorias_anio']; ?><br>
                                         ASUNTO: RESOLUCIÓN DE AMPLIACIÓN DE PLAZO<br>
                                         CLASIFICACIÓN: RS
                                     </p>

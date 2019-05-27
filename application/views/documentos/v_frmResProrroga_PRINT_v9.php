@@ -92,7 +92,7 @@
                                         <?php $hoy = date('Y-m-d'); ?>
                                         <?php $fechaDelOficio = isset($r) && isset($r[RESOL_PRORROG_P_FECHA_OFICIO]) ? $r[RESOL_PRORROG_P_FECHA_OFICIO] : $hoy; ?>
                                         Mérida, Yucatán, a <a href="#" class="xeditable" id="<?= RESOL_PRORROG_P_FECHA_OFICIO; ?>" data-pk="<?= RESOL_PRORROG_P_FECHA_OFICIO; ?>" data-type="date" data-placement="left" data-format="yyyy-mm-dd" data-title="Fecha del oficio" title="Fecha de emisión del oficio" data-value="<?= $fechaDelOficio; ?>"><?= mysqlDate2Date($fechaDelOficio); ?></a><br>
-                                        OFICIO: No. <?= $auditoria['auditorias_areas_siglas']; ?>/<span contenteditable="true" id="<?= RESOL_PRORROG_P_NUM_OFICIO_FOLIO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[RESOL_PRORROG_P_NUM_OFICIO_FOLIO] : ''; ?></span>/<?= date("Y"); ?><br>
+                                        OFICIO: No. <?= $auditoria['auditorias_areas_siglas']; ?>/<span contenteditable="true" id="<?= RESOL_PRORROG_P_NUM_OFICIO_FOLIO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[RESOL_PRORROG_P_NUM_OFICIO_FOLIO] : ''; ?></span>/<?= $auditoria['auditorias_anio']; ?><br>
                                         ASUNTO: RESOLUCIÓN DE PRÓRROGA<br>
                                         CLASIFICACIÓN: RS
                                     </p>
