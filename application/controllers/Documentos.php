@@ -77,6 +77,7 @@ class Documentos extends MY_Controller {
                 if (isset($constantes[AANP_JUSTIFICACION])) {
                     $constantes[AANP_JUSTIFICACION] = my_strip_tags($constantes[AANP_JUSTIFICACION]);
                 }
+                break;
             case TIPO_DOCUMENTO_REPROGRAMACION:
             case TIPO_DOCUMENTO_AMPLIACION:
                 if (isset($constantes[AMPLIA_REPROG_MOTIVO])) {
@@ -85,6 +86,19 @@ class Documentos extends MY_Controller {
                 if (isset($constantes[AMPLIA_REPROG_OBSERVACIONES])) {
                     $constantes[AMPLIA_REPROG_OBSERVACIONES] = my_strip_tags($constantes[AMPLIA_REPROG_OBSERVACIONES]);
                 }
+                break;
+            case TIPO_DOCUMENTO_RESOLUCION_PRORROGA:
+                if (isset($constantes[RESOL_PRORROG_P_TIPO_MEDIO_SOL])) {
+                    $opciones = array(NULL, 'oficio', 'correo electrónico');
+                    $constantes[RESOL_PRORROG_P_TIPO_MEDIO_SOL] = array_search($constantes[RESOL_PRORROG_P_TIPO_MEDIO_SOL], $opciones);
+                    if ($constantes[RESOL_PRORROG_P_TIPO_MEDIO_SOL] == 2) {
+                        $constantes[RESOL_PRORROG_P_NUM_MEDIO_SOL] = NULL;
+                    }
+                }
+                if (isset($constantes[RESOL_PRORROG_P_DIAS_HABILES_OTORG])) {
+                    $constantes[RESOL_PRORROG_P_DIAS_HABILES_OTORG] = my_strip_tags($constantes[RESOL_PRORROG_P_DIAS_HABILES_OTORG]);
+                }
+                break;
             default :
                 break;
         }
