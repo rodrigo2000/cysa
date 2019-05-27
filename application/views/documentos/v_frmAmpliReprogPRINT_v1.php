@@ -194,7 +194,7 @@ if ($documentos_tipos_id == TIPO_DOCUMENTO_AMPLIACION) {
                                     <table class="table table-sm table-bordered mismo-tamano-fuente-p">
                                         <tbody>
                                             <tr><th colspan="5">Actividad o motivo</th></tr>
-                                            <tr><td colspan="5"><?= span_editable($r, AMPLIA_REPROG_MOTIVO, NULL, TRUE) ?></td></tr>
+                                            <tr><td colspan="5"><?= span_editable($r, AMPLIA_REPROG_MOTIVO, NULL, NULL, NULL, TRUE) ?></td></tr>
                                             <tr>
                                                 <th colspan="2" class="text-xs-center">Fecha Inicio</th>
                                                 <th colspan="2" class="text-xs-center">Fecha Final</th>
@@ -246,7 +246,7 @@ if ($documentos_tipos_id == TIPO_DOCUMENTO_AMPLIACION) {
                                                 </td>
                                             </tr>
                                             <tr><th colspan="5">Observaciones</td></th>
-                                            <tr><td colspan="5"><?= span_editable($r, AMPLIA_REPROG_OBSERVACIONES, NULL, TRUE); ?></td></tr>
+                                            <tr><td colspan="5"><?= span_editable($r, AMPLIA_REPROG_OBSERVACIONES, NULL, NULL, NULL, TRUE); ?></td></tr>
                                         </tbody>
                                     </table>
                                     <?php if ($documento_autorizado): ?>

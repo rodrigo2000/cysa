@@ -127,7 +127,7 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                             así como
                                             <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_TESTIGO); ?>
                                             <span id="seccion_testigos_2">
-                                                est<span class="singular">e</span><span class="plural">os</span> último<span class="plural">s</span> en calidad de testigo<span class="plural">s</span>
+                                                est<singular>e</singular><plural>os</plural> último<plural>s</plural> en calidad de testigo<plural>s</plural>
                                             </span>
                                             <span class="bg-white">
                                                 a efecto de hacer constar el vencimiento de los plazos acordados entre el auditor líder y la unidad administrativa

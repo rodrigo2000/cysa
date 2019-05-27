@@ -281,7 +281,7 @@ foreach ($RAP as $rap) {
                                     <p id="seccion_testigos_2" class="text-justify bg-punteado">
                                         <span class="bg-white">
                                             <!-- Opcional -->
-                                            Por último, <span class="singular">el</span><span class="plural">los</span> servidor<span class="plural">es</span> público<span class="plural">s</span>
+                                            Por último, <singular>el</singular><plural>los</plural> servidor<singular>es</singular> público<plural>s</plural>
                                             <?=
                                             crear_texto_asistencias(
                                                     $documento['asistencias'], // Asistencias
@@ -295,7 +295,7 @@ foreach ($RAP as $rap) {
                                                     "," // Separador
                                             );
                                             ?>
-                                            manifiesta<span class="plural">n</span> que le fueron explicados los trabajos de la auditoría.
+                                            manifiesta<plural>n</plural> que le fueron explicados los trabajos de la auditoría.
                                         </span>
                                     </p>
                                     <p class="text-justify bg-punteado">

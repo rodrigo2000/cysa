@@ -144,7 +144,7 @@
                                         <?php endif; ?>
                                         <div class="texto-ccp">
                                             C.c.p. <?php $ccp_texto_plantilla = $this->CYSA_model->get_ccp_template(); ?>
-                                            <span id="<?= RESOL_AMPLI_CCP; ?>" contenteditable="true" class="editable" default-value="<?= $ccp_texto_plantilla; ?>" aceptar-enter="1"><?= isset($r) ? nl2br($r[RESOL_AMPLI_CCP]) : nl2br($ccp_texto_plantilla); ?></span><br>
+                                            <?= span_editable($r, RESOL_AMPLI_CCP, 'con copia para...', $ccp_texto_plantilla, NULL, NULL, TRUE); ?><br>
                                             Minutario<br>
                                             Expediente<br><br>
                                             <?= $this->Auditorias_model->get_siglas_de_empleados_para_documento_de_auditoria($auditoria['auditorias_auditor_lider'], $auditoria['auditorias_id']); ?><br><br>

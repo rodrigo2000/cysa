@@ -107,10 +107,12 @@
                                         de Yucatán, y con la finalidad de evaluar, promover y fortalecer el cumplimiento de los principios rectores del
                                         servicio público en los programas sustantivos y normatividad aplicable,
                                         <?php if ($auditoria['auditorias_is_programada'] == 1): ?>
-                                            <span class="resaltar"><?= "de acuerdo a nuestro Programa Anual de Auditoría" ?></span>,
+                                            <?= span_resaltar("de acuerdo a nuestro Programa Anual de Auditoría"); ?>,
                                         <?php endif; ?>
-                                        se dará inicio a la auditoría <span class="resaltar" title="Número de la auditoría"><?= $auditoria['numero_auditoria']; ?></span>,
-                                        que tiene por objetivo <span class="resaltar" title="Objetivo de la auditoría"><?= $auditoria['auditorias_objetivo']; ?></span>, en
+                                        se dará inicio a la auditoría
+                                        <?= span_resaltar($auditoria['numero_auditoria'], 'Número de la auditoría'); ?>,
+                                        que tiene por objetivo
+                                        <?= span_resaltar($auditoria['auditorias_objetivo'], 'Objetivo de la auditoría'); ?>, en
                                         <?php
                                         $aux = "";
                                         if ($auditoria['cc_etiqueta_departamento'] != 1) {
@@ -120,14 +122,15 @@
                                             $aux .= " la Subdirección de " . capitalizar($auditoria['subdirecciones_nombre']) . " de ";
                                         }
                                         $aux .= " la Dirección a su cargo";
-                                        ?>
-                                        <span class="resaltar" title="Nombre del Departamento, Subdirección o Dirección a la cual se realizará la auditoría"><?= $aux; ?></span>, misma que se llevará a
-                                        cabo en <span id="<?= ORD_ENT_DOMICILIO_UA; ?>" contenteditable="true" class="editable" title="Domicilio donde habrá de efectuarse la auditoría" default-value="ESPECIFICAR DOMICILIO"><?= !empty($auditoria['direcciones_ubicacion']) ? $auditoria['direcciones_ubicacion'] : ''; ?></span>.
+                                        echo span_resaltar($aux, "Nombre del Departamento, Subdirección o Dirección a la cual se realizará la auditoría");
+                                        ?>, misma que se llevará a
+                                        cabo en
+                                        <?= span_editable($r, ORD_ENT_DOMICILIO_UA, 'ESPECIFICAR DOMICILIO', 'Domicilio donde habrá de efectuarse la auditoría'); ?>.
                                     </p>
                                     <p class="text-justify texto-sangria">
                                         Para la práctica de la presente auditoría, se ha comisionado a los siguientes servidores públicos:
                                     </p>
-                                    <table id="equipo_auditoria" class="table-sm table-bordered m-b-1" align="center">
+                                    <table id="equipo_auditoria" class="table-sm table-bordered m-b-1 mismo-tamano-fuente-p" align="center">
                                         <thead>
                                             <tr>
                                                 <th>Nombre</th>
@@ -152,18 +155,18 @@
                                     <p class="text-justify texto-sangria">
                                         <?php $fechaMaximaSolicitudInformacion = isset($r) && isset($r[ORD_ENT_FECHA_SI]) ? $r[ORD_ENT_FECHA_SI] : agregar_dias($fechaDelOficio, 3); // Aumentamos 3 días  ?>
                                         Para el desarrollo de la auditoría, solicito su colaboración para que a más tardar el día
-                                        <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA_SI; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="<?= $fechaMaximaSolicitudInformacion; ?>"><?= mysqlDate2Date($fechaMaximaSolicitudInformacion); ?></a>, proporcione al
-                                        equipo de auditoría, quien podrá actuar en forma individual y/o conjunta durante el desarrollo de la misma, los
-                                        registros, reportes, informes, correspondencia, acceso a los sistemas y demás documentación relativa a sus
-                                        operaciones financieras, presupuestales y de consecución de metas, detallada en el documento anexo que
+                                        <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA_SI; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="<?= $fechaMaximaSolicitudInformacion; ?>"><?= mysqlDate2Date($fechaMaximaSolicitudInformacion); ?></a>
+                                        proporcione al equipo de auditoría, quien podrá actuar en forma individual y/o conjunta durante el desarrollo
+                                        de la misma, los registros, reportes, informes, correspondencia, acceso a los sistemas y demás documentación
+                                        relativa a sus operaciones financieras, presupuestales y de consecución de metas, detallada en el documento anexo que
                                         forma parte integrante del presente oficio, así como asignar un espacio físico adecuado para los
                                         auditores e insumos necesarios en sus instalaciones para la correcta ejecución de la misma.
                                     </p>
                                     <p class="text-justify texto-sangria">
                                         Asimismo, se requiere designe vía oficio en un término no mayor a dos días hábiles posteriores a la
                                         notificación del presente documento al servidor público adscrito a su
-                                        <span class="resaltar"><?= $oficio_para['tratamiento'] ?></span>, facultado
-                                        para ser el enlace en la atención de la presente auditoría, quien será responsable de solicitar a las
+                                        <?= span_resaltar($oficio_para['tratamiento']); ?>,
+                                        facultado para ser el enlace en la atención de la presente auditoría, quien será responsable de solicitar a las
                                         unidades administrativas auditadas la información, documentación y aclaraciones que se requieran; así como
                                         la designación de dos testigos para la firma del Acta de Inicio de Auditoría, acompañando copia de sus
                                         identificaciones oficiales.
@@ -175,18 +178,18 @@
                                         el Auditor Líder a cargo de la auditoría se presentará en el domicilio donde habrá de efectuarse ésta,
                                         para formalizar el acto de inicio de los trabajos de auditoría, por lo que se solicita su presencia o la
                                         del enlace designado, así como de los testigos asignados, en el horario de
-                                        <span id="<?= ORD_ENT_HORA_VISITA; ?>" contenteditable="true" class="editable" default-value="HH:MM"><?= isset($r) ? $r[ORD_ENT_HORA_VISITA] : ''; ?></span> horas. La omisión a lo anterior, podrá ser causal
-                                        de responsabilidad prevista en el artículo 51 fracción VII inciso c) de la Ley de Responsabilidades
-                                        Administrativas del Estado de Yucatán.
+                                        <span id="<?= ORD_ENT_HORA_VISITA; ?>" contenteditable="true" class="editable" default-value="HH:MM"><?= isset($r) ? $r[ORD_ENT_HORA_VISITA] : ''; ?></span> horas.
+                                        La omisión a lo anterior, podrá ser causal de responsabilidad prevista en el artículo 51 fracción VII inciso c)
+                                        de la Ley de Responsabilidades Administrativas del Estado de Yucatán.
                                     </p>
                                     <p class="text-justify texto-sangria">
                                         No omito comunicarle que cualquier queja, inconformidad o reporte del personal de esta Unidad de
                                         Contraloría podrá efectuarse a través de las líneas telefónicas
-                                        <span id="<?= ORD_ENT_TELEFONO; ?>" contenteditable="true" class="editable" default-value="(999) 923 6872 y 923 6859"><?= isset($r[ORD_ENT_TELEFONO]) && !empty($r[ORD_ENT_TELEFONO]) ? $r[ORD_ENT_TELEFONO] : ''; ?></span>,
+                                        <?= span_editable($r, ORD_ENT_TELEFONO, '(999) 923 6872 y 923 6859'); ?>,
                                         extensión
-                                        <span id="<?= ORD_ENT_EXTEN; ?>" contenteditable="true" class="editable" default-value="82255"><?= isset($r[ORD_ENT_EXTEN]) && !empty($r[ORD_ENT_EXTEN]) ? $r[ORD_ENT_EXTEN] : ''; ?></span>,
+                                        <?= span_editable($r, ORD_ENT_EXTEN, '82255'); ?>,
                                         así como al correo electrónico
-                                        <span id="<?= ORD_ENT_CORREO; ?>" contenteditable="true" class="editable" default-value="contraloriateescucha@merida.gob.mx"><?= isset($r[ORD_ENT_CORREO]) && !empty($r[ORD_ENT_CORREO]) ? $r[ORD_ENT_CORREO] : ''; ?></span>
+                                        <?= span_editable($r, ORD_ENT_CORREO, 'contraloriateescucha@merida.gob.mx'); ?>
                                         para su atención correspondiente.
                                     </p>
                                     <p class="text-justify texto-sangria">
@@ -207,7 +210,7 @@
                                         <?php endif; ?>
                                         <div class="texto-ccp">
                                             C.c.p. <?php $ccp_texto_plantilla = $this->CYSA_model->get_ccp_template(); ?>
-                                            <span id="<?= ORD_ENT_CCP; ?>" contenteditable="true" class="editable" default-value="<?= $ccp_texto_plantilla; ?>" aceptar-enter="1"><?= isset($r) ? nl2br($r[ORD_ENT_CCP]) : nl2br($ccp_texto_plantilla); ?></span><br>
+                                            <?= span_editable($r, ORD_ENT_CCP, $ccp_texto_plantilla, NULL, NULL, TRUE); ?><br>
                                             Minutario<br>
                                             Expediente<br><br>
                                             <?= $this->Auditorias_model->get_siglas_de_empleados_para_documento_de_auditoria($auditoria['auditorias_auditor_lider'], $auditoria['auditorias_id']); ?><br><br>

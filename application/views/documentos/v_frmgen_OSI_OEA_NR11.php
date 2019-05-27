@@ -142,7 +142,7 @@
                                     <?php
                                     $aux = "Mucho agradeceré se haga acompañar de los servidores públicos "
                                             . span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO, $auditoria)
-                                            . ' responsable<span class="plural">s</span> de la solventación de la<span class="plural">s</span> observaci<span class="singular">ón</span><span class="plural">ones</span>.';
+                                            . ' responsable<plural>s</plural> de la solventación de la<plural>s</plural> observaci<singular>ón</singular><plural>ones</plural>.';
                                     ?>
                                     <?= agregar_parrafo_show_hide($r, ASISTENCIA_PUBLICA, $aux, 'Mostrar párrafos de involucrados'); ?>
                                     <?= agregar_parrafo_show_hide($r, CITATORIO_MOSTRAR_PARRAFO_4, 'Lo que le tengo a bien comunicar en vía de notificación para los efectos correspondientes.', 'Agregar párrafo'); ?>
@@ -164,7 +164,7 @@
                                         <?php endif; ?>
                                         <div class="texto-ccp">
                                             C.c.p. <?php $ccp_texto_plantilla = $this->CYSA_model->get_ccp_template(); ?>
-                                            <span id="<?= CITATORIO_CCP; ?>" contenteditable="true" class="editable" default-value="<?= $ccp_texto_plantilla; ?>" aceptar-enter="1"><?= isset($r) ? nl2br($r[CITATORIO_CCP]) : nl2br($ccp_texto_plantilla); ?></span><br>
+                                            <?= span_editable($r, CITATORIO_CCP, $ccp_texto_plantilla, NULL, NULL, TRUE); ?><br>
                                             Minutario<br>
                                             Expediente<br><br>
                                             <?= $this->Auditorias_model->get_siglas_de_empleados_para_documento_de_auditoria($auditoria['auditorias_auditor_lider'], $auditoria['auditorias_id']); ?><br><br>
