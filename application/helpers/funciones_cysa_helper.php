@@ -16,7 +16,7 @@ function capitalizar($texto) {
                 $aux[$index] = ucfirst($a);
             }
         }
-        // Sin importar cual sea la primera palabra, la convertirmos en mayúsculas
+// Sin importar cual sea la primera palabra, la convertirmos en mayúsculas
         $aux[0] = ucfirst($aux[0]);
         $return = implode(" ", $aux);
     }
@@ -73,14 +73,39 @@ function get_frase_de_ua($a) {
  * @param array $r Arreglo con los valores del documento
  * @param integer $constante Constante del documento a utilizar
  * @param string $default_value Cadena de texto que tendrá el SPAN de forma predeterminada
+ * @param string $title Cadena de texto a mostrar en el atributo TITLE de la etiqueta. Este atributo sirve para el tour de Ayuda.
+ * @param string $title Cadena de texto del título de la funcionalidad de Tour
+ * @param string $description Descrpición del elemento
  * @param boolean $aceptar_enter TRUE para que en la etiqueta se acepte el ENTER dentro del Texto. FALSE para cualquier otro caso.
  * @return string Código HTML de la etiqueta SPAN
  */
-function span_editable($r, $constante, $default_value = NULL, $aceptar_enter = FALSE) {
+function span_editable($r, $constante, $default_value = NULL, $title = NULL, $descripcion = NULL, $aceptar_enter = FALSE) {
     if (empty($default_value)) {
         $default_value = SIN_ESPECIFICAR;
     }
-    $html = '<span id="' . $constante . '" contenteditable="true" class="editable" ' . ($aceptar_enter ? 'aceptar-enter="1"' : '') . ' default-value="' . $default_value . '">' . (isset($r) && isset($r[$constante]) ? $r[$constante] : '') . '</span>';
+    $real_title = $real_descripcion = NULL;
+    if (!empty($title) && is_array($title) && isset($title[$constante])) {
+        $real_title = $title[$constante];
+    } elseif (!empty($title) && is_string($title)) {
+        $real_title = $title;
+    }
+    if (!empty($descripcion) && is_array($descripcion) && isset($descripcion[$constante])) {
+        $real_descripcion = $descripcion[$constante];
+    } elseif (!empty($descripcion) && is_string($descripcion)) {
+        $real_descripcion = $descripcion;
+    }
+    $html = '<span '
+            . 'id="' . $constante . '" '
+            . 'contenteditable="true" '
+//            . (!empty($title) ? 'title="' . $title . '"' : '') . ' '
+            . 'class="editable" '
+            . ($aceptar_enter ? 'aceptar-enter="1"' : '') . ' '
+            . 'default-value="' . $default_value . '" '
+            . (!empty($real_title) ? 'data-tour-title="' . htmlentities($real_title) . '" ' : '')
+            . (!empty($real_descripcion) ? 'data-tour-description="' . htmlentities($real_descripcion) . '" ' : '')
+            . '>'
+            . (isset($r) && isset($r[$constante]) ? $r[$constante] : '')
+            . '</span>';
     return $html;
 }
 
@@ -93,6 +118,21 @@ function span_editable($r, $constante, $default_value = NULL, $aceptar_enter = F
 function span_calendario($r, $constante) {
     $fecha = isset($r) && isset($r[$constante]) ? $r[$constante] : date('Y-m-d');
     $html = '<a href="#" class="xeditable" id="' . $constante . '" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="' . $fecha . '">' . mysqlDate2Date($fecha) . '</a>';
+    return $html;
+}
+
+function span_show_hide($r, $constante, $texto_span = SIN_ESPECIFICAR, $etiqueta_boton = NULL) {
+    $con_valor = (isset($r) && isset($r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])));
+    if (empty($etiqueta_boton)) {
+        $etiqueta_boton = 'X';
+    }
+    $html = '<span class="show-hide">'
+            . '<span id="span' . $constante . '" class="bg-white ' . ($con_valor ? '' : 'hidden-xs-up') . '">'
+            . $texto_span
+            . '</span>'
+            . '<button type="button" onclick="ocultar_span(\'span' . $constante . '\', this);" class="btn btn-sm btn-danger btn-hide hidden-print ' . (!$con_valor ? 'hidden-xs-up' : '') . '"><i class="fa fa-close"></i></button>'
+            . '<button type="button" onclick="mostrar_span(\'span' . $constante . '\', this);" class="btn btn-sm btn-success btn-show hidden-print ' . ($con_valor ? 'hidden-xs-up' : '') . '">' . $etiqueta_boton . '</button>'
+            . "</span>";
     return $html;
 }
 
@@ -119,18 +159,78 @@ function agregar_parrafo_show_hide($r, $constante, $texto_parrafo = SIN_ESPECIFI
 /**
  * Crea una etiqueta SPAN con la clase CSS "resaltar", la cual hace destacar el texto en modo pantalla
  * @param string $texto Cadena de texto a mostrar dentro de la etiqueta
+ * @param string $title Cadena de texto a mostrar en el atributo TITLE de la etiqueta. Este atributo sirve para el tour de Ayuda.
+ * @param string $title Cadena de texto del título de la funcionalidad de Tour
  * @param string $css_class Nombre de las clases adicionales que se incluirán dentro del atriburo CLASS de la etiqueta SPAN
  * @return string Código HTML de la etiqueta SPAN
  */
-function span_resaltar($texto, $css_class = NULL) {
-    $html = '<span class="resaltar ' . $css_class . '">' . $texto . '</span>';
+function span_resaltar($texto, $title = NULL, $descripcion = NULL, $css_class = NULL) {
+    $real_title = $real_descripcion = NULL;
+    if (!empty($title) && is_array($title) && isset($title[$constante])) {
+        $real_title = $title[$constante];
+    } elseif (!empty($title) && is_string($title)) {
+        $real_title = $title;
+    }
+    if (!empty($descripcion) && is_array($descripcion) && isset($descripcion[$constante])) {
+        $real_descripcion = $descripcion[$constante];
+    } elseif (!empty($descripcion) && is_string($descripcion)) {
+        $real_descripcion = $descripcion;
+    }
+    $html = '<span class="resaltar '
+            . $css_class . '" '
+            . (!empty($real_title) ? 'data-tour-title="' . htmlentities($real_title) . '" ' : '')
+            . (!empty($real_descripcion) ? 'data-tour-description="' . htmlentities($real_descripcion) . '" ' : '')
+            . '>'
+            . $texto
+            . '</span>';
+    return $html;
+}
+
+function span_resaltar_constante($r, $constante, $title = NULL, $descripcion = NULL, $css_class = NULL) {
+    $return = "";
+    if (isset($r) && isset($r[$constante])) {
+        $texto = $r[$constante];
+        $return = span_resaltar($texto, $title, $descripcion, $css_class);
+    }
+    return $return;
+}
+
+function span_resaltar_constante_fecha($r, $constante, $title = NULL, $descripcion = NULL, $css_class = NULL) {
+    $return = "";
+    if (isset($r) && isset($r[$constante])) {
+        $texto = mysqlDate2OnlyDate($r[$constante]);
+        $return = span_resaltar($texto, $title, $descripcion, $css_class);
+    }
+    return $return;
+}
+
+/**
+ *
+ * @param array $r Arreglo con los valores del documento
+ * @param integer $constante Constante del documento a utilizar
+ * @param array $opciones Arerglo con las opciones a visualizar en la etiqueta
+ * @param boolean $usar_index TRUE para indicar que se enviará el índice de arreglo como valor a enviar. FALSE para indiciar que se enviará el elemento del índice.
+ * @return string
+ */
+function span_opciones($r, $constante, $opciones = array(), $usar_index = TRUE) {
+    $label = $r[$constante];
+    $default_value = $r[$constante];
+    if ($usar_index) {
+        $label = $opciones[$r[$constante]];
+    }
+    $html = '<span id="' . $constante . '" '
+            . 'name="constantes[' . $constante . ']" '
+            . 'class="resaltar opciones" '
+            . 'default-value="' . $default_value . '" '
+            . 'data-opciones="' . implode('|', $opciones) . '"'
+            . '>' . $label . '</span>';
     return $html;
 }
 
 /**
  *
- * @param type $tipo_asistencia
- * @param type $label_boton
+ * @param integer $tipo_asistencia
+ * @param string $label_boton
  * @return string
  */
 function genera_boton_autocomplete($tipo_asistencia, $label_boton = NULL) {
@@ -178,7 +278,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = N
     foreach ($asistencias as $direcciones_id => $d) {
         if (isset($d[$tipo_asistencia]) && is_array($d[$tipo_asistencia]) && !empty($d[$tipo_asistencia])) {
             $aux = $CI->SAC_model->get_direccion($direcciones_id);
-            $html .= '<span class = "resaltar" id = "direcciones_' . $direcciones_id . '">';
+            $html .= '<span class="resaltar" id="direcciones_' . $direcciones_id . '">';
             $aux['nombre_completo_direccion'];
             $asistentes = array();
             foreach ($d[$tipo_asistencia] as $e) {
@@ -194,7 +294,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = N
             }
             if (count($asistentes) > 1) {
                 $ultimo = array_pop($asistentes);
-                $html .= implode(", ", $asistentes) . '<span class="plural conjuncion"> y </span>' . $ultimo;
+                $html .= implode(", ", $asistentes) . '<plural class="conjuncion"> y </plural>' . $ultimo;
             } else {
                 $html .= implode(", ", $asistentes);
             }
@@ -284,7 +384,7 @@ function crear_texto_asistencias($asistencias = array(), $distribuir = TRUE, $ti
         if (count($a) > 0) {
             $ultimo = NULL;
             if (count($a) > 1) {
-                $ultimo = '<span class="plural conjuncion"> y </span>' . array_pop($a);
+                $ultimo = '<plural class="conjuncion"> y </plural>' . array_pop($a);
             }
             $cadena = implode($separador . " ", $a) . $ultimo;
         }
