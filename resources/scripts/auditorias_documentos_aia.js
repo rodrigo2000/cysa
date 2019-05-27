@@ -31,16 +31,16 @@ function agregar_testigo($this, suggestion, tipo_asistencia, documentos_tipos_id
             '<input type="hidden" name="testigos[]" value="' + suggestion.empleados_id + '">' +
             '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span>' +
             '</span>';
-    if ($("span.resaltar", "#seccion_testigos").length > 0 && $("span.plural", "#seccion_testigos").length == 0) {
-        html = '<span class="plural conjuncion"> y </span>' + html;
+    if ($("span.resaltar", "#seccion_testigos").length > 0 && $("plural", "#seccion_testigos").length == 0) {
+        html = '<plural class="conjuncion"> y </plural>' + html;
     }
 
     if (parseInt(documentos_tipos_id) == 29) {
-        var html2 = '<span class="plural conjuncion"> y </span>' +
+        var html2 = '<plural class="conjuncion"> y </plural>' +
                 '<span class="resaltar empleado_' + suggestion.empleados_id + '">' +
                 suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
                 '</span>';
-        $("span.conjuncion", "p#seccion_testigos_2").html(', ');
+        $("plural.conjuncion", "p#seccion_testigos_2").html(', ');
         $("span.resaltar:last", "p#seccion_testigos_2").after(html2);
     }
 
