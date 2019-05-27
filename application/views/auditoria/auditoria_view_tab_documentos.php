@@ -65,7 +65,9 @@
                     <div id="documentacion-final" class="card-block panel-collapse collapse in" role="tabpanel">
                         <div class="list-group">
                             <a href="<?= $this->module['documentos_url'] . "/OC"; ?>" class="list-group-item">Oficio de Citatorio (OC)</a>
-                            <a href="<?= $this->module['documentos_url'] . "/OED"; ?>" class="list-group-item">Oficio de Envío de Documentos (OED)</a>
+                            <?php if ($auditoria['auditorias_anio'] < 2018): ?>
+                                <a href="<?= $this->module['documentos_url'] . "/OED"; ?>" class="list-group-item">Oficio de Envío de Documentos (OED)</a>
+                            <?php endif; ?>
                             <a href="<?= $this->module['url'] . "/portada"; ?>" class="list-group-item">Imprimir portada o guarda exterior</a>
                         </div>
                     </div>
