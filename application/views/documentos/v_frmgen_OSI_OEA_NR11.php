@@ -98,7 +98,7 @@
                                         <?php $hoy = date('Y-m-d'); ?>
                                         <?php $fechaDelOficio = isset($r) && isset($r[FECHA_LECTURA_CITATORIO]) ? $r[FECHA_LECTURA_CITATORIO] : $hoy; ?>
                                         Mérida, Yucatán, a <a href="#" class="xeditable" id="<?= FECHA_LECTURA_CITATORIO; ?>" data-pk="<?= FECHA_LECTURA_CITATORIO; ?>" data-type="date" data-placement="left" data-format="yyyy-mm-dd" data-title="Fecha del oficio" title="Fecha de emisión del oficio" data-value="<?= $fechaDelOficio; ?>"><?= mysqlDate2Date($fechaDelOficio); ?></a><br>
-                                        Oficio NO. <?= ($auditoria['auditorias_segundo_periodo'] == 1 ? '2' : '') . $auditoria['auditorias_areas_siglas']; ?>/<span contenteditable="true" id="<?= CITATORIO_OFICIO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[CITATORIO_OFICIO] : ''; ?></span>/<?= date("Y"); ?><br>
+                                        Oficio NO. <?= ($auditoria['auditorias_segundo_periodo'] == 1 ? '2' : '') . $auditoria['auditorias_areas_siglas']; ?>/<span contenteditable="true" id="<?= CITATORIO_OFICIO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[CITATORIO_OFICIO] : ''; ?></span>/<?= $auditoria['auditorias_anio']; ?><br>
                                         Asunto: Citatorio<br>
                                         Clasificación: RS
                                     </p>
