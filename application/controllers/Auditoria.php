@@ -202,6 +202,8 @@ class Auditoria extends MY_Controller {
             'documentos' => $documentos,
             'index' => $index,
             'documento' => $documentos[$index],
+            'tooltiptext' => isset($documentos[$index]['tooltiptext']) ? $documentos[$index]['tooltiptext'] : array(),
+            'descripciones' => isset($documentos[$index]['descripciones']) ? $documentos[$index]['descripciones'] : array(),
             'r' => isset($documentos[$index]['valores']) ? $documentos[$index]['valores'] : array(),
             'documento_autorizado' => $documento_autorizado,
             'hidden' => $hidden,
