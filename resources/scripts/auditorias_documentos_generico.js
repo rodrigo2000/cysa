@@ -33,6 +33,11 @@ $(document).ready(function () {
                 if (response.state === "success") {
                     $(this).html(response.nuevo_valor_por_mostrar);
                     $("input[name=" + response.nombre_campo + "]").val(response.nuevo_valor_guardado);
+                    if (this.nodeName === 'INPUT' || this.nodeName === 'SELECT' || this.nodeName === 'TEXTAREA') {
+
+                    } else {
+                        $(this).attr('data-value', response.nuevo_valor_guardado);
+                    }
                 } else {
                     return response.msg;
                 }
@@ -275,18 +280,18 @@ function get_form_data(async = false) {
 
 function plurales(mostrar, selector) {
     if (mostrar) {
-        $(".plural", selector).show();
+        $("plural", selector).show();
     } else {
-        $(".plural", selector).hide();
+        $("plural", selector).hide();
     }
     singulares(!mostrar, selector);
 }
 
 function singulares(mostrar, selector) {
     if (mostrar) {
-        $(".singular", selector).show();
+        $("singular", selector).show();
     } else {
-        $(".singular", selector).hide();
+        $("singular", selector).hide();
     }
 }
 
@@ -385,6 +390,28 @@ function ocultar_parrafo(id, obj) {
                 .find(".btn-show")
                 .removeClass('hidden-xs-up');
         $(obj).parents('.show-hide').find('input').val(0);
+    }
+    return false;
+}
+
+function mostrar_span(id, obj) {
+    if ($("#" + id).length > 0) {
+        $("#" + id).removeClass('hidden-xs-up');
+        $(obj).addClass('hidden-xs-up');
+        $(obj).parents(".show-hide")
+                .find(".btn-hide")
+                .removeClass('hidden-xs-up');
+    }
+    return false;
+}
+
+function ocultar_span(id, obj) {
+    if ($("#" + id).length > 0) {
+        $("#" + id).addClass('hidden-xs-up');
+        $(obj).addClass('hidden-xs-up');
+        $(obj).parents(".show-hide")
+                .find(".btn-show")
+                .removeClass('hidden-xs-up');
     }
     return false;
 }
