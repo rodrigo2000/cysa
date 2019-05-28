@@ -13,12 +13,20 @@ class Recomendaciones_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
-    function get_recomendacion($idRecomendacion) {
-
+    function get_recomendacion($recomendaciones_id) {
+        $return = array();
+        if (!empty($recomendaciones_id)) {
+            $return = $this->get_uno($recomendaciones_id);
+        }
+        return $return;
     }
 
-    function get_recomendaciones($idObservacion) {
+    function get_recomendaciones($observaciones_id) {
         $return = array();
+        if (!empty($observaciones_id)) {
+            $this->db->where("recomendaciones_observaciones_id", $observaciones_id);
+            $return = $this->get_todos();
+        }
         return $return;
     }
 

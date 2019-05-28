@@ -255,4 +255,21 @@ class Auditoria_model extends MY_Model {
         return $return;
     }
 
+    function get_auditoria_de_seguimiento($auditorias_id = NULL) {
+        $return = array();
+        if (empty($auditorias_id)) {
+            $cysa = $this->session->userdata('cysa');
+            $auditorias_id = $cysa['auditorias_id'];
+        }
+        $result = $this->db->select($this->id_field)
+                ->where("auditorias_origen_id", $auditorias_id)
+                ->where("fecha_delete", NULL)
+                ->get($this->table_name . " " . $this->table_prefix);
+        if ($result && $result->num_rows() > 0) {
+            $aux = $result->row()->{$this->id_field};
+            $return = $this->get_auditoria($aux);
+        }
+        return $return;
+    }
+
 }

@@ -552,4 +552,48 @@ class Auditorias_model extends MY_Model {
         return $return;
     }
 
+    function get_status_de_observaciones($auditorias_id) {
+        $return = array(
+            'solventadas' => array(),
+            'pendientes' => array()
+        );
+        if (!empty($auditorias_id)) {
+            $observaciones = $this->Observaciones_model->get_observaciones($auditorias_id);
+            if (is_array($observaciones) && !empty($observaciones)) {
+                foreach ($observaciones as $o) {
+                    $is_solventada = $this->Observaciones_model->is_solventada($o['observaciones_id']);
+                    if ($is_solventada) {
+                        array_push($return['solventadas'], $o['observaciones_id']);
+                    } else {
+                        array_push($return['pendientes'], $o['observaciones_id']);
+                    }
+                }
+            }
+        }
+        return $return;
+    }
+
+    function get_status_de_recomendaciones($auditorias_id) {
+        $return = array(
+            OBSERVACIONES_STATUS_NO_SOLVENTADA => array(),
+            OBSERVACIONES_STATUS_SOLVENTADA => array(),
+            OBSERVACIONES_STATUS_NO_SE_ACEPTA => array(),
+            OBSERVACIONES_STATUS_ATENDIDA => array(),
+            OBSERVACIONES_STATUS_NO_ATENDIDA => array()
+        );
+        if (!empty($auditorias_id)) {
+            $observaciones = $this->Observaciones_model->get_observaciones($auditorias_id);
+            if (is_array($observaciones) && !empty($observaciones)) {
+                foreach ($observaciones as $o) {
+                    $recomendaciones = $this->Recomendaciones_model->get_recomendaciones($o['observaciones_id']);
+                    foreach ($recomendaciones as $r) {
+                        $status_id = intval($r['recomendaciones_status_id']);
+                        array_push($return[$status_id], $r['recomendaciones_id']);
+                    }
+                }
+            }
+        }
+        return $return;
+    }
+
 }

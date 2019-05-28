@@ -124,7 +124,7 @@ class Documentos_model extends MY_Model {
                     define($c, intval($v));
                 }
             }
-            $return = array_merge($return, $constantes, $documentos_versiones);
+            $return = array_merge($documentos_versiones, $return);
         }
         return $return;
     }

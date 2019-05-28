@@ -40,10 +40,39 @@ class Observaciones_model extends MY_Model {
         return $return;
     }
 
-    function get_recomendaciones_de_observacion($idObservacion) {
+    function get_recomendaciones_de_observacion($observaciones_id) {
         $return = array();
-        $this->load->model("Recomendaciones_model");
-        $return = $this->Recomendaciones_model->get_recomendaciones($idObservacion);
+        if (!empty($observaciones_id)) {
+            $return = $this->Recomendaciones_model->get_recomendaciones($observaciones_id);
+        }
+        return $return;
+    }
+
+    function is_solventada($observaciones_id) {
+        $return = FALSE;
+        if (!empty($observaciones_id)) {
+            $status = $this->get_status($observaciones_id);
+            if (isset($status[1]) && count($status) == 1) {
+                $return = TRUE;
+            }
+        }
+        return $return;
+    }
+
+    function get_status($observaciones_id) {
+        $return = array();
+        if (!empty($observaciones_id)) {
+            $recomendaciones = $this->get_recomendaciones_de_observacion($observaciones_id);
+            $status = array();
+            foreach ($recomendaciones as $r) {
+                $status_id = intval($r['recomendaciones_status_id']);
+                if (!isset($status[$status_id])) {
+                    $status[$status_id] = array();
+                }
+                array_push($status[$status_id], $r['recomendaciones_id']);
+            }
+            $return = $status;
+        }
         return $return;
     }
 

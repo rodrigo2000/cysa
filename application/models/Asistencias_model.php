@@ -118,7 +118,7 @@ class Asistencias_model extends MY_Model {
                 default:
                     break;
             }
-            
+
             $this->Asistencias_model->insert($data);
         }
         return $return;
