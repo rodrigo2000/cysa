@@ -74,7 +74,6 @@ function get_frase_de_ua($a) {
  * @param integer $constante Constante del documento a utilizar
  * @param string $default_value Cadena de texto que tendrá el SPAN de forma predeterminada
  * @param string $title Cadena de texto a mostrar en el atributo TITLE de la etiqueta. Este atributo sirve para el tour de Ayuda.
- * @param string $title Cadena de texto del título de la funcionalidad de Tour
  * @param string $description Descrpición del elemento
  * @param boolean $aceptar_enter TRUE para que en la etiqueta se acepte el ENTER dentro del Texto. FALSE para cualquier otro caso.
  * @return string Código HTML de la etiqueta SPAN
