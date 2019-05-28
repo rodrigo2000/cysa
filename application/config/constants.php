@@ -104,7 +104,7 @@ define('TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA', 4);
 
 define('LABEL_CONTRALORIA', 'Unidad de Contraloría Municipal');
 define('SIN_ESPECIFICAR', '[SIN ESPECIFICAR]');
-define('SIN_ESPECIFICAR_BOLD', '<b>'.SIN_ESPECIFICAR.'</b>');
+define('SIN_ESPECIFICAR_BOLD', '<b>' . SIN_ESPECIFICAR . '</b>');
 
 define('TIPO_AUDITORIA_AP', 1);
 define('TIPO_AUDITORIA_AE', 2);
@@ -116,6 +116,12 @@ define('TIPO_AUDITORIA_MO', 6);
 define('AUDITORIA_ETAPA_AP', 0);
 define('AUDITORIA_ETAPA_REV1', 1);
 define('AUDITORIA_ETAPA_REV2', 2);
+
+define('OBSERVACIONES_STATUS_NO_SOLVENTADA', 1);
+define('OBSERVACIONES_STATUS_SOLVENTADA', 2);
+define('OBSERVACIONES_STATUS_NO_SE_ACEPTA', 3);
+define('OBSERVACIONES_STATUS_ATENDIDA', 4);
+define('OBSERVACIONES_STATUS_NO_ATENDIDA', 5);
 
 /*
   |--------------------------------------------------------------------------
