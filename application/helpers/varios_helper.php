@@ -494,3 +494,15 @@ function forma_nombre_completo_de_ua(&$empleado) {
     }
     return TRUE;
 }
+
+function is_vocal($letra) {
+    $return = FALSE;
+    $vocales = array(
+        'a', 'e', 'i', 'o', 'u',
+        'á', 'é', 'í', 'ó', 'u',
+        'A', 'E', 'I', 'O', 'U',
+        'Á', 'É', 'Í', 'Ó', 'Ú'
+    );
+    $return = in_array($letra, $vocales);
+    return $return;
+}

@@ -48,6 +48,11 @@ class Auditoria extends MY_Controller {
         );
         if (!empty($auditorias_id)) {
             $this->{$this->module['controller'] . "_model"}->actualizar_session('auditorias_id', intval($auditorias_id));
+            $anio = -1 * intval($auditoria['auditorias_anio']);
+            if ($auditoria['auditorias_status_id'] == 1) {
+                $anio = abs($anio);
+            }
+            $this->{$this->module['controller'] . "_model"}->actualizar_session('auditorias_anio', intval($anio));
         }
         $this->listado($data);
     }

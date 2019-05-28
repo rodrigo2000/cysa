@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-xs-12 col-sm-6">
         <div class="card">
-            <h3 class="card-header bg-info">Datos de la auditoría: <strong><?= $auditoria['auditorias_rubro']; ?></strong></h3>
+            <h3 class="card-header bg-info">Datos de la auditoría</h3>
             <div class="card-block row">
                 <dl>
                     <dt class="col-sm-3">Área auditada</dt>
@@ -21,6 +21,15 @@
                     <dd class="col-sm-9"><?= $auditoria['auditorias_tipos_nombre'] . " (" . $auditoria['auditorias_tipos_siglas'] . ")"; ?></dd>
                     <dt class="col-sm-3 text-truncate">Área responsable</dt>
                     <dd class="col-sm-9"><?= $auditoria['auditorias_areas_siglas']; ?></dd>
+                    <?php if (!empty($auditoria['auditorias_origen_id'])): $aux = $this->Auditorias_model->get_auditoria($auditoria['auditorias_origen_id']); ?>
+                        <dt class="col-sm-3">Auditoría Origen</dt>
+                        <dd class="col-sm-9"><a href="<?= base_url() . $this->module['controller'] . "/" . $aux['auditorias_id']; ?>"><?= $aux['numero_auditoria']; ?></a></dd>
+                    <?php endif; ?>
+                    <?php $aux = $this->Auditoria_model->get_auditoria_de_seguimiento($auditoria['auditorias_id']); ?>
+                    <?php if (!empty($aux)): ?>
+                        <dt class="col-sm-3">Auditoría de Seguimiento</dt>
+                        <dd class="col-sm-9"><a href="<?= base_url() . $this->module['controller'] . "/" . $aux['auditorias_id']; ?>"><?= $aux['numero_auditoria']; ?></a></dd>
+                    <?php endif; ?>
                 </dl>
             </div>
         </div>

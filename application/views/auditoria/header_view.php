@@ -86,7 +86,7 @@ $anio_select = isset($this->session->cysa['auditorias_anio']) ? $this->session->
         <?php endif; ?>
     </select>
 </div>
-<h3><?= !empty($auditorias_id) ? $this->module['title_list'] : 'Seleccione auditoría'; ?></h3>
+<h3><?= !empty($auditorias_id) ? $auditoria['auditorias_rubro'] : 'Seleccione auditoría'; ?></h3>
 <div class="row hidden-sm-up">
     <div class="col-xs-6 col-sm-2">
         <select name="mis_auditorias_anio" class="mis_auditorias_anio form-control">
