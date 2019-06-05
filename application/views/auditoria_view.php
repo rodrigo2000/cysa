@@ -4,45 +4,53 @@
     </div>
     <div class="card-block">
         <?php if (isset($this->session->cysa[$this->module['id_field']])): ?>
-            <ul id="tabMenuAuditoria" class="nav nav-tabs" role="tablist">
+            <ul id="tab-menu-auditoria" class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#informacion" role="tab">Información</a>
+                    <a class="nav-link" data-toggle="tab" href="#tab-informacion" role="tab">Información</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#documentos" role="tab">Documentos</a>
+                    <a class="nav-link" data-toggle="tab" href="#tab-documentos" role="tab">Documentos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#acta_resultados" role="tab">Acta de Resultados</a>
+                    <a class="nav-link" data-toggle="tab" href="#tab-acta_resultados" role="tab">Acta de Resultados</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#control_auditoria" role="tab">Control de auditoría</a>
+                    <a class="nav-link active" data-toggle="tab" href="#tab-observaciones" role="tab">Observaciones</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#herramientas" role="tab">Herramientras</a>
+                    <a class="nav-link" data-toggle="tab" href="#tab-control_auditoria" role="tab">Control de auditoría</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#reciclaje" role="tab">Reciclaje</a>
+                    <a class="nav-link" data-toggle="tab" href="#tab-herramientas" role="tab">Herramientras</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#timeline" role="tab">Línea de tiempo</a>
+                    <a class="nav-link" data-toggle="tab" href="#tab-reciclaje" role="tab">Reciclaje</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#tab-timeline" role="tab">Línea de tiempo</a>
                 </li>
             </ul>
 
             <!-- Tab panes -->
             <div class="tab-content">
-                <div class="tab-pane active" id="informacion" role="tabpanel">
+                <div class="tab-pane" id="tab-informacion" role="tabpanel">
                     <?php $this->load->view("auditoria/auditoria_view_tab_informacion"); ?>
                 </div>
-                <div class="tab-pane" id="documentos" role="tabpanel">
+                <div class="tab-pane" id="tab-documentos" role="tabpanel">
                     <?php $this->load->view("auditoria/auditoria_view_tab_documentos"); ?>
                 </div>
-                <div class="tab-pane" id="acta_resultados" role="tabpanel">messages</div>
-                <div class="tab-pane" id="control_auditoria" role="tabpanel">
+                <div class="tab-pane" id="tab-acta_resultados" role="tabpanel">
+                    ARA
+                </div>
+                <div class="tab-pane active" id="tab-observaciones">
+                    <?php $this->load->view("auditoria/auditoria_view_tab_observaciones"); ?>
+                </div>
+                <div class="tab-pane" id="tab-control_auditoria" role="tabpanel">
                     <?php $this->load->view("auditoria/auditoria_view_tab_control_auditoria"); ?>
                 </div>
-                <div class="tab-pane" id="herramientras" role="tabpanel">settings</div>
-                <div class="tab-pane" id="reciclaje" role="tabpanel">settings</div>
-                <div class="tab-pane" id="timeline" role="tabpanel">settings</div>
+                <div class="tab-pane" id="tab-herramientras" role="tabpanel">settings</div>
+                <div class="tab-pane" id="tab-reciclaje" role="tabpanel">settings</div>
+                <div class="tab-pane" id="tab-timeline" role="tabpanel">settings</div>
             </div>
         <?php endif; ?>
     </div>

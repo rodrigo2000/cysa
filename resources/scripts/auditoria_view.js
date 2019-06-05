@@ -74,7 +74,7 @@ $(document).ready(function () {
         let data = {
             'empleados_id': a
         }
-        $(this).html('<i class="fa fa-spinner fa-pulse"></i>').prop('disabled', true);
+        $(this).html(ICON_SPINNER).prop('disabled', true);
         $.post(url, data, function (json) {
             alert(json.message);
             $("#btn-actualizar-empleados-involucrados").html('Actualizar involucrados').prop('disabled', false);
@@ -87,7 +87,7 @@ $(document).ready(function () {
         let data = {
             'empleados_id': a
         }
-        $(this).html('<i class="fa fa-spinner fa-pulse"></i>').prop('disabled', true);
+        $(this).html(ICON_SPINNER).prop('disabled', true);
         $.post(url, data, function (json) {
             if (json.success) {
 
@@ -102,7 +102,7 @@ $(document).ready(function () {
         let data = {
             'empleados_id': a
         }
-        $(this).html('<i class="fa fa-spinner fa-pulse"></i>').prop('disabled', true);
+        $(this).html(ICON_SPINNER).prop('disabled', true);
         $.post(url, data, function (json) {
             if (json.success) {
 

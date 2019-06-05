@@ -56,10 +56,10 @@
                             <?php endif; ?>
                             <div id="collapseOne" class="collapse" role="tabpanel">
                                 <div class="card-block">
-                                    <ul class="list-group list-group-flush">
+                                    <ul class="list-group list-group-flush" id="observaciones">
                                         <?php foreach ($auditoria['observaciones'] as $o): ?>
                                             <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
-                                                <li class="list-group-item" style="box-shadow: none;"><?= $o['observaciones_titulo']; ?></li>
+                                                <li id="observacion_<?= $o['observaciones_id']; ?>" class="list-group-item" style="box-shadow: none;"><?= $o['observaciones_titulo']; ?></li>
                                             <?php endif; ?>
                                         <?php endforeach; ?>
                                     </ul>

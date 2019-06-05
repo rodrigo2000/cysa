@@ -76,4 +76,17 @@ class Observaciones_model extends MY_Model {
         return $return;
     }
 
+    function get_siguiente_numero_de_observacion($auditorias_id) {
+        $return = 0;
+        if (!empty($auditorias_id)) {
+            $result = $this->db->select_max('observaciones_numero')
+                    ->where("observaciones_auditorias_id", $auditorias_id)
+                    ->get($this->table_name);
+            if ($result && $result->num_rows() > 0) {
+                $return = $result->row()->observaciones_numero + 1;
+            }
+        }
+        return $return;
+    }
+
 }
