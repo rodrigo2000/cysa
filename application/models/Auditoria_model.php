@@ -272,4 +272,11 @@ class Auditoria_model extends MY_Model {
         return $return;
     }
 
+    function get_involucrados() {
+        $cysa = $this->session->userdata('cysa');
+        $auditorias_id = $cysa['auditorias_id'];
+        $return = $this->Auditorias_model->get_involucrados($auditorias_id);
+        return $return;
+    }
+
 }

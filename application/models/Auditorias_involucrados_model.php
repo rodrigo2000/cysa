@@ -13,7 +13,7 @@ class Auditorias_involucrados_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
-    function get_empleados_involucrados_en_auditoria($auditorias_id = NULL) {
+    function get_empleados_involucrados_en_auditoria($auditorias_id = NULL, $tipo = NULL) {
         $return = array();
         if (!empty($auditorias_id)) {
             $result = $this->db

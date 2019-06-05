@@ -413,9 +413,9 @@ class Auditorias_model extends MY_Model {
         return $return;
     }
 
-    function get_involucrados($auditorias_id, $tipo) {
+    function get_involucrados($auditorias_id, $tipo = NULL) {
         $return = array();
-        if (!empty($auditorias_id) && !empty($tipo)) {
+        if (!empty($auditorias_id)) {
             $return = $this->Auditorias_involucrados_model->get_empleados_involucrados_en_auditoria($auditorias_id, $tipo);
         }
         return $return;
