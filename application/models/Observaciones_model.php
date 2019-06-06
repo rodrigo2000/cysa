@@ -13,6 +13,11 @@ class Observaciones_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
+    function delete($id) {
+        $this->db->set('observaciones_is_eliminada', 1);
+        return parent::delete($id);
+    }
+
     function getResultados($limit = NULL, $start = NULL) {
         $this->db->order_by("observaciones_numero", "ASC");
         return parent::getResultados($limit, $start);
@@ -81,6 +86,8 @@ class Observaciones_model extends MY_Model {
         if (!empty($auditorias_id)) {
             $result = $this->db->select_max('observaciones_numero')
                     ->where("observaciones_auditorias_id", $auditorias_id)
+                    ->where("observaciones_is_eliminada", 0)
+                    ->where("fecha_delete", NULL)
                     ->get($this->table_name);
             if ($result && $result->num_rows() > 0) {
                 $return = $result->row()->observaciones_numero + 1;
