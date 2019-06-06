@@ -4,12 +4,13 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#observaciones_<?= $o['observaciones_id']; ?>" role="tab" title="<?= $o['observaciones_titulo']; ?>">
                 Observación <?= $o['observaciones_numero']; ?>
+                <button class="btn btn-sm btn-danger btn-tab-close eliminar-observacion" data-observaciones-id="<?= $o['observaciones_id']; ?>" type="button">&times;</button>
             </a>
         </li>
     <?php endforeach; ?>
-    <li class="nav-item">
-        <a class="nav-link add-observacion" dta-toggle="tab" href="#" onclick="" role="tab">
-            + Agregar observación
+    <li class="nav-item" id="tab-add-observacion">
+        <a class="nav-link" onclick="javascript: return false;" data-toggle="tab" href="#" role="tab">
+            <button class="btn btn-sm btn-success-outline btn-tab-add add-observacion">+ Agregar observación</button>
         </a>
     </li>
 </ul>
@@ -39,11 +40,5 @@
 <script src="<?= APP_SAC_URL; ?>resources/plugins/autosize/dist/autosize.min.js" type="text/javascript"></script>
 
 <!-- Personalizado -->
+<link href="<?= base_url(); ?>resources/styles/auditorias_view_tab_observaciones.css" rel="stylesheet" type="text/css"/>
 <script src="<?= base_url(); ?>resources/scripts/auditorias_view_tab_observaciones.js" type="text/javascript"></script>
-<?php if (count($auditoria['observaciones']) == 0): ?>
-    <script>
-        $(document).ready(function () {
-            $(".add-observacion").trigger("click");
-        });
-    </script>
-<?php endif; ?>

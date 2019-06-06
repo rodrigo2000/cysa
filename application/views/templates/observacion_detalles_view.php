@@ -1,4 +1,4 @@
-<div class="tab-pane active" id="observacion_detalles_<?= isset($o, $o['observaciones_id']) ? $o['observaciones_id'] : NULL; ?>" role="tabpanel">
+<div class="tab-pane active panel-detalles" id="observacion_detalles_<?= isset($o, $o['observaciones_id']) ? $o['observaciones_id'] : NULL; ?>" role="tabpanel">
     <form>
         <input type="text" name="observaciones_titulo[]" class="form-control m-b-2" placeholder="Título de la observación" value="<?= isset($o['observaciones_titulo']) ? $o['observaciones_titulo'] : NULL; ?>">
         <textarea name="observaciones_descripcion[]" class="editor_html"><?= isset($o['observaciones_descripcion']) ? $o['observaciones_descripcion'] : NULL; ?></textarea>
@@ -6,7 +6,6 @@
         <input type="hidden" name="observaciones_numero[]" value="<?= isset($o['observaciones_numero']) ? $o['observaciones_numero'] : 0; ?>">
         <div class="row text-xs-center m-t-1">
             <a href="<?= base_url() . $this->module['controller'] . "/guardar"; ?>" class="btn btn-primary guardar-observacion">Guardar observación</a>
-            <a href="<?= base_url() . $this->module['controller'] . "/eliminar"; ?>" class="btn btn-danger eliminar-observacion">Eliminar observación</a>
         </div>
     </form>
     <div id="recomendaciones" class="m-t-2">

@@ -21,25 +21,34 @@ $(document).ready(function () {
     });
 }).on('click', '.add-observacion', function (e) {
     e.preventDefault();
-    var id = "nueva_observacion_" + contador;
-    $(this).closest('li').before('<li class="nav-item"><a class="nav-link" dta-toggle="tab" href="#' + id + '" onclick="" role="tab">Nueva observación</a></li>');
-    var template = $("div.tab-pane", "#template_nueva_observacion").clone(true);
-    $(template).prop("id", id);
+    e.stopPropagation();
+    var template = $("#template_nueva_observacion > div.tab-pane").clone(true);
+    var id = template.prop("id") + contador;
+    $(template).prop("id", id).addClass('active');
+    $(this).closest('li').before('<li class="nav-item"><a class="nav-link" dta-toggle="tab" href="#' + id + '" onclick="" role="tab">Nueva observación <button class="btn btn-sm btn-danger btn-tab-close eliminar-observacion" type="button" data-observaciones-id="' + id + '">&times;</button></a></li>');
     $("#recomendaciones_observacion_", template).prop("id", "recomendaciones_observacion_" + contador);
     $(".add-recomendacion", template).attr("data-observacion", id);
     $('#observaciones_auditoria.tab-content > .tab-pane.active').removeClass('active');
     $('#observaciones_auditoria.tab-content').append(template);
     convertir_tinymce("#" + id + ".tab-pane.active textarea.editor_html");
     setTimeout(function () {
-        $('.nav-tabs li:nth-child(' + contador + ') a', "#observaciones").trigger("click");
+        $('.nav-tabs li:nth-child(' + contador + ') a', "#observaciones").focus().trigger("click");
         $("input[name^=observaciones_titulo]", "#" + id + ".tab-pane.active").focus();
         $("input[name^=observaciones_numero]", "#" + id + ".tab-pane.active").val(contador);
+        var aux;
+        aux = $("a.tab-detalles", "#" + id + ".tab-pane.active").get(0);
+        $("div.panel-detalles", "#" + id + ".tab-pane.active").get(0).id = aux.hash.replace("#", "") + contador;
+        aux.href = aux.hash + contador;
+        aux = $("a.tab-solventacion", "#" + id + ".tab-pane.active").get(0);
+        $("div.panel-solventacion", "#" + id + ".tab-pane.active").get(0).id = aux.hash.replace("#", "") + contador;
+        aux.href = aux.hash += contador;
+        contador++;
     }, 100);
-    contador++;
 }).on('click', '.guardar-observacion', function (e) {
     e.preventDefault();
     tinyMCE.triggerSave();
     var data = $(this).parents("form").serializeObject();
+    data.selector = $("div.tab-pane.active", "#observaciones_auditoria").prop("id");
     var url = base_url + "Observaciones/guardar/";
     var $this = this;
     $($this).addClass('disabled').html(ICON_SPINNER + ' Guardando...');
@@ -52,7 +61,12 @@ $(document).ready(function () {
             setTimeout(function () {
                 $($this).removeClass('disabled btn-success').addClass('btn-primary').html('Guardar observación');
             }, 3000);
-            $(".observaciones_id", "#nueva_observacion_" + index).val(observaciones_id);
+            $("a[href$=" + json.data.selector + "]", "#observaciones_menu")
+                    .prop("href", "#observaciones_" + observaciones_id)
+                    .attr("data-observaciones-id", observaciones_id);
+            $("div#" + json.data.selector + " a.tab-detalles", "#observaciones_auditoria").prop("href", "#observacion_detalles_" + observaciones_id);
+            $("div#" + json.data.selector + " a.tab-solventacion", "#observaciones_auditoria").prop("href", "#observaciones_solventacion_" + observaciones_id);
+            $("div#" + json.data.selector, "#observaciones_auditoria").prop("id", "observaciones_" + observaciones_id);
             // Actualizamos el titulo en la pestaña de información
             $("ul#observaciones li#observacion_" + json.data.observaciones_id, "#tab-informacion").html(json.data.observaciones_titulo);
             $("ul#observaciones_menu li a.active", "#tab-observaciones").prop("title", json.data.observaciones_titulo);
@@ -65,11 +79,28 @@ $(document).ready(function () {
     return false;
 }).on('click', '.eliminar-observacion', function (e) {
     e.preventDefault();
-    var url = base_url + "Observaciones/eliminar";
-    var data = {};
+    var url = base_url + "Observaciones/eliminar_observacion";
+    var data = {
+        observaciones_id: $(this).attr('data-observaciones-id')
+    };
     $.post(url, data, function (json) {
-        if(json.success){
-            
+        if (json.success) {
+            let observaciones_id = json.data.observaciones_id;
+            let selector = json.data.selector;
+            var tab_actual = $("a[href$=" + selector + "]", "#observaciones_menu").parents("li");
+            if (tab_actual.prev('li').length > 0) {
+                tab_actual.prev('li').children('a').trigger('click');
+            } else if (tab_actual.next('li:not(#tab-add-observacion)').length > 0) {
+                tab_actual.next('li:not(#tab-add-observacion)').children('a').trigger('click');
+            }
+            tab_actual.fadeOut('slow', function () {
+                $(this).remove();
+            });
+            $("#" + selector, "#observaciones_auditoria").fadeOut('slow', function () {
+                $(this).remove();
+            });
+        } else {
+            alert(json.message);
         }
     }, "json");
     return false;
@@ -123,7 +154,7 @@ function convertir_tinymce(selector) {
         height: '300px',
         plugins: 'print preview fullpage searchreplace autolink directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern placeholder code',
         //plugins: 'print preview fullpage powerpaste searchreplace autolink directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount tinymcespellchecker a11ychecker imagetools textpattern formatpainter permanentpen pageembed tinycomments mentions linkchecker code',
-        toolbar: 'formatselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | code fullscreen',
+        toolbar: 'formatselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image table | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | code fullscreen',
         menubar: false,
         image_advtab: true,
         template_cdate_format: '[CDATE: %m/%d/%Y : %H:%M:%S]',
