@@ -4,3 +4,28 @@
     background: none !important;
     cursor: default;
 }
+
+.explotar {
+    /*width:200vw;*/
+    animation-name:letter_explotar;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+.implotar {
+    /*width:200vw;*/
+    animation-name:letter_implotar;
+    animation-duration: 1s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes letter_implotar {
+    0% {letter-spacing:0px; opacity:1;}
+    100% {letter-spacing:-8px;opacity:0;}
+}
+
+@keyframes letter_explotar {
+    0% {letter-spacing:-8px; opacity:0;}
+    100% {letter-spacing:0px; opacity:1;}
+}

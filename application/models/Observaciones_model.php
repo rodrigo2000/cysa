@@ -90,7 +90,40 @@ class Observaciones_model extends MY_Model {
                     ->where("fecha_delete", NULL)
                     ->get($this->table_name);
             if ($result && $result->num_rows() > 0) {
-                $return = $result->row()->observaciones_numero + 1;
+                $return = intval($result->row()->observaciones_numero) + 1;
+            }
+        }
+        return $return;
+    }
+
+    /**
+     * Esta función re-enumera las observaciones de un auditoría. Se debe usar después de eliminar o destruir una observación
+     * @param integer $auditorias_id Identificador de la auditoría
+     * @return boolen Devuelve un arreglo de identificadores ordenados ascendentemente reflando el orden actual de las observaciones. Arreglo vacío si no hubo cambios.
+     */
+    function reenumerar_observaciones_de_auditoria($auditorias_id) {
+        $return = array();
+        if (!empty($auditorias_id)) {
+            $result = $this->db
+                    ->where("fecha_delete", NULL)
+                    ->where("observaciones_auditorias_id", $auditorias_id)
+                    ->order_by('observaciones_numero', 'ASC')
+                    ->get($this->table_name);
+            if ($result && $result->num_rows() > 0) {
+                $observaciones = $result->result_array();
+                foreach ($observaciones as $index => $o) {
+                    $this->db
+                            ->set("observaciones_numero", $index + 1)
+                            ->where($this->id_field, $o[$this->id_field])
+                            ->update($this->table_name);
+                }
+                if ($this->db->affected_rows() > 0) {
+                    $this->db
+                            ->where("observaciones_auditorias_id", $auditorias_id)
+                            ->order_by('observaciones_numero', 'ASC');
+                    $aux = $this->get_todos();
+                    $return = array_column($aux, 'observaciones_id', 'observaciones_numero');
+                }
             }
         }
         return $return;

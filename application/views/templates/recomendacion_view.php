@@ -3,8 +3,8 @@
 <div id="<?= isset($rr, $rr['recomendaciones_id']) ? 'recomendacion_' . $rr['recomendaciones_id'] : 'nueva_recomendacion_' ?>" class="card XXXcard-inverse XXXcard-<?= $css[$status_id]; ?>">
     <form>
         <div class="card-header text-xs-right">
-            <a href="#" class="btn btn-primary btn-sm guardar-recomendacion" data-recomendacion-id="0">Guardar</a>
-            <a href="#" class="btn btn-danger btn-sm eliminar-recomendacion" data-recomendacion-id="0">Eliminar</a>
+            <a href="#" class="btn btn-primary btn-sm guardar-recomendacion">Guardar</a>
+            <a href="#" class="btn btn-danger btn-sm eliminar-recomendacion">Eliminar</a>
             <h4 class="pull-xs-left">Recomendación <?= isset($rr, $rr['recomendaciones_numero']) ? $rr['recomendaciones_numero'] : 'nueva'; ?></h4>
             <input type="hidden" class="recomendaciones_id" name="recomendaciones_id[]" value="<?= isset($rr, $rr['recomendaciones_id']) ? $rr['recomendaciones_id'] : 0 ?>">
             <input type="hidden" class="recomendaciones_observaciones_id" name="recomendaciones_observaciones_id[]" value="<?= isset($rr, $rr['recomendaciones_observaciones_id']) ? $rr['recomendaciones_observaciones_id'] : 0 ?>">

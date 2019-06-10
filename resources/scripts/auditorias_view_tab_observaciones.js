@@ -13,60 +13,68 @@ $(document).ready(function () {
         if (!$(this).hasClass('add-contact')) {
             $(this).tab('show');
         }
-    }).on("click", "span", function () {
-        var anchor = $(this).siblings('a');
-        $(anchor.attr('href')).remove();
-        $(this).parent().remove();
-        $(".nav-tabs li").children('a').first().click();
     });
-}).on('click', '.add-observacion', function (e) {
+});
+$(document).on('click', '.add-observacion', function (e) {
     e.preventDefault();
     e.stopPropagation();
     var template = $("#template_nueva_observacion > div.tab-pane").clone(true);
     var id = template.prop("id") + contador;
     $(template).prop("id", id).addClass('active');
-    $(this).closest('li').before('<li class="nav-item"><a class="nav-link" dta-toggle="tab" href="#' + id + '" onclick="" role="tab">Nueva observación <button class="btn btn-sm btn-danger btn-tab-close eliminar-observacion" type="button" data-observaciones-id="' + id + '">&times;</button></a></li>');
+    $("a.nav-link.active", "#observaciones_menu").removeClass("active");
+    $(this).closest('li').before('<li class="nav-item"><a class="nav-link active" dta-toggle="tab" href="#' + id + '" role="tab"><span>Nueva observación</span> <button class="btn btn-sm btn-danger btn-tab-close eliminar-observacion" type="button" data-observaciones-id="' + id + '" title="Eliminar observación">&times;</button></a></li>');
     $("#recomendaciones_observacion_", template).prop("id", "recomendaciones_observacion_" + contador);
-    $(".add-recomendacion", template).attr("data-observacion", id);
     $('#observaciones_auditoria.tab-content > .tab-pane.active').removeClass('active');
     $('#observaciones_auditoria.tab-content').append(template);
     convertir_tinymce("#" + id + ".tab-pane.active textarea.editor_html");
     setTimeout(function () {
-        $('.nav-tabs li:nth-child(' + contador + ') a', "#observaciones").focus().trigger("click");
-        $("input[name^=observaciones_titulo]", "#" + id + ".tab-pane.active").focus();
-        $("input[name^=observaciones_numero]", "#" + id + ".tab-pane.active").val(contador);
+        $("#" + id, "#observaciones").focus().trigger("click");
+        $("input[name^=observaciones_titulo]", "#" + id).focus();
+        $("input[name^=observaciones_numero]", "#" + id).val(0);
         var aux;
-        aux = $("a.tab-detalles", "#" + id + ".tab-pane.active").get(0);
-        $("div.panel-detalles", "#" + id + ".tab-pane.active").get(0).id = aux.hash.replace("#", "") + contador;
+        aux = $("a.tab-detalles", "#" + id).get(0);
+        $("div.panel-detalles", "#" + id).get(0).id = aux.hash.replace("#", "") + contador;
         aux.href = aux.hash + contador;
-        aux = $("a.tab-solventacion", "#" + id + ".tab-pane.active").get(0);
-        $("div.panel-solventacion", "#" + id + ".tab-pane.active").get(0).id = aux.hash.replace("#", "") + contador;
+        aux = $("a.tab-solventacion", "#" + id).get(0);
+        $("div.panel-solventacion", "#" + id).get(0).id = aux.hash.replace("#", "") + contador;
         aux.href = aux.hash += contador;
         contador++;
     }, 100);
-}).on('click', '.guardar-observacion', function (e) {
+    return true;
+});
+$(document).on('click', '.guardar-observacion', function (e) {
     e.preventDefault();
     tinyMCE.triggerSave();
     var data = $(this).parents("form").serializeObject();
-    data.selector = $("div.tab-pane.active", "#observaciones_auditoria").prop("id");
+    data.selector = $("> div.tab-pane.active", "#observaciones_auditoria").prop("id");
     var url = base_url + "Observaciones/guardar/";
     var $this = this;
     $($this).addClass('disabled').html(ICON_SPINNER + ' Guardando...');
+    var old_id = $("#observaciones_auditoria > .tab-pane.active").prop("id");
     $.post(url, data, function (json) {
         if (json.success) {
-            var observaciones_id = json.data.insert_id;
-            var index = json.data.observaciones_numero;
-            var id = "observacion_" + observaciones_id;
             $($this).removeClass("btn-primary").addClass("btn-success").html(ICON_SUCCESS + ' Guardado correctamente');
             setTimeout(function () {
                 $($this).removeClass('disabled btn-success').addClass('btn-primary').html('Guardar observación');
             }, 3000);
-            $("a[href$=" + json.data.selector + "]", "#observaciones_menu")
-                    .prop("href", "#observaciones_" + observaciones_id)
-                    .attr("data-observaciones-id", observaciones_id);
-            $("div#" + json.data.selector + " a.tab-detalles", "#observaciones_auditoria").prop("href", "#observacion_detalles_" + observaciones_id);
-            $("div#" + json.data.selector + " a.tab-solventacion", "#observaciones_auditoria").prop("href", "#observaciones_solventacion_" + observaciones_id);
-            $("div#" + json.data.selector, "#observaciones_auditoria").prop("id", "observaciones_" + observaciones_id);
+            if (json.data.accion === "nuevo") {
+                let new_selector = "observaciones_" + json.data.observaciones_id;
+                $("a[href$=" + json.data.old_selector + "] ", "#observaciones_menu")
+                        .prop("href", "#observaciones_" + json.data.observaciones_id)
+                        .children('span').html('Observación ' + json.data.observaciones_numero)
+                        .parent("a")
+                        .children('button').attr("data-observaciones-id", json.data.observaciones_id);
+                $("div#" + json.data.old_selector).prop('id', new_selector);
+//                $("a.tab-detalles", "div#" + new_selector).prop("href", "#observacion_detalles_" + json.data.observaciones_id);
+//                $("a.tab-solventacion", "div#" + new_selector).prop("href", "#observaciones_solventacion_" + json.data.observaciones_id);
+//                $("div.panel-detalles", "div#" + new_selector).prop("id", "observacion_detalles_" + json.data.observaciones_id);
+//                $("div.panel-solventacion", "div#" + new_selector).prop("id", "observacion_solventacion_" + json.data.observaciones_id);
+                $("input[name^=observaciones_id]", "#" + new_selector).val(json.data.observaciones_id);
+                $("input[name^=observaciones_numero]", "#" + new_selector).val(json.data.observaciones_numero);
+                $("a.add-recomendacion", "#" + new_selector)
+                        .attr("data-observacion-id", json.data.observaciones_id)
+                        .parent('div').removeClass('hidden-xs-up');
+            }
             // Actualizamos el titulo en la pestaña de información
             $("ul#observaciones li#observacion_" + json.data.observaciones_id, "#tab-informacion").html(json.data.observaciones_titulo);
             $("ul#observaciones_menu li a.active", "#tab-observaciones").prop("title", json.data.observaciones_titulo);
@@ -77,7 +85,8 @@ $(document).ready(function () {
 
     }, "json");
     return false;
-}).on('click', '.eliminar-observacion', function (e) {
+});
+$(document).on('click', '.eliminar-observacion', function (e) {
     e.preventDefault();
     var url = base_url + "Observaciones/eliminar_observacion";
     var data = {
@@ -95,6 +104,7 @@ $(document).ready(function () {
             }
             tab_actual.fadeOut('slow', function () {
                 $(this).remove();
+                reenumerar_observaciones(json.data.reenumeracion);
             });
             $("#" + selector, "#observaciones_auditoria").fadeOut('slow', function () {
                 $(this).remove();
@@ -104,19 +114,22 @@ $(document).ready(function () {
         }
     }, "json");
     return false;
-}).on('click', '.add-recomendacion', function (e) {
-    var id = $(this).parents('div.tab-pane.active').prop('id');
-    var aux = id.split('_'); // id = 'observaciones_1345' ó 'nueva_observacion_1'
-    var observaciones_id = aux[1];
-    var template = $("div.card", "#template_nueva_recomendacion").clone(true);
-    $(template).prop("id", "nueva_recomendacion_" + contador);
-    $(".recomendaciones_observaciones_id", template).val(observaciones_id);
-    $("#recomendaciones", "#observaciones_auditoria #" + id).append(template);
-    // Aplicamos plugins
-    var textarea = $('#' + id + ' #recomendaciones #nueva_recomendacion_' + contador + ' textarea.autosize');
-    autosize(textarea);
-    contador++;
-}).on('click', '.guardar-recomendacion', function (e) {
+});
+$(document).on('click', '.add-recomendacion', function (e) {
+    var observaciones_id = $(this).parents("div.panel-detalles.active").children('form').children('input.observaciones_id').val();
+    if (!isEmpty(observaciones_id)) {
+        var selector = $(this).parents("div.panel-detalles.active").prop('id');
+        var template = $("div.card", "#template_nueva_recomendacion").clone(true);
+        $(template).prop("id", "nueva_recomendacion_" + contador);
+        $(".recomendaciones_observaciones_id", template).val(observaciones_id);
+        $("#recomendaciones", "#observaciones_auditoria #" + selector).append(template);
+        // Aplicamos plugins
+        var textarea = $('#' + selector + ' #recomendaciones #nueva_recomendacion_' + contador + ' textarea.autosize');
+        autosize(textarea);
+        contador++;
+    }
+});
+$(document).on('click', '.guardar-recomendacion', function (e) {
     e.preventDefault();
     var url = base_url + "Recomendaciones/guardar";
     var $this = this;
@@ -129,7 +142,6 @@ $(document).ready(function () {
                 $('.recomendaciones_id', div).val(json.data.insert_id);
                 $("h4", div).html("Recomendación " + json.data.recomendaciones_numero);
             } else {
-                console.log("#observacion_" + json.data.observaciones_id + ", #tab-informacion ul#observaciones")
                 $("#observacion_" + json.data.observaciones_id, "#tab-informacion ul#observaciones").html(json.data.observaciones_titulo);
             }
         } else {
@@ -137,11 +149,20 @@ $(document).ready(function () {
         }
         $($this).removeClass("disabled").html('Guardar');
     }, "json");
-}).on('click', '.eliminar-recomendacion', function (e) {
+});
+$(document).on('click', '.eliminar-recomendacion', function (e) {
     e.preventDefault();
-    var url = base_url + 'Recomendaciones/eliminar';
-    var data = {};
+    var url = base_url + 'Recomendaciones/eliminar_recomendacion';
+    var data = {
+        recomendaciones_id: $(this).parent('div.card-header').children('input[type=hidden]').val()
+    };
     $.post(url, data, function (json) {
+        $("#recomendacion_" + json.data.recomendaciones_id, "#recomendaciones").fadeOut('slow');
+        if (json.success) {
+
+        } else {
+            alert(json.message);
+        }
     }, "json");
     return false;
 });
@@ -213,4 +234,22 @@ function convertir_tinymce(selector) {
             input.click();
         }
     });
+}
+
+function reenumerar_observaciones(data) {
+    var $return = false;
+    if (!isEmpty(data)) {
+        $.each(data, function (observaciones_numero, observaciones_id) {
+            var element = $("a[href$=observaciones_" + observaciones_id + "] span", "#observaciones_menu");
+            var nueva_etiqueta = "Observación " + observaciones_numero;
+            if (element.text() !== nueva_etiqueta) {
+                element.addClass('implotar');
+                setTimeout(function(){
+                    element.removeClass('implotar').text(nueva_etiqueta).addClass('explotar')
+                },1100);
+            }
+        });
+        $return = true;
+    }
+    return $return;
 }

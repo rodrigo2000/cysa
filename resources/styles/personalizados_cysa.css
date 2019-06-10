@@ -3,7 +3,7 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
-/* 
+/*
     Created on : 26-jul-2016, 10:38:25
     Author     : rodrigo.sevilla
 */
@@ -20,8 +20,8 @@ and open the template in the editor.
 }
 
 /*.notification-bar-success .notification-bar-icon i.material-icons,
-.notification-bar-fail .notification-bar-icon i.material-icons, 
-.notification-bar-warning .notification-bar-icon i.material-icons, 
+.notification-bar-fail .notification-bar-icon i.material-icons,
+.notification-bar-warning .notification-bar-icon i.material-icons,
 .notification-bar-info .notification-bar-icon i.material-icons {
     color: #fff;
 }*/
@@ -84,7 +84,7 @@ and open the template in the editor.
     .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-warning:after {
         border-color: transparent transparent transparent transparent;
     }
-    
+
     .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-info:before {
         border-color: transparent transparent transparent #4cc3f0;
     }
@@ -92,7 +92,7 @@ and open the template in the editor.
     .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-info:after {
         border-color: transparent transparent transparent transparent;
     }
-    
+
     .timeline:not(.stacked) .timeline-card:nth-child(odd) .timeline-content .timeline-body.bg-success:before {
         border-color: transparent transparent transparent #7fc35c;
     }

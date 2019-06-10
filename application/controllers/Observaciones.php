@@ -40,6 +40,7 @@ class Observaciones extends MY_Controller {
                 $return = $this->Observaciones_model->insert($data);
                 $return['data']['accion'] = "nuevo";
                 $return['data']['message'] = "Se ha agregado la observación.";
+                unset($data['observaciones_descripcion']);
                 $return['data'] = array_merge($return['data'], $data);
                 $return['data']['observaciones_id'] = $return['data']['insert_id'];
             } else {
@@ -50,7 +51,6 @@ class Observaciones extends MY_Controller {
                 unset($data['observaciones_descripcion']);
                 $return['data'] = array_merge($return['data'], $data);
             }
-            $return['data']['observaciones_numero'] = $post['observaciones_numero'][$index];
             $return['data']['old_selector'] = $this->input->post("selector");
         }
         if ($return['state'] === 'success') {
@@ -68,19 +68,23 @@ class Observaciones extends MY_Controller {
         $observaciones_id = $this->input->post('observaciones_id');
         if (!empty($observaciones_id)) {
             if (is_numeric($observaciones_id)) {
-                $recomendaciones = $this->Observaciones_model->get_recomendaciones_de_observacion($observaciones_id);
-                if (!empty($recomendaciones)) {
-                    foreach ($recomendaciones as $r) {
-                        $this->Recomendaciones_model->delete($r['recomendaciones_id']);
-                    }
-                }
+//                $recomendaciones = $this->Observaciones_model->get_recomendaciones_de_observacion($observaciones_id);
+//                if (!empty($recomendaciones)) {
+//                    foreach ($recomendaciones as $r) {
+//                        $this->Recomendaciones_model->delete($r['recomendaciones_id']);
+//                    }
+//                }
                 $return = $this->Observaciones_model->delete($observaciones_id);
                 if ($return['state'] === "success") {
+                    $cysa = $this->session->userdata(APP_NAMESPACE);
+                    $auditorias_id = $cysa['auditorias_id'];
+                    $reenumarcion = $this->Observaciones_model->reenumerar_observaciones_de_auditoria($auditorias_id);
                     $return['success'] = TRUE;
                     $return['message'] = "Se ha eliminado la observación.";
                     $return['data'] = array(
                         'observaciones_id' => $observaciones_id,
-                        'selector' => 'observaciones_' . $observaciones_id
+                        'selector' => 'observaciones_' . $observaciones_id,
+                        'reenumeracion' => $reenumarcion
                     );
                 }
             } else {
@@ -88,7 +92,8 @@ class Observaciones extends MY_Controller {
                 $return['success'] = TRUE;
                 $return['data'] = array(
                     'observaciones_id' => $observaciones_id,
-                    'selector' => $observaciones_id
+                    'selector' => $observaciones_id,
+                    'reenumarcion' => array()
                 );
             }
         } else {
@@ -96,6 +101,11 @@ class Observaciones extends MY_Controller {
         }
         echo json_encode($return);
         return $return;
+    }
+
+    function demo() {
+        $r = $this->Observaciones_model->reenumerar_observaciones_de_auditoria(985);
+        var_dump($r);
     }
 
 }

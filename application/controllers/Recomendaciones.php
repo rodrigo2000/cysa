@@ -54,4 +54,37 @@ class Recomendaciones extends MY_Controller {
         echo json_encode($return);
     }
 
+    function eliminar_recomendacion() {
+        $return = array(
+            'state' => 'error',
+            'success' => FALSE,
+            'message' => 'Error desconocido'
+        );
+        $recomendaciones_id = $this->input->post('recomendaciones_id');
+        if (!empty($recomendaciones_id)) {
+            if (is_numeric($recomendaciones_id)) {
+                $return = $this->Recomendaciones_model->delete($recomendaciones_id);
+                if ($return['state'] === "success") {
+                    $return['success'] = TRUE;
+                    $return['message'] = "Se ha eliminado la recomendación.";
+                    $return['data'] = array(
+                        'recomendaciones_id' => $recomendaciones_id,
+                        'selector' => 'recomedanciones_id' . $recomendaciones_id
+                    );
+                }
+            } else {
+                // Es una observación nueva, por lo tanto es solo eliminar la pestaña de la observación
+                $return['success'] = TRUE;
+                $return['data'] = array(
+                    'recomendaciones_id' => $recomendaciones_id,
+                    'selector' => 'recomedanciones_id' . $recomendaciones_id
+                );
+            }
+        } else {
+            $return['message'] = "Faltó especificar el identificador de la recomendación.";
+        }
+        echo json_encode($return);
+        return $return;
+    }
+
 }

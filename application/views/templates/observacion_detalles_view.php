@@ -16,8 +16,8 @@
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
-    <div class="text-xs-center">
-        <a href="#" class="btn btn-default btn-sm add-recomendacion">
+    <div class="text-xs-center <?= isset($o, $o['observaciones_id']) && $o['observaciones_id'] > 0 ? '' : 'hidden-xs-up'; ?>">
+        <a href="#" class="btn btn-default btn-sm add-recomendacion" data-observaciones-id="<?= isset($o, $o['observaciones_id']) && $o['observaciones_id'] > 0 ? $o['observaciones_id'] : ''; ?>">
             Agregar recomendación
         </a>
     </div>

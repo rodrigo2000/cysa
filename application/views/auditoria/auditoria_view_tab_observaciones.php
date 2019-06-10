@@ -3,13 +3,13 @@
     <?php foreach ($auditoria['observaciones'] as $o): ?>
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#observaciones_<?= $o['observaciones_id']; ?>" role="tab" title="<?= $o['observaciones_titulo']; ?>">
-                Observación <?= $o['observaciones_numero']; ?>
-                <button class="btn btn-sm btn-danger btn-tab-close eliminar-observacion" data-observaciones-id="<?= $o['observaciones_id']; ?>" type="button">&times;</button>
+                <span>Observación <?= $o['observaciones_numero']; ?></span>
+                <button class="btn btn-sm btn-danger btn-tab-close eliminar-observacion" data-observaciones-id="<?= $o['observaciones_id']; ?>" type="button" title="Eliminar observación">&times;</button>
             </a>
         </li>
     <?php endforeach; ?>
     <li class="nav-item" id="tab-add-observacion">
-        <a class="nav-link" onclick="javascript: return false;" data-toggle="tab" href="#" role="tab">
+        <a class="nav-link" data-toggle="tab" href="#" role="tab">
             <button class="btn btn-sm btn-success-outline btn-tab-add add-observacion">+ Agregar observación</button>
         </a>
     </li>
@@ -23,7 +23,7 @@
     <?php endforeach; ?>
 </div>
 <div id="template_nueva_observacion" class="hidden-xs-up">
-    <?php $data = array('o' => array()); ?>
+    <?php $data = array('index' => NULL, 'o' => array()); ?>
     <?php $this->load->view('templates/observacion_view', $data); ?>
 </div>
 <div id="template_nueva_recomendacion" class="hidden-xs-up">
