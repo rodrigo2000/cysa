@@ -25,6 +25,10 @@ class Observaciones_model extends MY_Model {
 
     function get_observacion($observaciones_id = NULL) {
         $return = array();
+        if (!empty($observaciones_id)) {
+            $return = $this->get_uno($observaciones_id);
+            $return['recomendaciones'] = $this->get_recomendaciones_de_observacion($observaciones_id);
+        }
         return $return;
     }
 
