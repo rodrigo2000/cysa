@@ -1,3 +1,4 @@
+<link href="<?= APP_SAC_URL; ?>resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
 <!--Nav tabs -->
 <ul class = "nav nav-tabs" role = "tablist" id = "observaciones_menu">
     <?php foreach ($auditoria['observaciones'] as $o): ?>
@@ -8,7 +9,7 @@
             </a>
         </li>
     <?php endforeach; ?>
-    <li class="nav-item" id="tab-add-observacion">
+    <li class="nav-item tab-no-hover" id="tab-add-observacion">
         <a class="nav-link" data-toggle="tab" href="#" role="tab">
             <button class="btn btn-sm btn-success-outline btn-tab-add add-observacion">+ Agregar observación</button>
         </a>

@@ -1,0 +1,95 @@
+.table-observaciones {
+    border: 1px solid black;
+    margin-bottom: 1em;
+}
+
+.table-observaciones tfoot tr td {
+    text-align: center;
+    border-top: 1px solid black;
+}
+.observacion-bg-default-light {
+    background-color: lightgray;
+    padding: .4em;
+    color: black;
+    font-weight: bold;
+}
+
+.observacion-cuadro-descripcion{
+    border: 1px solid black;
+    margin: .5em;
+    padding: .5em;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+.observacion-cuadro-descripcion p {
+    font-family: barlow !important;
+    margin-bottom: 1em !important;
+}
+.observacion-cuadro-descripcion li {
+    font-family: barlow !important;
+}
+.observacion-cuadro-descripcion table td,
+.observacion-cuadro-descripcion table th {
+    padding: 5px;
+    font-family: barlow !important;
+
+}
+.observacion-cuadro-descripcion strong,
+.observacion-cuadro-descripcion b {
+    font-weight: auto !important;
+}
+
+.recomendaciones-bg-default-light {
+    background-color: lightgray;
+    padding: .5em;
+    color: black;
+    font-weight: bold;
+}
+
+.recomendacion p.recomendacion-descripcion {
+    margin: .4em 1em;
+    font-family: Barlow;
+    text-align: justify;
+}
+
+.recomendacion p.recomendacion-clasificacion,
+.recomendacion p.recomendacion-responsable {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 1em;
+}
+.recomendacion p.recomendacion-clasificacion { margin-top: 1em;}
+
+dl {
+    margin-left: .5em;
+}
+
+.texto-foja, .version_documento {
+    padding: 0 .5em;
+}
+
+.firmas_empleado {
+    display: inline-block !important;
+    margin: 5em 15px !important;
+    margin-bottom: 1em !important;
+    width: 240px !important;
+    vertical-align: top;
+}
+
+@media print {
+    div#oficio-hoja tbody#oficio-body tr {
+        page-break-inside: avoid;
+    }
+
+    .observacion-cuadro, .observacion-cuadro-descripcion {
+        border: none;
+    }
+
+    table.table-observaciones {
+        page-break-before: always;
+    }
+
+    .firmas_empleado {
+        vertical-align: top;
+        width: 3.5cm !important;
+    }
+}

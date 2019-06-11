@@ -1,6 +1,6 @@
-#tab-add-observacion:hover,
-#tab-add-observacion:focus,
-#tab-add-observacion a:hover {
+.tab-no-hover:hover,
+.tab-no-hover:focus,
+.tab-no-hover a:hover {
     background: none !important;
     cursor: default;
 }

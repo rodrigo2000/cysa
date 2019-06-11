@@ -10,7 +10,7 @@
             <input type="hidden" class="recomendaciones_observaciones_id" name="recomendaciones_observaciones_id[]" value="<?= isset($rr, $rr['recomendaciones_observaciones_id']) ? $rr['recomendaciones_observaciones_id'] : 0 ?>">
         </div>
         <div class="card-block">
-            <textarea name="recomendaciones_descripcion[]" class="form-control autosize"><?= isset($rr, $rr['recomendaciones_descripcion']) ? trim($rr['recomendaciones_descripcion']) : NULL; ?></textarea>
+            <textarea name="recomendaciones_descripcion[]" class="form-control autosize font-barlow text-justify"><?= isset($rr, $rr['recomendaciones_descripcion']) ? trim($rr['recomendaciones_descripcion']) : NULL; ?></textarea>
         </div>
         <div class="card-footer">
             <div class="row align-middle">

@@ -1,19 +1,22 @@
 var contador = 0;
 $(document).ready(function () {
     $("#observaciones_menu li:first-child a, #observaciones_auditoria > div:first-child").addClass("active");
-
     convertir_tinymce("#observaciones_auditoria textarea.editor_html");
-
     $(".autosize").each(function (index, element) {
         autosize(element);
     });
-
     $(".nav-tabs").on("click", "a", function (e) {
         e.preventDefault();
         if (!$(this).hasClass('add-contact')) {
             $(this).tab('show');
         }
     });
+});
+$(".nav-pills a[data-toggle=tab], .nav-tabs a[data-toggle=tab]").on("click", function (e) {
+    if ($(this).hasClass("disabled")) {
+        e.preventDefault();
+        return false;
+    }
 });
 $(document).on('click', '.add-observacion', function (e) {
     e.preventDefault();
@@ -166,17 +169,38 @@ $(document).on('click', '.eliminar-recomendacion', function (e) {
     }, "json");
     return false;
 });
-
+$(document).on('click', 'button.imprimir', function (e) {
+    var hashtag = $(this).parent("a.nav-link").prop('hash');
+    var id = $("input.observaciones_id", "#observaciones_auditoria " + hashtag).val();
+    if ($(this).hasClass('imprimir-todas')) {
+        id = 0;
+    }
+    var etapa = $(this).attr("data-etapa");
+    window.open(base_url + controller + "/descargar/CO/" + id + "/" + etapa);
+});
 function convertir_tinymce(selector) {
     tinymce.init({
         language: 'es_MX',
         statusbar: false,
         selector: selector,
         height: '300px',
+        content_style: ".mce-content-body {font-size:15px;font-family:Barlow;}",
+        font_formats: 'Andale Mono=andale mono,times; Alwyn=alwyn, Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Barlow=barlow; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats',
+//        preview_styles: false,
+        fontsize_formats: '10px 11px 12px 13px 14px 15px 16px 18px 24px 36px 48px',
         plugins: 'print preview fullpage searchreplace autolink directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern placeholder code',
         //plugins: 'print preview fullpage powerpaste searchreplace autolink directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount tinymcespellchecker a11ychecker imagetools textpattern formatpainter permanentpen pageembed tinycomments mentions linkchecker code',
-        toolbar: 'formatselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image table | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | code fullscreen',
-        menubar: false,
+        toolbar: 'formatselect | fontselect | fontsizeselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image table | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | code fullscreen',
+        menubar: false, // TRUE ó 'file edit insert view format table tools help'
+//        menu: {
+//            file: {title: 'File', items: 'newdocument'},
+//            edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
+//            insert: {title: 'Insert', items: 'link media | template hr'},
+//            view: {title: 'View', items: 'visualaid'},
+//            format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
+//            table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
+//            tools: {title: 'Tools', items: 'spellchecker code'}
+//        },
         image_advtab: true,
         template_cdate_format: '[CDATE: %m/%d/%Y : %H:%M:%S]',
         template_mdate_format: '[MDATE: %m/%d/%Y : %H:%M:%S]',
@@ -200,7 +224,6 @@ function convertir_tinymce(selector) {
             var input = document.createElement('input');
             input.setAttribute('type', 'file');
             input.setAttribute('accept', 'image/*');
-
             /*
              Note: In modern browsers input[type="file"] is functional without
              even adding it to the DOM, but that might not be the case in some older
@@ -211,7 +234,6 @@ function convertir_tinymce(selector) {
 
             input.onchange = function () {
                 var file = this.files[0];
-
                 var reader = new FileReader();
                 reader.onload = function () {
                     /*
@@ -224,13 +246,11 @@ function convertir_tinymce(selector) {
                     var base64 = reader.result.split(',')[1];
                     var blobInfo = blobCache.create(id, file, base64);
                     blobCache.add(blobInfo);
-
                     /* call the callback and populate the Title field with the file name */
                     cb(blobInfo.blobUri(), {title: file.name});
                 };
                 reader.readAsDataURL(file);
             };
-
             input.click();
         }
     });
@@ -244,9 +264,9 @@ function reenumerar_observaciones(data) {
             var nueva_etiqueta = "Observación " + observaciones_numero;
             if (element.text() !== nueva_etiqueta) {
                 element.addClass('implotar');
-                setTimeout(function(){
+                setTimeout(function () {
                     element.removeClass('implotar').text(nueva_etiqueta).addClass('explotar')
-                },1100);
+                }, 1100);
             }
         });
         $return = true;
