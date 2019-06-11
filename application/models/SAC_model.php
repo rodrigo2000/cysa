@@ -642,4 +642,42 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
+    /**
+     * Devuelve la lista de jefes jerarquicos de un empleado
+     * @param integer $empleados_id Identificador del empleado
+     * @param integer $auditorias_id Identificador de la auditoría. Si es NULL, entonces se toma el de la variable $_SESSION
+     * @return array Listado con los identificadores de empleados de los jefes del emplado en donde el índice del arrego indica el identificador de puesto y el valor de i-ésimo elemento indica el identificador del empleado
+     */
+    function get_jefes_de_empleado($empleados_id, $auditorias_id = NULL, $periodos_id = NULL) {
+        $return = array();
+        if (!empty($empleados_id)) {
+            $empleado = $this->get_empleado($empleados_id);
+            switch ($empleado['empleados_puestos_id']) {
+                case PUESTO_AUDITOR:
+                case PUESTO_AUXILIAR_DE_AUDITORIA:
+                    if (empty($auditorias_id)) {
+                        $cysa = $this->session->userdata(APP_NAMESPACE);
+                        $auditorias_id = $cysa['auditorias_id'];
+                    }
+                    $aux = $this->get_coordinador_de_empleado($empleados_id, $auditorias_id);
+                    $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
+                case PUESTO_COORDINADOR:
+                case PUESTO_COORDINADOR_AUDITORIA:
+                    $aux = $this->get_jefe_de_empleado($empleados_id);
+                    $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
+                case PUESTO_JEFE_DEPARTAMENTO:
+                    $aux = $this->get_subdirector_de_empleado($empleados_id);
+                    $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
+                case PUESTO_SUBDIRECTOR:
+                    $aux = $this->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $periodos_id);
+                    $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
+                case PUESTO_DIRECTOR:
+                    break;
+                default:
+                    break;
+            }
+        }
+        return $return;
+    }
+
 }
