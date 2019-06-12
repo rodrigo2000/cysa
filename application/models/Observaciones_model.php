@@ -45,6 +45,10 @@ class Observaciones_model extends MY_Model {
             }
             $this->db->where("observaciones_auditorias_id", $real_auditoria_origen_id);
             $return = $this->getResultados();
+            foreach ($return as $index => $r) {
+                $recomendaciones = $this->get_recomendaciones_de_observacion($r[$this->id_field]);
+                $return[$index]['recomendaciones'] = $recomendaciones;
+            }
         }
         return $return;
     }
