@@ -18,6 +18,11 @@ $(".nav-pills a[data-toggle=tab], .nav-tabs a[data-toggle=tab]").on("click", fun
         return false;
     }
 });
+$(document).on('shown.bs.tab', ".nav-tabs a", function (e) {
+    $("div.tab-pane.active #recomendaciones textarea", e.target.hash).each(function (index, textarea) {
+        autosize.update(textarea);
+    });
+});
 $(document).on('click', '.add-observacion', function (e) {
     e.preventDefault();
     e.stopPropagation();
