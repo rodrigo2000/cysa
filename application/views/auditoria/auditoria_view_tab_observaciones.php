@@ -10,8 +10,13 @@
         </li>
     <?php endforeach; ?>
     <li class="nav-item tab-no-hover" id="tab-add-observacion">
-        <a class="nav-link" data-toggle="tab" href="#" role="tab">
-            <button class="btn btn-sm btn-success-outline btn-tab-add add-observacion">+ Agregar observación</button>
+        <a class="nav-link" data-toggle="tab" href="#" role="tab" style="padding: .75rem 0;">
+            <button class="btn btn-sm btn-success-outline btn-tab-add add-observacion"><i class="fa fa-plus" title="Agregar observación"></i></button>
+        </a>
+    </li>
+    <li class="nav-item tab-no-hover">
+        <a class="nav-link" data-toggle="tab" href="" style="padding: .75rem 0;">
+            <button class="btn btn-sm btn-info-outline btn-tab-close imprimir imprimir-todas" data-etapa="-1" title="Imprimir todas las observaciones"><i class="fa fa-print"></i></button>
         </a>
     </li>
 </ul>

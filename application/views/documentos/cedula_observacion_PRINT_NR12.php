@@ -99,8 +99,8 @@
                                                         </div>
                                                         <div class="firmas">
                                                             <div class="firmas_involucrados">
+                                                                <?php array_push($involucrados, $auditoria['cc_empleados_id']); ?>
                                                                 <?php if (count($involucrados) > 0): ?>
-                                                                    <?php array_push($involucrados, $auditoria['cc_empleados_id']); ?>
                                                                     <?php $involucrados = array_unique($involucrados); ?>
                                                                     <?php foreach ($involucrados as $i): ?>
                                                                         <?php if (!empty($i)): $e = $this->SAC_model->get_empleado($i); ?>

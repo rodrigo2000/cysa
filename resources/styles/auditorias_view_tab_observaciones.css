@@ -1,6 +1,7 @@
 .tab-no-hover:hover,
 .tab-no-hover:focus,
-.tab-no-hover a:hover {
+.tab-no-hover a:hover,
+.tab-no-hover a.active {
     background: none !important;
     cursor: default;
 }

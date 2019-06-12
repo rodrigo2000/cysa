@@ -12,11 +12,6 @@
                 <button class="btn btn-sm btn-info btn-tab-close disabled imprimir" data-etapa="<?= AUDITORIA_ETAPA_REV1 ?>"><i class="fa fa-print"></i></button>
             </a>
         </li>
-        <li class="nav-item tab-no-hover">
-            <a class="nav-link" data-toggle="tab" href="">
-                <button class="btn btn-sm btn-info btn-tab-close imprimir imprimir-todas" data-etapa="-1"><i class="fa fa-print"></i> Imprimir todas las observaciones</button>
-            </a>
-        </li>
     </ul>
     <div class="tab-content">
         <?php
