@@ -383,7 +383,7 @@ function get_cargo_de_empleado(&$row) {
         }
     }
     $cargo = capitalizar($cargo);
-    $row['empleados_cargo'] = $cargo;
+    $row['empleados_cargo'] = trim($cargo);
     return TRUE;
 }
 
@@ -402,6 +402,8 @@ function get_nombre_titulado(&$empleado) {
             $empleado['empleados_nombre_titulado'] = $empleado['titulos_masculino_nombre'] . " " . $empleado['nombre_completo'];
         }
     }
+    $empleado['empleados_nombre_titulado_siglas'] = trim($empleado['empleados_nombre_titulado_siglas']);
+    $empleado['empleados_nombre_titulado'] = trim($empleado['empleados_nombre_titulado']);
     return TRUE;
 }
 
@@ -475,7 +477,7 @@ function get_siglas_de_empleado(&$empleado) {
                 . (!empty($empleado['empleados_apellido_paterno']) ? $empleado['empleados_apellido_paterno'][0] : '')
                 . (!empty($empleado['empleados_apellido_materno']) ? $empleado['empleados_apellido_materno'][0] : '');
     }
-    $empleado['empleado_siglas'] = $siglas;
+    $empleado['empleado_siglas'] = trim($siglas);
     return TRUE;
 }
 
@@ -490,11 +492,16 @@ function forma_nombre_completo_de_ua(&$empleado) {
             $h = $empleado['tipos_ua_nombre'];
         }
         $data = array($g, $h, 'de', $empleado['direcciones_nombre']);
-        $empleado['nombre_completo_direccion'] = implode(" ", $data);
+        $empleado['nombre_completo_direccion'] = trim(implode(" ", $data));
     }
     return TRUE;
 }
 
+/**
+ * Comprueba si una valor es una vocal.
+ * @param string $letra El valor a verificar
+ * @return Devuelve TRUE cuando la $letra es una vocal
+ */
 function is_vocal($letra) {
     $return = FALSE;
     $vocales = array(
