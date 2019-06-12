@@ -88,8 +88,8 @@
                                                                     <div class="recomendacion">
                                                                         <p class="recomendaciones-bg-default-light">Recomendación <?= $r['recomendaciones_numero']; ?></p>
                                                                         <p class="recomendacion-descripcion"><?= $r['recomendaciones_descripcion']; ?></p>
-                                                                        <p class="recomendacion-clasificacion"><strong>Clasificación:</strong> <?= $r['recomendaciones_clasificaciones_nombre']; ?></p>
-                                                                        <p class="recomendacion-responsable"><strong>Responsable:</strong> <?= $r['empleados_nombre_titulado_siglas']; ?></p>
+                                                                        <p class="recomendacion-clasificacion"><strong>Clasificación:</strong> <?= !empty($r['recomendaciones_clasificaciones_nombre']) ? $r['recomendaciones_clasificaciones_nombre'] : SIN_ESPECIFICAR; ?></p>
+                                                                        <p class="recomendacion-responsable"><strong>Responsable:</strong> <?= !empty($r['empleados_nombre_titulado_siglas']) ? $r['empleados_nombre_titulado_siglas'] : SIN_ESPECIFICAR; ?></p>
                                                                     </div>
                                                                 <?php endforeach; ?>
                                                             <?php endif; ?>
@@ -100,12 +100,15 @@
                                                         <div class="firmas">
                                                             <div class="firmas_involucrados">
                                                                 <?php if (count($involucrados) > 0): ?>
+                                                                    <?php array_push($involucrados, $auditoria['cc_empleados_id']); ?>
                                                                     <?php $involucrados = array_unique($involucrados); ?>
-                                                                    <?php foreach ($involucrados as $i): $e = $this->SAC_model->get_empleado($i); ?>
-                                                                        <div class="firmas_empleado empleado_<?= $e['empleados_id']; ?>">
-                                                                            <div class="firmas_empleado_nombre"><?= $e['empleados_nombre_titulado_siglas']; ?></div>
-                                                                            <div class="firmas_empleado_cargo"><?= $e['empleados_cargo']; ?></div>
-                                                                        </div>
+                                                                    <?php foreach ($involucrados as $i): ?>
+                                                                        <?php if (!empty($i)): $e = $this->SAC_model->get_empleado($i); ?>
+                                                                            <div class="firmas_empleado empleado_<?= $e['empleados_id']; ?>">
+                                                                                <div class="firmas_empleado_nombre"><?= $e['empleados_nombre_titulado_siglas']; ?></div>
+                                                                                <div class="firmas_empleado_cargo"><?= $e['empleados_cargo']; ?></div>
+                                                                            </div>
+                                                                        <?php endif; ?>
                                                                     <?php endforeach; ?>
                                                                 <?php else: ?>
                                                                     <p>No se han definido los responsables de las recomendaciones.</p>
