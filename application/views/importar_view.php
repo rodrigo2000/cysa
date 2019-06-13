@@ -51,6 +51,13 @@
                     </div>
                     <div class="form-check">
                         <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" name="catalogo[]" value="avances">
+                            Catálogo de Avances de Recomendaciones
+                            <span id="avances"></span>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
                             <input class="form-check-input" type="checkbox" name="catalogo[]" value="equipos_trabajo">
                             Catálogo de Equipos de trabajo
                             <span id="equipos_trabajo"></span>

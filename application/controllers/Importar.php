@@ -49,6 +49,10 @@ class Importar extends MY_Controller {
                     $message = $this->Importar_model->importar_recomendaciones();
                     $id = $c;
                     break;
+                case 'avances':
+                    $message = $this->Importar_model->importar_avances_recomendaciones();
+                    $id = $c;
+                    break;
                 case 'equipos_trabajo':
                     $message = $this->Importar_model->importar_equipos_trabajo();
                     $id = $c;

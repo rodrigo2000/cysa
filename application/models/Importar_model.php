@@ -178,7 +178,7 @@ class Importar_model extends MY_Model {
             if (!empty($e)) {
                 $empleados_id = $e['empleados_id'];
             }
-            if(!empty($ed)){
+            if (!empty($ed)) {
                 $enlace_designado = $ed['empleados_id'];
             }
             $aa = array(
@@ -427,6 +427,41 @@ class Importar_model extends MY_Model {
         }
         $this->dbNuevoCYSA->insert_batch('recomendaciones', $batch);
         $return = "Catálogo de recomendaciones importado.";
+        if ($flush) {
+            echo $return . "<br>";
+            ob_flush();
+            flush();
+            $return = TRUE;
+        }
+        return $return;
+    }
+
+    function importar_avances_recomendaciones($flush = FALSE) {
+        $this->dbNuevoCYSA->truncate('recomendaciones_avances');
+        $data = $this->dbProtoCYSA
+                ->get("revision_recomendacion")
+                ->result_array();
+        $ahora = ahora();
+        $batch = array();
+        foreach ($data as $d) {
+            $empleados_id = NULL;
+            $e = $this->SAC_model->get_empleado($d['idResponsable'], TRUE, TRUE);
+            if (!empty($e) && isset($e['empleados_id'])) {
+                $empleados_id = $e['empleados_id'];
+            }
+            $insert = array(
+                'recomendaciones_avances_numero_revision' => $d['numRevision'],
+                'recomendaciones_avances_recomendaciones_id' => $d['idRecomendacion'],
+                'recomendaciones_avances_recomendaciones_clasificacioes_id' => $d['idClasificacion'],
+                'recomendaciones_avances_recomendaciones_status_id' => $d['idEstatus'],
+                'recomendaciones_avances_empleados_id' => $empleados_id,
+                'recomendaciones_avances_descripcion' => $d['avance'],
+                'fecha_insert' => $ahora
+            );
+            array_push($batch, $insert);
+        }
+        $this->dbNuevoCYSA->insert_batch('recomendaciones_avances', $batch);
+        $return = "Catálogo de avances de recomendaciones importado.";
         if ($flush) {
             echo $return . "<br>";
             ob_flush();
