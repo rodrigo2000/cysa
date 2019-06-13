@@ -452,7 +452,7 @@ class Importar_model extends MY_Model {
             $insert = array(
                 'recomendaciones_avances_numero_revision' => $d['numRevision'],
                 'recomendaciones_avances_recomendaciones_id' => $d['idRecomendacion'],
-                'recomendaciones_avances_recomendaciones_clasificacioes_id' => $d['idClasificacion'],
+                'recomendaciones_avances_recomendaciones_clasificacinoes_id' => $d['idClasificacion'],
                 'recomendaciones_avances_recomendaciones_status_id' => $d['idEstatus'],
                 'recomendaciones_avances_empleados_id' => $empleados_id,
                 'recomendaciones_avances_descripcion' => $d['avance'],
