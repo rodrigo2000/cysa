@@ -139,7 +139,7 @@ class Auditoria_model extends MY_Model {
             $this->db->where($this->table_prefix . ".auditorias_status_id >", 0);
         }
         $this->db->select($this->table_prefix . ".*")
-                ->select("CONCAT(IF(a.auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas,'/',at.auditorias_tipos_siglas,'/', LPAD(a.auditorias_numero,3,'0'),'/',a.auditorias_anio) AS 'numero_auditoria'")
+                ->select("CONCAT(LPAD(a.auditorias_numero,3,'0'),' - ',IF(a.auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas,'/',at.auditorias_tipos_siglas,'/', LPAD(a.auditorias_numero,3,'0'),'/',a.auditorias_anio) AS 'numero_auditoria'")
                 ->select("CASE WHEN a.auditorias_tipo < 4 THEN 1 ELSE 2 END AS 'tipo_auditoria'")
                 ->order_by("a.auditorias_anio", "DESC")
                 ->order_by("tipo_auditoria", "ASC")
@@ -277,6 +277,12 @@ class Auditoria_model extends MY_Model {
         $auditorias_id = $cysa['auditorias_id'];
         $return = $this->Auditorias_model->get_involucrados($auditorias_id);
         return $return;
+    }
+
+    function get_etapa() {
+        $cysa = $this->session->userdata(APP_NAMESPACE);
+        $auditorias_id = $cysa['auditorias_id'];
+        return $this->Auditorias_model->get_etapa_de_auditoria($auditorias_id);
     }
 
 }
