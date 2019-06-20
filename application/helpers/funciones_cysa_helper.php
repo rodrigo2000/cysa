@@ -103,7 +103,7 @@ function span_editable($r, $constante, $default_value = NULL, $title = NULL, $de
             . (!empty($real_title) ? 'data-tour-title="' . htmlentities($real_title) . '" ' : '')
             . (!empty($real_descripcion) ? 'data-tour-description="' . htmlentities($real_descripcion) . '" ' : '')
             . '>'
-            . (isset($r) && isset($r[$constante]) ? $r[$constante] : '')
+            . (isset($r, $r[$constante]) ? $r[$constante] : '')
             . '</span>';
     return $html;
 }
@@ -115,13 +115,13 @@ function span_editable($r, $constante, $default_value = NULL, $title = NULL, $de
  * @return string Código HTML de la etiqueta SPAN
  */
 function span_calendario($r, $constante) {
-    $fecha = isset($r) && isset($r[$constante]) ? $r[$constante] : date('Y-m-d');
+    $fecha = isset($r, $r[$constante]) ? $r[$constante] : date('Y-m-d');
     $html = '<a href="#" class="xeditable" id="' . $constante . '" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="' . $fecha . '">' . mysqlDate2Date($fecha) . '</a>';
     return $html;
 }
 
 function span_show_hide($r, $constante, $texto_span = SIN_ESPECIFICAR, $etiqueta_boton = NULL) {
-    $con_valor = (isset($r) && isset($r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])));
+    $con_valor = (isset($r, $r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])));
     if (empty($etiqueta_boton)) {
         $etiqueta_boton = 'X';
     }
@@ -144,13 +144,13 @@ function span_show_hide($r, $constante, $texto_span = SIN_ESPECIFICAR, $etiqueta
  * @return string Código HTML del párrafo
  */
 function agregar_parrafo_show_hide($r, $constante, $texto_parrafo = SIN_ESPECIFICAR, $etiqueta_boton = 'Agregar párrafo') {
-    $con_valor = (isset($r) && isset($r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])));
+    $con_valor = (isset($r, $r[$constante]) && ($r[$constante] == 1 || !empty($r[$constante])));
     $html = '<p class="text-justify ' . ($con_valor ? 'bg-punteado text-justify texto-sangria' : 'text-xs-center') . ' show-hide">'
             . '<span id="parrafo' . $constante . '" class="bg-white ' . ($con_valor ? '' : 'hidden-xs-up') . '">'
             . $texto_parrafo . '</span>'
             . '<button type="button" onclick="ocultar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-danger btn-hide hidden-print ' . (!$con_valor ? 'hidden-xs-up' : '') . '"><i class="fa fa-close"></i></button>'
             . '<button type="button" onclick="mostrar_parrafo(\'parrafo' . $constante . '\', this);" class="btn btn-sm btn-success btn-show hidden-print ' . ($con_valor ? 'hidden-xs-up' : '') . '">' . $etiqueta_boton . '</button>'
-            . '<input type="hidden" name="constantes[' . $constante . ']" value="' . (isset($r) && isset($r[$constante]) ? $r[$constante] : 0) . '">'
+            . '<input type="hidden" name="constantes[' . $constante . ']" value="' . (isset($r, $r[$constante]) ? $r[$constante] : 0) . '">'
             . '</p>';
     return $html;
 }
@@ -187,7 +187,7 @@ function span_resaltar($texto, $title = NULL, $descripcion = NULL, $css_class = 
 
 function span_resaltar_constante($r, $constante, $title = NULL, $descripcion = NULL, $css_class = NULL) {
     $return = "";
-    if (isset($r) && isset($r[$constante])) {
+    if (isset($r, $r[$constante])) {
         $texto = $r[$constante];
         $return = span_resaltar($texto, $title, $descripcion, $css_class);
     }
@@ -196,7 +196,7 @@ function span_resaltar_constante($r, $constante, $title = NULL, $descripcion = N
 
 function span_resaltar_constante_fecha($r, $constante, $title = NULL, $descripcion = NULL, $css_class = NULL) {
     $return = "";
-    if (isset($r) && isset($r[$constante])) {
+    if (isset($r, $r[$constante])) {
         $texto = mysqlDate2OnlyDate($r[$constante]);
         $return = span_resaltar($texto, $title, $descripcion, $css_class);
     }
