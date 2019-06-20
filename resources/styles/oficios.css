@@ -63,6 +63,7 @@ div#oficio-hoja > table table#resultados_auditoria td {
 .texto-ccp, .texto-ccp span {
     font-size: 8pt !important;
     line-height: 15px;
+    white-space: pre-line;
 }
 
 table { font-size: 10pt; }
