@@ -221,7 +221,8 @@ function get_form_data(async = false) {
     data.headers_id = $(".dd-selected-value", "#headers_id").attr('value');
     data.footers_id = $(".dd-selected-value", "#footers_id").attr('value');
     var oficio = $("#oficio-hoja").clone(true);
-    $("button,.btn,.autocomplete_empleados_delete,.hidden-print,.watermark", oficio).remove();
+    // Eliminamos elementos del oficios que no son necesarios
+    $("button,.btn,.autocomplete_empleados_delete,.hidden-print,.watermark,input[type=hidden]", oficio).remove();
     $('.resaltar, .editable, .bg-white>span', oficio).each(function (index, element) {
         let txt = $(element).text();
         $(element).replaceWith(txt);
@@ -257,19 +258,19 @@ function get_form_data(async = false) {
         var arr = $("#" + id).editable('getValue');
         data.constantes[id] = arr[id];
     });
-    data.html = $(oficio).html();
+    // Guardamos el oficio
+    data.html = $(oficio).get(0).outerHTML;
     var url = base_url + 'Documentos/guardar';
     $("button.boton_guardar").prop('disabled', true).addClass('disabled').html('Guardando...');
     $.post(url, data, function (json) {
         if (json.success) {
             if ($("#documentos_id").val() === '0') {
-                $(".actualizar_id").each(function (index, element) {
-                    var href = $(element).prop('href') + "/" + json.documentos_id;
-                    $(element).prop('href', href);
+                $(".actualizar_id", "#oficio-menu-opciones").each(function (index, element) {
+                    element.href += "/" + json.documentos_id;
                 });
             }
             $("#documentos_id").val(json.documentos_id);
-            $(".actualizar_id").removeClass('hidden-xs-up');
+            $(".actualizar_id", "#oficio-menu-opciones").removeClass('hidden-xs-up');
             $("#accion").val('modificar');
             //alert("Cambios actualizados");
         }
