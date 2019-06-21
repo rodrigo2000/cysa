@@ -260,8 +260,102 @@ class Auditorias_model extends MY_Model {
         return intval($return);
     }
 
-    function get_etapa_de_auditoria($auditorias_id) {
+    /**
+     * Identifica la etapa de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
+     * @param datetime $fecha Fecha en la que se desea saber la etapa de la auditoría. De forma predeterminada es la fecha en la que se hace la solicitud.
+     * @param array $datos_auditoria Arreglo que contiene información de la auditoría
+     * @return integer Entero que identifica la etapa de la auditoría
+     */
+    function get_etapa_de_auditoria($auditorias_id, $fecha = NULL, $datos_auditoria = NULL) {
+        $return = FALSE;
+        if (!empty($auditorias_id)) {
+            if (empty($fecha)) {
+                $fecha = ahora();
+            }
+            if (empty($datos_auditoria)) {
+                $datos_auditoria = $this->get_auditoria($auditorias_id);
+            }
+            if ($datos_auditoria['auditorias_anio'] >= 2018) {
+                $return = $this->get_etapa_de_auditoria_2018($auditorias_id, $fecha, $datos_auditoria);
+            } else {
+                $return = $this->get_etapa_procedimiento_1($auditorias_id, $fecha, $datos_auditoria);
+            }
+        }
+        return $return;
+    }
 
+    function get_etapa_procedimiento_1($auditorias_id, $fecha = NULL, $datos_auditoria = NULL) {
+        $return = AUDITORIA_ETAPA_AP;
+        if (!empty($auditorias_id)) {
+            if (empty($fecha)) {
+                $fecha = ahora();
+            }
+            if (empty($datos_auditoria)) {
+                $datos_auditoria = $this->get_auditoria($auditorias_id);
+            }
+            $status = array(AUDITORIAS_STATUS_FINALIZADA, AUDITORIAS_STATUS_FINALIZADA_RESERVADA);
+            if (in_array($datos_auditoria['auditorias_status_id'], $status)) {
+                $return = AUDITORIA_ETAPA_FIN;
+            } elseif (empty($datos_auditoria['auditorias_fechas_lectura']) && intval($datos_auditoria['auditorias_is_sin_observaciones']) === 1) {
+                $return = AUDITORIA_ETAPA_AP;
+            } elseif (!empty($datos_auditoria['auditorias_fechas_lectura']) && intval($datos_auditoria['auditorias_is_sin_observaciones']) === 0) {
+                // Como ya se ha leído el ARA, entonces se espera un $plazo=1 días para bloquear el acta
+                $plazo = 1;
+                $fecha_limite_para_editar = agregar_dias($datos_auditoria['auditorias_fechas_lectura'], $plazo, TRUE);
+                $DT_fecha_limite_para_editar = new DateTime($fecha_limite_para_editar);
+                if (empty($fecha)) {
+                    $fecha = ahora();
+                }
+                $hoy = new DateTime($fecha);
+                if ($hoy > $DT_fecha_limite_para_editar) {
+                    $return = AUDITORIA_ETAPA_REV1;
+                }
+            } elseif (empty($datos_auditoria['auditorias_fechas_lectura'])) {
+                $return = AUDITORIA_ETAPA_REV1;
+            } else {
+                $numero_revision = empty($datos_auditoria['auditorias_origen_id']) ? 3 : 5;
+                $observaciones = $this->get_status_de_observaciones($auditorias_id, $numero_revision);
+                if (intval($datos_auditoria['auditorias_is_sin_observaciones']) === 0 && !empty($observaciones['pendientes'])) {
+                    $return = AUDITORIA_ETAPA_REV1;
+                }
+            }
+        }
+        return $return;
+    }
+
+    function get_etapa_de_auditoria_2018($auditorias_id, $fecha = NULL, $datos_auditoria = NULL) {
+        $return = AUDITORIA_ETAPA_AP;
+        if (!empty($auditorias_id)) {
+            if (empty($datos_auditoria)) {
+                $datos_auditoria = $this->get_auditoria($auditorias_id);
+            }
+            $status = array(AUDITORIAS_STATUS_FINALIZADA, AUDITORIAS_STATUS_FINALIZADA_RESERVADA);
+            if (in_array($datos_auditoria['auditorias_status_id'], $status)) {
+                $return = AUDITORIA_ETAPA_FIN;
+            } elseif (empty($datos_auditoria['auditorias_fechas_lectura']) && intval($datos_auditoria['auditorias_is_sin_observaciones']) === 1) {
+                $return = AUDITORIA_ETAPA_AP;
+            } elseif (!empty($datos_auditoria['auditorias_fechas_lectura']) && intval($datos_auditoria['auditorias_is_sin_observaciones']) === 0) {
+                // Como ya se ha leído el ARA, entonces se espera un $plazo=1 días para bloquear el acta
+                $plazo = 1;
+                $fecha_limite_para_editar = agregar_dias($datos_auditoria['auditorias_fechas_lectura'], $plazo, TRUE);
+                $DT_fecha_limite_para_editar = new DateTime($fecha_limite_para_editar);
+                if (empty($fecha)) {
+                    $fecha = ahora();
+                }
+                $hoy = new DateTime($fecha);
+                if ($hoy > $DT_fecha_limite_para_editar) {
+                    $return = AUDITORIA_ETAPA_REV1;
+                }
+            } else {
+                $numero_revision = empty($datos_auditoria['auditorias_origen_id']) ? 3 : 5;
+                $observaciones = $this->get_status_de_observaciones($auditorias_id, $numero_revision);
+                if (intval($datos_auditoria['auditorias_is_sin_observaciones']) === 0 && !empty($observaciones['pendientes'])) {
+                    $return = AUDITORIA_ETAPA_REV1;
+                }
+            }
+        }
+        return $return;
     }
 
     /**
@@ -282,6 +376,9 @@ class Auditorias_model extends MY_Model {
      */
     function get_observaciones_de_auditoria($auditorias_id) {
         $return = array();
+        if (!empty($auditorias_id)) {
+            $return = $this->Observaciones_model->get_observaciones_de_auditoria($auditorias_id);
+        }
         return $return;
     }
 

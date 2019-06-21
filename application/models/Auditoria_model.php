@@ -285,4 +285,24 @@ class Auditoria_model extends MY_Model {
         return $this->Auditorias_model->get_etapa_de_auditoria($auditorias_id);
     }
 
+    function get_numero_revision($auditorias_id, $etapas_id = NULL, $procesos_id = NULL) {
+        $return = 0;
+        if (empty($etapas_id)) {
+            $etapas_id = $this->get_etapa($auditorias_id, $procesos_id);
+        }
+        if (!empty($auditorias_id)) {
+            $auditoria = $this->get_auditoria($auditorias_id);
+            if (empty($auditoria['auditorias_origen_id'])) {
+                $return = 1;
+            } else {
+                $return = 3;
+                $auditoria_seguimiento = $this->get_auditoria($auditoria['auditorias_id']);
+                if (!empty($auditoria_seguimiento['auditorias_origen_id'])) {
+                    $return = 5;
+                }
+            }
+        }
+        return $return;
+    }
+
 }

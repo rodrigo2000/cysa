@@ -45,6 +45,7 @@ class Auditoria extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodos_id),
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
+            'is_finalizada' => $auditoria['auditorias_status_id'] >= AUDITORIAS_STATUS_FINALIZADA ? TRUE : FALSE,
         );
         if (!empty($auditorias_id)) {
             $this->{$this->module['controller'] . "_model"}->actualizar_session('auditorias_id', intval($auditorias_id));
@@ -53,6 +54,7 @@ class Auditoria extends MY_Controller {
                 $anio = abs($anio);
             }
             $this->{$this->module['controller'] . "_model"}->actualizar_session('auditorias_anio', intval($anio));
+            $data['etapa_auditoria'] = $this->Auditoria_model->get_etapa();
         }
         $this->listado($data);
     }
@@ -178,7 +180,7 @@ class Auditoria extends MY_Controller {
             $de_tratamiento = '';
         }
         $hidden = !isset($documentos[$index]['documentos_id']) || empty($documentos[$index]['documentos_id']) ? 'hidden-xs-up' : '';
-        $documento_autorizado = isset($documento['documentos_is_aprobado']) && $documento['documentos_is_aprobado'] == 1 ? TRUE : FALSE;
+        $documento_autorizado = isset($documentos[$index]['documentos_is_aprobado']) && $documentos[$index]['documentos_is_aprobado'] == 1 ? TRUE : FALSE;
         // Texto que va debajo de cada foja
         $texto_foja = "";
         $direcciones = array();
@@ -200,12 +202,16 @@ class Auditoria extends MY_Controller {
         } else {
             $texto_foja = implode(", ", $direcciones);
         }
+        $periodos_id = intval($auditoria['cc_periodos_id']);
+        $direcciones_id = intval($auditoria['cc_direcciones_id']);
+        $subdirecciones_id = intval($auditoria['cc_subdirecciones_id']);
         $data = array(
             'documentos_tipos_id' => $documentos_tipos_id,
             'auditoria' => $auditoria,
             'registros' => array(),
             'documentos' => $documentos,
             'index' => $index,
+            'etapa_auditoria' => $this->Auditoria_model->get_etapa(),
             'documento' => $documentos[$index],
             'tooltiptext' => isset($documentos[$index]['tooltiptext']) ? $documentos[$index]['tooltiptext'] : array(),
             'descripciones' => isset($documentos[$index]['descripciones']) ? $documentos[$index]['descripciones'] : array(),
@@ -230,7 +236,12 @@ class Auditoria extends MY_Controller {
                 'nombre' => $de_nombre,
                 'cargo' => $de_cargo,
                 'tratamiento' => $de_tratamiento
-            )
+            ),
+            'periodos' => $this->SAC_model->get_periodos(),
+            'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodos_id),
+            'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
+            'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
+            'is_finalizada' => $auditoria['auditorias_status_id'] >= AUDITORIAS_STATUS_FINALIZADA ? TRUE : FALSE,
         );
         $data = array_merge($data, $mi_data);
         $this->visualizar($vista, $data);
@@ -343,7 +354,7 @@ class Auditoria extends MY_Controller {
         } else {
             $informacion['message'] = "No se especificó el identificador del documento.";
         }
-        if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_DESAUTORIZAR_DOCUMENTO) && !empty($documentos_id)) {
+        if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_AUTORIZAR_DOCUMENTO) && !empty($documentos_id)) {
             $return = $this->Auditoria_model->autorizar_documento($documentos_id, 1);
             $informacion['state'] = 'success';
             $informacion['message'] = 'Documento autorizado';
@@ -384,13 +395,63 @@ class Auditoria extends MY_Controller {
         redirect(base_url() . $this->module['controller'] . "/Audtoria/");
     }
 
+    function imprimir($documentos_id, $return_html = FALSE) {
+        if (!empty($documentos_id)) {
+            $documento = $this->Documentos_blob_model->get_uno($documentos_id);
+            $html = '<!DOCTYPE html>
+                        <html lang="en">
+                            <head>
+                                <meta charset="utf-8">
+                                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
+                                <link rel="icon" href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/images/ico/32x32.png" type="image/png">
+                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/app.min.css" rel="stylesheet">
+                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/personalizados.css" rel="stylesheet" type="text/css"/>
+                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/personalizados_sac.css" rel="stylesheet" type="text/css"/>
+                                <!-- Personalizado -->
+                                <script src="http://DCON-ATI-RSEVI/contraloria2/cysa/resources/scripts/auditoria_view.js" type="text/javascript"></script>
+                                <script src="http://DCON-ATI-RSEVI/contraloria2/cysa/resources/scripts/auditorias_documentos_generico.js" type="text/javascript"></script>
+
+                                <link href="http://DCON-ATI-RSEVI/contraloria2/cysa/resources/styles/oficios.css" rel="stylesheet" type="text/css"/>
+                                <link href="http://DCON-ATI-RSEVI/contraloria2/cysa/resources/styles/media_print.css" rel="stylesheet" type="text/css"/>
+                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/emular_impresora.css" rel="stylesheet" type="text/css"/>
+                                <script src="http://DCON-ATI-RSEVI/contraloria2/sac/resources/scripts/emular_impresora.js" type="text/javascript"></script>
+                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
+                                </head>
+                                <body>'
+                    . utf8_encode($documento['documentos_blob_contenido'])
+                    . '</body>
+                    </html>';
+            if ($return_html) {
+                return $html;
+            } else {
+                echo $html;
+            }
+        }
+    }
+
     function descargar($documentos_id) {
-        $documento = $this->Documentos_model->get_documento($documentos_id);
-        $documentos_tipos_id = intval($documento['documentos_documentos_tipos_id']);
+        if ($documentos_id !== "CO") {
+            $documento = $this->Documentos_model->get_documento($documentos_id);
+            $documentos_tipos_id = intval($documento['documentos_documentos_tipos_id']);
+        } else {
+            $documento = array();
+            $documentos_id = NULL;
+            $documentos_tipos_id = TIPO_DOCUMENTO_CEDULAS_OBSERVACION;
+        }
         $template = $this->Documentos_model->get_template($documentos_tipos_id);
         $documento = array_merge($documento, $template);
-        $auditorias_id = intval($documento['documentos_auditorias_id']);
-        $periodos_id = $documento['documentos_periodos_id'];
+        $cysa = $this->session->userdata(APP_NAMESPACE);
+        $auditorias_id = $cysa['auditorias_id'];
+        $periodos_id = NULL;
+        if (!empty($documento) && isset($documento['documentos_auditorias_id'])) {
+            $auditorias_id = intval($documento['documentos_auditorias_id']);
+            $periodos_id = $documento['documentos_periodos_id'];
+            if ($documento['documentos_is_aprobado'] == 1) {
+                $this->imprimir($documentos_id);
+                exit();
+            }
+        }
         $auditoria = $this->Auditoria_model->get_auditoria($auditorias_id);
         $titular = $this->SAC_model->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $auditoria['auditorias_periodos_id']);
         $de_empleados_id = $titular['empleados_id'];
@@ -437,6 +498,22 @@ class Auditoria extends MY_Controller {
             case TIPO_DOCUMENTO_AMPLIACION:
             case TIPO_DOCUMENTO_REPROGRAMACION:
                 $is_oficio = FALSE;
+                break;
+            case TIPO_DOCUMENTO_CEDULAS_OBSERVACION:
+                $is_oficio = FALSE;
+                $observaciones_id = $this->uri->segment(4);
+                $etapa = $this->uri->segment(5);
+                $observaciones = NULL;
+                if (!empty($observaciones_id)) {
+                    $observaciones = array(
+                        0 => $this->Observaciones_model->get_observacion($observaciones_id)
+                    );
+                } else {
+                    $observaciones = $this->Observaciones_model->get_observaciones($auditorias_id);
+                }
+                $mi_data = array(
+                    'observaciones' => $observaciones
+                );
                 break;
             default :
                 echo "Tipo de documento no encontrado";
@@ -806,6 +883,84 @@ class Auditoria extends MY_Controller {
             $error = "Error con el Query: " . $strSQL;
         }
         die($error);
+    }
+
+    function demodemo() {
+        $this->db->select('auditorias_id, auditorias_origen_id')
+                ->where("auditorias_anio", 2018);
+        $auditorias = $this->Auditorias_model->get_todos();
+        foreach ($auditorias as $auditoria) {
+            $auditorias_id = intval($auditoria['auditorias_id']);
+            if (!empty($auditoria['auditorias_origen_id'])) {
+                $r = 1; //$this->Auditorias_model->get_etapa_de_auditoria($a['auditorias_id']);
+                $origen = $this->Auditorias_model->get_real_auditoria_origen($auditorias_id);
+                if ($auditorias_id != $origen) {
+                    $a = $this->Auditorias_model->get_auditoria($auditorias_id);
+                    $partes = array(
+                        $a['auditorias_areas_siglas'],
+                        $a['auditorias_tipos_siglas'],
+                        $a['auditorias_numero'],
+                        $a['auditorias_anio']
+                    );
+                    $numero = implode("/", $partes);
+                    echo "<p>" . $numero . " [" . $auditorias_id . "] // " . $origen . ": " . $r . "</p>";
+                }
+            }
+        }
+    }
+
+    function word($documentos_id) {
+        if (!empty($documentos_id)) {
+
+        }
+    }
+
+    function pdf($documentos_id) {
+        if (!empty($documentos_id) && FALSE) {
+            $path = realpath(".") . '\application\third_party\html2pdf\src';
+            //Incluimos la librería
+            require_once $path . '\Html2Pdf.php';
+
+            //Recogemos el contenido de la vista
+            ob_start();
+            $this->imprimir($documentos_id);
+            $html = ob_get_clean();
+
+            //Pasamos esa vista a PDF
+            //Le indicamos el tipo de hoja y la codificación de caracteres
+            $mipdf = new \Spipu\Html2Pdf('P', 'Letter', 'es', 'true', 'UTF-8');
+
+            //Escribimos el contenido en el PDF
+            $mipdf->writeHTML($html);
+
+            //Generamos el PDF
+            $mipdf->Output('PdfGeneradoPHP.pdf');
+        }
+
+        if (!empty($documentos_id)) {
+            // load the library
+            $this->load->library('html2pdf_lib');
+
+            //Set the paper defaults
+            $this->html2pdf->paper('a4', 'portrait');
+            /*             * ******
+             * $content = the html content to be converted
+             * you can use file_get_content() to get the html from other location
+             *
+             * $filename = filename of the pdf file, make sure you put the extension as .pdf
+             * $save_to = location where you want to save the file,
+             *            set it to null will not save the file but display the file directly after converted
+             * ***** */
+            $content = $this->imprimir($documentos_id, TRUE);
+
+            $filename = 'testing.pdf';
+            $save_to = $this->config->item('upload_root');
+            if ($this->html2pdf_lib->converHtml2pdf($content, $filename, $save_to)) {
+                echo $save_to . '/' . $filename;
+            } else {
+                echo 'failed';
+            }
+        }
     }
 
 }
