@@ -30,6 +30,10 @@ class SAC_model extends MY_Model {
      * @return array Arreglo que contiene los periodos del ayuntamiento
      */
     function get_periodos($incluir_eliminados = FALSE) {
+        $return = array();
+        if (!$incluir_eliminados) {
+            $this->dbSAC->where('fecha_delete', NULL);
+        }
         $result = $this->dbSAC
                 ->order_by("periodos_fecha_inicio", "ASC")
                 ->get("periodos");
@@ -584,7 +588,7 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
-    function get_subdirector_de_empleado($empleados_id) {
+    function get_subdirector_de_empleado($empleados_id, $auditorias_id = NULL) {
         $return = array();
         $empleado = $this->get_empleado($empleados_id);
         if (!in_array($empleado['empleados_puestos_id'], array(PUESTO_SUBDIRECTOR, PUESTO_DIRECTOR))) {
@@ -602,7 +606,7 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
-    function get_jefe_de_empleado($empleados_id) {
+    function get_jefe_de_empleado($empleados_id, $auditorias_id = NULL) {
         $return = array();
         $empleado = $this->get_empleado($empleados_id);
         if (!in_array($empleado['empleados_puestos_id'], array(PUESTO_JEFE_DEPARTAMENTO, PUESTO_SUBDIRECTOR, PUESTO_DIRECTOR))) {
@@ -621,10 +625,15 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
-    function get_coordinador_de_empleado($empleados_id, $auditorias_id) {
+    function get_coordinador_de_empleado($empleados_id, $auditorias_id = NULL) {
         $return = array();
         $empleado = $this->get_empleado($empleados_id);
         if (!in_array($empleado['empleados_puestos_id'], array(PUESTO_COORDINADOR, PUESTO_COORDINADOR_AUDITORIA, PUESTO_JEFE_DEPARTAMENTO, PUESTO_SUBDIRECTOR, PUESTO_DIRECTOR))) {
+            if (empty($auditorias_id)) {
+                $cysa = $this->session->userdata(APP_NAMESPACE);
+                $auditorias_id = $cysa['auditorias_id'];
+            }
+            $auditoria = $this->Auditoria_model->get_auditoria($auditorias_id);
             $this->dbSAC
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_CYSA . ".auditorias_equipo ae", "ae.auditorias_equipo_empleados_id = e.empleados_numero_empleado", "INNER")
                     ->where("cc.cc_periodos_id", $empleado['cc_periodos_id'])
@@ -652,26 +661,34 @@ class SAC_model extends MY_Model {
         $return = array();
         if (!empty($empleados_id)) {
             $empleado = $this->get_empleado($empleados_id);
-            switch ($empleado['empleados_puestos_id']) {
-                case PUESTO_AUDITOR:
-                case PUESTO_AUXILIAR_DE_AUDITORIA:
+            switch (intval($empleado['empleados_puestos_id'])) {
+                case PUESTO_AUDITOR: // 7
+                case PUESTO_AUXILIAR_DE_AUDITORIA: // 8
                     if (empty($auditorias_id)) {
                         $cysa = $this->session->userdata(APP_NAMESPACE);
                         $auditorias_id = $cysa['auditorias_id'];
                     }
                     $aux = $this->get_coordinador_de_empleado($empleados_id, $auditorias_id);
-                    $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
-                case PUESTO_COORDINADOR:
-                case PUESTO_COORDINADOR_AUDITORIA:
-                    $aux = $this->get_jefe_de_empleado($empleados_id);
-                    $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
-                case PUESTO_JEFE_DEPARTAMENTO:
-                    $aux = $this->get_subdirector_de_empleado($empleados_id);
-                    $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
-                case PUESTO_SUBDIRECTOR:
+                    if (!empty($aux)) {
+                        $return[$empleado['empleados_puestos_id']] = $aux['empleados_id'];
+                    }
+                case PUESTO_COORDINADOR: // 40
+                case PUESTO_COORDINADOR_AUDITORIA: // 269
+                    $aux = $this->get_jefe_de_empleado($empleados_id, $auditorias_id);
+                    if (!empty($aux)) {
+                        $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
+                    }
+                case PUESTO_JEFE_DEPARTAMENTO: // 59
+                    $aux = $this->get_subdirector_de_empleado($empleados_id, $auditorias_id);
+                    if (!empty($aux)) {
+                        $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
+                    }
+                case PUESTO_SUBDIRECTOR: // 106
                     $aux = $this->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $periodos_id);
-                    $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
-                case PUESTO_DIRECTOR:
+                    if (!empty($aux)) {
+                        $return[$aux['empleados_puestos_id']] = $aux['empleados_id'];
+                    }
+                case PUESTO_DIRECTOR: // 45
                     break;
                 default:
                     break;
