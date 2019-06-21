@@ -62,17 +62,6 @@ if ($documentos_tipos_id == TIPO_DOCUMENTO_AMPLIACION) {
     <script src="<?= APP_SAC_URL; ?>resources/scripts/emular_impresora.js" type="text/javascript"></script>
 <?php endif; ?>
 <link href="<?= APP_SAC_URL; ?>resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
-<style>
-    /*    .table td, .table th, .table tr:last-child td {
-            border:none;
-        }
-        .table td:first-child {
-            font-weight: bold;
-        }
-        .table td:last-child {
-            border-bottom: 1px solid black;
-        }*/
-</style>
 <div class="card">
     <div class="card-header no-bg1 b-a-0 hidden-print">
         <?php $this->load->view('auditoria/header_view'); ?>
@@ -81,31 +70,8 @@ if ($documentos_tipos_id == TIPO_DOCUMENTO_AMPLIACION) {
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))) : ?>
             <?php echo validation_errors(); ?>
             <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
-                <div class="text-xs-center m-b-1 hidden-print">
-                    <?php if (!$documento_autorizado): ?>
-                        <button type="button" class="btn btn-primary boton_guardar m-l-2"><?= $etiquetaBoton; ?></button>
-                        <?php if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_AUTORIZAR_DOCUMENTO)): ?>
-                            <a id="btn-autorizar" href="<?= $this->module['autorizar_url'] . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" class="actualizar_id btn btn-default btn-warning m-l-2 <?= $hidden; ?>">Autorizar</a>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <?php if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_DESAUTORIZAR_DOCUMENTO)): ?>
-                            <a id="btn-autorizar" href="<?= $this->module['desautorizar_url'] . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" class="actualizar_id btn btn-default btn-danger m-l-2">Desautorizar</a>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                    <a id="btn-vista-impresion" href="<?= base_url() . $this->module['controller'] . "/descargar" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" class="actualizar_id btn btn-info m-l-2 <?= $hidden; ?>" target="_blank">Imprimir</a>
-                    <?php if (count($documentos) > 1): ?>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default dropdown-toggle m-l-2" data-toggle="dropdown">Oficios</button>
-                            <div class="dropdown-menu">
-                                <?php foreach ($documentos as $d): ?>
-                                    <?php $direccion = $this->SAC_model->get_direccion($d['valores'][ORD_ENT_ID_DIR_AUDIT]); ?>
-                                    <a style="margin-right:20px;" class="dropdown-item" href="<?= base_url() . $this->module['controller'] . "/documento/" . $this->uri->segment(3) . "/" . $d['documentos_id']; ?>"><?= ($documento['documentos_id'] == $d['documentos_id'] ? '<i class="fa fa-check"></i> ' : '<i style="padding-left:16px;"></i> ') . $direccion['direcciones_nombre']; ?> <span class="badge badge-primary badge-pill bg-red pull-right"><?= $d['documentos_id']; ?></span></a>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                    <a id="btn-regresar" class="btn btn-default m-l-2" href="<?= base_url() . $this->uri->segment(1) . "/" . $auditoria['auditorias_id']; ?>#documentos">Regresar</a>
-                    <a id="btn-eliminar" class="btn btn-danger m-l-2 actualizar_id <?= $hidden; ?>" href="<?= base_url() . "Documentos/eliminar" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>">Eliminar</a>
+                <div id="oficio-menu-opciones" class="text-xs-center m-b-1 hidden-print">
+                    <?php $this->load->view('documentos/menu_opciones'); ?>
                 </div>
                 <div id="oficio-hoja" class="acta <?= $documento_autorizado ? 'autorizado' : ''; ?>">
                     <div class="watermark">PARA REVISIÓN</div>
