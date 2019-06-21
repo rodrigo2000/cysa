@@ -30,3 +30,13 @@
     0% {letter-spacing:-8px; opacity:0;}
     100% {letter-spacing:0px; opacity:1;}
 }
+
+.font-size-1rem {
+    font-size: 1rem;
+}
+
+.text-2-html{
+    font-size: 1rem;
+    font-family: 'Barlow';
+    white-space: pre-line;
+}
