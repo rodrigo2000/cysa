@@ -1,24 +1,30 @@
 <link href="<?= APP_SAC_URL; ?>resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
 <!--Nav tabs -->
-<ul class = "nav nav-tabs" role = "tablist" id = "observaciones_menu">
+<ul class="nav nav-tabs" role="tablist" id="observaciones_menu">
     <?php foreach ($auditoria['observaciones'] as $o): ?>
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#observaciones_<?= $o['observaciones_id']; ?>" role="tab" title="<?= $o['observaciones_titulo']; ?>">
                 <span>Observación <?= $o['observaciones_numero']; ?></span>
-                <button class="btn btn-sm btn-danger btn-tab-close eliminar-observacion" data-observaciones-id="<?= $o['observaciones_id']; ?>" type="button" title="Eliminar observación">&times;</button>
+                <?php if ($etapa_auditoria == AUDITORIA_ETAPA_AP): ?>
+                    <button class="btn btn-sm btn-danger btn-tab-close eliminar-observacion" data-observaciones-id="<?= $o['observaciones_id']; ?>" type="button" title="Eliminar observación">&times;</button>
+                <?php endif; ?>
             </a>
         </li>
     <?php endforeach; ?>
-    <li class="nav-item tab-no-hover" id="tab-add-observacion">
-        <a class="nav-link" data-toggle="tab" href="#" role="tab" style="padding: .75rem 0;">
-            <button class="btn btn-sm btn-success-outline btn-tab-add add-observacion"><i class="fa fa-plus" title="Agregar observación"></i></button>
-        </a>
-    </li>
-    <li class="nav-item tab-no-hover">
-        <a class="nav-link" data-toggle="tab" href="" style="padding: .75rem 0;">
-            <button class="btn btn-sm btn-info-outline btn-tab-close imprimir imprimir-todas" data-etapa="-1" title="Imprimir todas las observaciones"><i class="fa fa-print"></i></button>
-        </a>
-    </li>
+    <?php if ($etapa_auditoria == AUDITORIA_ETAPA_AP): ?>
+        <li class="nav-item tab-no-hover" id="tab-add-observacion">
+            <a class="nav-link" data-toggle="tab" href="#" role="tab" style="padding: .75rem 0;">
+                <button class="btn btn-sm btn-success-outline btn-tab-add add-observacion"><i class="fa fa-plus" title="Agregar observación"></i></button>
+            </a>
+        </li>
+    <?php endif; ?>
+    <?php if (count($auditoria['observaciones']) > 1): ?>
+        <li class="nav-item tab-no-hover">
+            <a class="nav-link" data-toggle="tab" href="" style="padding: .75rem 0;">
+                <button class="btn btn-sm btn-info-outline btn-tab-close imprimir imprimir-todas" data-etapa="-1" title="Imprimir todas las observaciones"><i class="fa fa-print"></i></button>
+            </a>
+        </li>
+    <?php endif; ?>
 </ul>
 
 <!-- Tab panes -->
