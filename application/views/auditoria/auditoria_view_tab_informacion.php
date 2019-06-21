@@ -22,8 +22,10 @@
                     <dt class="col-sm-3 text-truncate">Área responsable</dt>
                     <dd class="col-sm-9"><?= $auditoria['auditorias_areas_siglas']; ?></dd>
                     <?php if (!empty($auditoria['auditorias_origen_id'])): $aux = $this->Auditorias_model->get_auditoria($auditoria['auditorias_origen_id']); ?>
-                        <dt class="col-sm-3">Auditoría Origen</dt>
-                        <dd class="col-sm-9"><a href="<?= base_url() . $this->module['controller'] . "/" . $aux['auditorias_id']; ?>"><?= $aux['numero_auditoria']; ?></a></dd>
+                        <?php if (!empty($aux)): ?>
+                            <dt class="col-sm-3">Auditoría Origen</dt>
+                            <dd class="col-sm-9"><a href="<?= base_url() . $this->module['controller'] . "/" . $aux['auditorias_id']; ?>"><?= $aux['numero_auditoria']; ?></a></dd>
+                        <?php endif; ?>
                     <?php endif; ?>
                     <?php $aux = $this->Auditoria_model->get_auditoria_de_seguimiento($auditoria['auditorias_id']); ?>
                     <?php if (!empty($aux)): ?>
@@ -40,33 +42,33 @@
             <div class="card-block">
                 <?php if ($auditoria['auditorias_status_id'] == AUDITORIAS_STATUS_EN_PROCESO): // Esta en proceso ?>
                     <p><input type="checkbox" class="labelautyfy" name="auditorias_is_sin_observaciones" id="auditorias_is_sin_observaciones" data-labelauty="Sin observaciones"></p>
-                <?php elseif ($auditoria['auditorias_is_sin_observaciones'] == 1): ?>
-                    <p class="lead text-xs-center">SIN OBSERVACIONES</p>
-                <?php endif; ?>
-                <?php if (isset($auditoria['observaciones']) && count($auditoria['observaciones']) > 0): ?>
-                    <div id="accordion" role="tablist" aria-multiselectable="true">
-                        <div class="card m-b-0">
-                            <?php if ($auditoria['observaciones'][0]['observaciones_auditorias_id'] !== $auditoria['auditorias_id']): ?>
-                                <?php $aa = $this->Auditorias_model->get_auditoria($auditoria['observaciones'][0]['observaciones_auditorias_id']); ?>
-                                <div class="card-header bg-gray-darker" role="tab" id="headingOne">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                        Observaciones de la auditoría <?= $aa['numero_auditoria']; ?>
-                                    </a>
-                                </div>
-                            <?php endif; ?>
-                            <div id="collapseOne" class="collapse" role="tabpanel">
-                                <div class="card-block">
-                                    <ul class="list-group list-group-flush" id="observaciones">
-                                        <?php foreach ($auditoria['observaciones'] as $o): ?>
-                                            <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
-                                                <li id="observacion_<?= $o['observaciones_id']; ?>" class="list-group-item" style="box-shadow: none;"><?= $o['observaciones_titulo']; ?></li>
-                                            <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    </ul>
+                    <?php if (isset($auditoria['observaciones']) && count($auditoria['observaciones']) > 0): ?>
+                        <div id="accordion" role="tablist" aria-multiselectable="true">
+                            <div class="card m-b-0">
+                                <?php if ($auditoria['observaciones'][0]['observaciones_auditorias_id'] !== $auditoria['auditorias_id']): ?>
+                                    <?php $aa = $this->Auditorias_model->get_auditoria($auditoria['observaciones'][0]['observaciones_auditorias_id']); ?>
+                                    <div class="card-header bg-gray-darker" role="tab" id="headingOne">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                            Observaciones de la auditoría <?= $aa['numero_auditoria']; ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <div id="collapseOne" class="collapse" role="tabpanel">
+                                    <div class="card-block">
+                                        <ul class="list-group list-group-flush" id="observaciones">
+                                            <?php foreach ($auditoria['observaciones'] as $o): ?>
+                                                <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
+                                                    <li id="observacion_<?= $o['observaciones_id']; ?>" class="list-group-item" style="box-shadow: none;"><?= $o['observaciones_titulo']; ?></li>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    <?php endif; ?>
+                <?php elseif ($auditoria['auditorias_is_sin_observaciones'] == 1): ?>
+                    <p class="lead text-xs-center">SIN OBSERVACIONES</p>
                 <?php endif; ?>
             </div>
         </div>
