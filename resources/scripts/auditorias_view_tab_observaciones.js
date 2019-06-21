@@ -174,6 +174,28 @@ $(document).on('click', '.eliminar-recomendacion', function (e) {
     }, "json");
     return false;
 });
+$(document).on('click', '.guardar-recomendacion-avance', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var url = base_url + "Recomendaciones_avances/guardar";
+    var $this = this;
+    var data = $(this).parents("form").serializeObject();
+    $(this).addClass("disabled").html(ICON_SPINNER);
+    $.post(url, data, function (json) {
+        if (json.success) {
+            if (json.data.accion === 'nuevo') {
+                var div = $($this).parent("div");
+                $('.recomendaciones_id', div).val(json.data.insert_id);
+                $("h4", div).html("Recomendación " + json.data.recomendaciones_numero);
+            } else {
+                $("#observacion_" + json.data.observaciones_id, "#tab-informacion ul#observaciones").html(json.data.observaciones_titulo);
+            }
+        } else {
+            alert(json.message);
+        }
+        $($this).removeClass("disabled").html('<i class="fa fa-save"></i>');
+    }, "json");
+});
 $(document).on('click', 'button.imprimir', function (e) {
     var hashtag = $(this).parent("a.nav-link").prop('hash');
     var id = $("input.observaciones_id", "#observaciones_auditoria " + hashtag).val();
