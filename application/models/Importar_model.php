@@ -155,7 +155,7 @@ class Importar_model extends MY_Model {
         $tipos = array_column($aux, 'auditorias_tipos_siglas', 'auditorias_tipos_id');
         $batch_aa = $batch_aaf = $batch_aafRev1 = $batch_aafRev2 = array();
         foreach ($auditorias as $a) {
-            $cc = $this->SAC_model->get_cc2(2, $a['clv_dir'], $a['clv_subdir'], $a['clv_depto']);
+            $cc = $this->SAC_model->get_cc_por_datos(2, $a['clv_dir'], $a['clv_subdir'], $a['clv_depto']);
             if (empty($cc)) {
                 $cc = array(
                     'cc_id' => NULL,
@@ -452,7 +452,7 @@ class Importar_model extends MY_Model {
             $insert = array(
                 'recomendaciones_avances_numero_revision' => $d['numRevision'],
                 'recomendaciones_avances_recomendaciones_id' => $d['idRecomendacion'],
-                'recomendaciones_avances_recomendaciones_clasificacinoes_id' => $d['idClasificacion'],
+                'recomendaciones_avances_recomendaciones_clasificaciones_id' => $d['idClasificacion'],
                 'recomendaciones_avances_recomendaciones_status_id' => $d['idEstatus'],
                 'recomendaciones_avances_empleados_id' => $empleados_id,
                 'recomendaciones_avances_descripcion' => $d['avance'],
