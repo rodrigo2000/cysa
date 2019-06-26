@@ -358,7 +358,6 @@ class SAC_model extends MY_Model {
                     ->where("cc_etiqueta_subdireccion", $subdirecciones_id)
                     ->where("cc_etiqueta_departamento", $departamentos_id)
                     ->get("centros_costos");
-            echo $this->dbSAC->last_query();
             if ($result && $result->num_rows() == 1) {
                 $return = $result->row_array();
             }
