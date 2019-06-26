@@ -6,7 +6,7 @@
         <?php if (isset($this->session->cysa[$this->module['id_field']])): ?>
             <ul id="tab-menu-auditoria" class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#tab-informacion" role="tab">Información</a>
+                    <a class="nav-link active" data-toggle="tab" href="#tab-informacion" role="tab">Información</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tab-documentos" role="tab">Documentos</a>
@@ -15,7 +15,7 @@
                     <a class="nav-link" data-toggle="tab" href="#tab-acta_resultados" role="tab">Acta de Resultados</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#tab-observaciones" role="tab">Observaciones</a>
+                    <a class="nav-link" data-toggle="tab" href="#tab-observaciones" role="tab">Observaciones</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tab-control_auditoria" role="tab">Control de auditoría</a>
@@ -33,7 +33,7 @@
 
             <!-- Tab panes -->
             <div class="tab-content">
-                <div class="tab-pane" id="tab-informacion" role="tabpanel">
+                <div class="tab-pane active" id="tab-informacion" role="tabpanel">
                     <?php $this->load->view("auditoria/auditoria_view_tab_informacion"); ?>
                 </div>
                 <div class="tab-pane" id="tab-documentos" role="tabpanel">
@@ -42,7 +42,7 @@
                 <div class="tab-pane" id="tab-acta_resultados" role="tabpanel">
                     ARA
                 </div>
-                <div class="tab-pane active" id="tab-observaciones">
+                <div class="tab-pane" id="tab-observaciones">
                     <?php $this->load->view("auditoria/auditoria_view_tab_observaciones"); ?>
                 </div>
                 <div class="tab-pane" id="tab-control_auditoria" role="tabpanel">
