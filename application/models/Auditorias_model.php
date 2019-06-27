@@ -168,11 +168,15 @@ class Auditorias_model extends MY_Model {
     /**
      * Regresa el equipo de trabajo asociado a una auditoría
      * @param integer $auditorias_id Identificador de la auditoría
+     * @param integer $tipo_permiso 1=Equipo de trabajo, 2=Acceso adicional, cualquier otro valor devuelve a todos
      * @return array Información de los auditores que apoyarán en la auditoría
      */
-    function get_equipo_auditoria($auditorias_id) {
+    function get_equipo_auditoria($auditorias_id, $tipo_permiso = NULL) {
         $return = array();
         if (!empty($auditorias_id)) {
+            if (!empty($tipo_permiso)) {
+                $this->db->where('auditorias_equipo_tipo', $tipo_permiso);
+            }
             $result = $this->db
                     ->select("CASE
                     WHEN e.empleados_puestos_id IN (155) THEN 0
@@ -231,8 +235,8 @@ class Auditorias_model extends MY_Model {
                 $return['nombre_completo'] = $return['auditor_lider_nombre_completo'];
                 forma_nombre_completo_de_ua($return);
                 get_nombre_titulado($return);
-                $equipo = $this->get_equipo_auditoria($auditorias_id);
-                $return['auditoria_equipo'] = $equipo;
+                $return['auditoria_equipo'] = $this->get_equipo_auditoria($auditorias_id, TIPO_PERMISO_EQUIPO_TRABAJO);
+                $return['auditoria_permisos_adicionales'] = $this->get_equipo_auditoria($auditorias_id, TIPO_PERMISO_ADICIONAL);
                 $return['enlace_designado'] = $this->SAC_model->get_empleado($return['auditorias_enlace_designado']);
                 $return['empleados_involucrados'] = $this->Auditorias_involucrados_model->get_empleados_involucrados_en_auditoria($auditorias_id);
                 $return['observaciones'] = $this->Observaciones_model->get_observaciones($auditorias_id);
@@ -510,10 +514,10 @@ class Auditorias_model extends MY_Model {
         return $return;
     }
 
-    function get_involucrados($auditorias_id, $tipo = NULL) {
+    function get_involucrados($auditorias_id, $etapa = NULL, $tipo = NULL) {
         $return = array();
         if (!empty($auditorias_id)) {
-            $return = $this->Auditorias_involucrados_model->get_empleados_involucrados_en_auditoria($auditorias_id, $tipo);
+            $return = $this->Auditorias_involucrados_model->get_empleados_involucrados_en_auditoria($auditorias_id, $etapa, $tipo);
         }
         return $return;
     }

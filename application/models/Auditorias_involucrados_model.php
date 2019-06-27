@@ -13,17 +13,38 @@ class Auditorias_involucrados_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
-    function get_empleados_involucrados_en_auditoria($auditorias_id = NULL, $tipo = NULL) {
+    function get_empleados_involucrados_en_auditoria($auditorias_id = NULL, $etapa = NULL, $tipo = NULL) {
         $return = array();
         if (!empty($auditorias_id)) {
+            if (!is_null($etapa)) {
+                switch ($etapa) {
+                    case AUDITORIA_ETAPA_AP:
+                        $this->db->where('auditorias_involucrados_asistio_en_AP IS NOT NULL');
+                        break;
+                    case AUDITORIA_ETAPA_REV1:
+                        $this->db->where('auditorias_involucrados_asistio_en_rev1 IS NOT NULL');
+                        break;
+                    case AUDITORIA_ETAPA_REV2:
+                        $this->db->where('auditorias_involucrados_asistio_en_rev2 IS NOT NULL');
+                        break;
+                    default:
+                        break;
+                }
+            }
+//            if (!empty($tipo)) {
+//                $this->db->where('', $tipo);
+//            }
             $result = $this->db
                     ->where($this->id_field, $auditorias_id)
                     ->get($this->table_name . " " . $this->table_prefix);
             if ($result && $result->num_rows() > 0) {
-                $return = $result->result_array();
-                foreach ($return as $index => $r) {
-                    $e = $this->SAC_model->get_empleado($r['auditorias_involucrados_empleados_id']);
-                    $return[$index] = array_merge($r, $e);
+                $involucrados = $result->result_array();
+                foreach ($involucrados as $index => $i) {
+                    $e = $this->SAC_model->get_empleado($i['auditorias_involucrados_empleados_id']);
+                    if (isset($e['cc_direcciones_id']) && $e['cc_direcciones_id'] != 5) {
+                        $involucrados[$index] = array_merge($i, $e);
+                        array_push($return, $involucrados[$index]);
+                    }
                 }
             }
         }
