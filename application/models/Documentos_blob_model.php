@@ -36,4 +36,27 @@ class Documentos_blob_model extends MY_Model {
         return $return;
     }
 
+    function get_html($auditorias_id, $documentos_tipos_id) {
+        $return = "";
+        $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
+        if (count($documentos) == 1) {
+            $documento = $documentos[0];
+        }
+        if (!empty($documento) && isset($documento['documentos_blob_contenido']) && !empty($documento['documentos_blob_contenido'])) {
+            $return = utf8_encode($documento['documentos_blob_contenido']);
+        } else {
+            $aux = $this->Importar_model->get_documento_de_auditoria($auditorias_id, $documentos_tipos_id);
+            if (!empty($aux) && isset($aux['contenido'])) {
+                $return = '<p class="text-xs-center"><a href="' . base_url() . 'Documento/antiguo_cysa/' . $aux['idDocto'] . '" class="btn btn-default" target="_blank">Visualizar documento</a></p>';
+            } else {
+                $return = '<p class="lead text-xs-center">'
+                        . 'No se encontró el documento autorizado.'
+                        . '<br>'
+                        . 'Es probable que no se haya hecho este documento para esta auditoría.'
+                        . '</p>';
+            }
+        }
+        return $return;
+    }
+
 }

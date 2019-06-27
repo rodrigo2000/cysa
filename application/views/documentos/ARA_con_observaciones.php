@@ -42,10 +42,13 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
     <div class="card-block">
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))) : ?>
             <?php echo validation_errors(); ?>
-            <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
+            <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado || $is_finalizada ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
                 <div id="oficio-menu-opciones" class="text-xs-center m-b-1 hidden-print">
                     <?php $this->load->view('documentos/menu_opciones'); ?>
                 </div>
+                <?php if ($is_finalizada || $documento_autorizado): ?>
+                    <?php echo $this->Documentos_blob_model->get_html($auditoria['auditorias_id'], $documento['documentos_versiones_documentos_tipos_id']); ?>
+                <?php else: ?>
                 <div id="oficio-hoja" class="acta <?= $documento_autorizado ? 'autorizado' : ''; ?>">
                     <?php $r = isset($documento['valores']) && !empty($documento['valores']) && $accion !== "nuevo" ? $documento['valores'] : NULL; ?>
                     <div class="watermark">PARA REVISIÓN</div>
@@ -281,6 +284,7 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                         <input type="hidden" name="documentos_versiones_id" id="documentos_versiones_id" value="<?= $documento['documentos_versiones_id']; ?>">
                     </div>
                 </div>
+                <?php endif; ?>
             </form>
         <?php endif; ?>
     </div>

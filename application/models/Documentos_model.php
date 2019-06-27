@@ -94,6 +94,8 @@ class Documentos_model extends MY_Model {
                 $return = $result->result_array();
                 foreach ($return as $index => $d) {
                     $return[$index]['valores'] = $this->Documentos_valores_model->get_valores_de_documento($d['documentos_id']);
+                    $aux = $this->Documentos_blob_model->get_uno($d['documentos_id']);
+                    $return[$index] = array_merge($return[$index], $aux);
                     $aux = $this->Documentos_constantes_model->get_constantes_de_documento($documentos_tipos_id);
                     $constantes = array_column($aux, 'documentos_constantes_id', 'documentos_constantes_nombre');
                     $return[$index]['tooltiptext'] = array_column($aux, 'documentos_constantes_tooltiptext', 'documentos_constantes_id');

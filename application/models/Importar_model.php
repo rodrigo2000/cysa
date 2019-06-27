@@ -503,4 +503,34 @@ class Importar_model extends MY_Model {
         return $return;
     }
 
+    function get_documento_de_auditoria($auditorias_id, $documentos_tipos_id) {
+        $return = array();
+        if (!empty($auditorias_id) && !empty($documentos_tipos_id)) {
+            $result = $this->dbProtoCYSA->select("d.*")
+                    ->join("documentos_html h", "h.idDocto = d.idDocto", "LEFT")->select("h.contenido")
+                    ->where('idAuditoria', $auditorias_id)
+                    ->where('idTipoDocto', $documentos_tipos_id)
+                    ->where('bCancelado', 0)
+                    ->get("documentos d");
+            if ($result && $result->num_rows() > 0) {
+                $return = $result->row_array();
+            }
+        }
+        return $return;
+    }
+
+    function get_html_de_documento($idDocto) {
+        $return = array();
+        if (!empty($idDocto)) {
+            $result = $this->dbProtoCYSA
+                    ->where('idDocto', $idDocto)
+                    ->limit(1)
+                    ->get("documentos_html");
+            if ($result && $result->num_rows() > 0) {
+                $return = $result->row_array();
+            }
+        }
+        return $return;
+    }
+
 }

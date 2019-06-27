@@ -35,17 +35,6 @@ $unidad_administrativa = implode(" / ", $aux);
     <script src="<?= APP_SAC_URL; ?>resources/scripts/emular_impresora.js" type="text/javascript"></script>
 <?php endif; ?>
 <link href="<?= APP_SAC_URL; ?>resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
-<style>
-    .table td, .table th, .table tr:last-child td {
-        border:none;
-    }
-    .table td:first-child {
-        font-weight: bold;
-    }
-    .table td:last-child {
-        border-bottom: 1px solid black;
-    }
-</style>
 <div class="card">
     <div class="card-header no-bg1 b-a-0 hidden-print">
         <?php $this->load->view('auditoria/header_view'); ?>
@@ -53,10 +42,13 @@ $unidad_administrativa = implode(" / ", $aux);
     <div class="card-block">
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))) : ?>
             <?php echo validation_errors(); ?>
-            <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
+            <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado || $is_finalizada ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
                 <div id="oficio-menu-opciones" class="text-xs-center m-b-1 hidden-print">
                     <?php $this->load->view('documentos/menu_opciones'); ?>
                 </div>
+                <?php if ($is_finalizada || $documento_autorizado): ?>
+                    <?php echo $this->Documentos_blob_model->get_html($auditoria['auditorias_id'], $documento['documentos_versiones_documentos_tipos_id']); ?>
+                <?php else: ?>
                 <div class="form-group row hidden-print">
                     <label for="auditorias_tipos_siglas" class="col-xs-12 col-sm-3 col-md-2 control-label">Sustituye a</label>
                     <div class="col-sm-6 col-md-4">
@@ -205,8 +197,10 @@ $unidad_administrativa = implode(" / ", $aux);
                         <input type="hidden" name="documentos_versiones_id" id="documentos_versiones_id" value="<?= $documento['documentos_versiones_id']; ?>">
                     </div>
                 </div>
+                <?php endif; ?>
             </form>
         <?php endif; ?>
     </div>
 </div>
 <script src="<?= APP_CYSA_URL; ?>resources/scripts/auditorias_documentos_acei.js" type="text/javascript"></script>
+<link href="<?= APP_CYSA_URL; ?>resources/styles/auditorias_documentos_acei.css" rel="stylesheet" type="text/css"/>

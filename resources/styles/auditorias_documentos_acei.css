@@ -1,0 +1,9 @@
+.table td, .table th, .table tr:last-child td {
+    border:none;
+}
+.table td:first-child {
+    font-weight: bold;
+}
+.table td:last-child {
+    border-bottom: 1px solid black;
+}

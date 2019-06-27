@@ -29,4 +29,9 @@ $(document).ready(function () {
             $("#" + alternativo).val(picker.startDate.format("YYYY-MM-DD")).trigger("change");
         });
     }
+
+    var hash = window.location.hash;
+    if (!isEmpty(hash)) {
+        $('#tab-menu-auditoria a[href="' + hash + '"]').tab('show');
+    }
 });
