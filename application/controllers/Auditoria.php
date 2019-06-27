@@ -963,4 +963,36 @@ class Auditoria extends MY_Controller {
         }
     }
 
+    function actualizar_campo() {
+        $return = array(
+            'success' => FALSE,
+            'message' => 'No se pudieron actualizar los datos. Error desconocido.'
+        );
+        $campo = $this->input->post('campo');
+        $valor = $this->input->post('valor');
+        $auditorias_id = $this->input->post('auditorias_id');
+        $result = FALSE;
+        if (strpos($campo, '_fechas_') !== FALSE) {
+            $result = $this->db
+                    ->set($campo, $valor)
+                    ->where('auditorias_fechas_auditorias_id', $auditorias_id)
+                    ->update('auditorias_fechas');
+            $return = array(
+                'success' => TRUE,
+                'message' => 'Datos actualizados'
+            );
+        } else {
+            $result = $this->db
+                    ->set($campo, $valor)
+                    ->where('auditorias_id', $auditorias_id)
+                    ->update('auditorias');
+            $return = array(
+                'success' => TRUE,
+                'message' => 'Datos actualizados'
+            );
+        }
+        //var_dump($result, $this->db->last_query());
+        echo json_encode($return);
+    }
+
 }
