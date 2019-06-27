@@ -90,6 +90,10 @@ define('TIPO_ASISTENCIA_TESTIGO', 2);
 define('TIPO_ASISTENCIA_INVOLUCRADO', 3);
 define('TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA', 4);
 
+// Tipo de permiso del equipo de trabajo
+define('TIPO_PERMISO_EQUIPO_TRABAJO', 1);
+define('TIPO_PERMISO_ADICIONAL', 2);
+
 /* Dias habiles para el plazo de solventacion de la auditoria */
 @define('PLAZO_SOLV_AP', 25);
 /* Dias habiles para el plazo de solventacion de la auditoria Operativa */
