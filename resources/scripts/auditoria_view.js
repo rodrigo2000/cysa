@@ -4,7 +4,6 @@ $(document).ready(function () {
     });
 
     if ($('.component-daterangepicker').length) {
-        console.log("hay almenos uno")
         $('.component-daterangepicker').daterangepicker({
             singleDatePicker: true,
             showDropdowns: true,
