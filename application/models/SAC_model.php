@@ -52,6 +52,10 @@ class SAC_model extends MY_Model {
      */
     function get_direcciones_de_periodo($periodos_id = NULL, $is_descentralizadas = NULL, $incluir_eliminados = FALSE) {
         $return = array();
+        if (empty($periodos_id)) {
+            $p = $this->get_ultimo_periodo();
+            $periodos_id = $p['periodos_id'];
+        }
         if (!empty($periodos_id)) {
             if (!is_null($is_descentralizadas)) {
                 $this->db->where("direcciones_is_descentralizada", $is_descentralizadas);
@@ -383,7 +387,7 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
-    function get_auditores($mostrar_bajas = FALSE) {
+    function get_auditores($periodos_id = NULL, $mostrar_bajas = FALSE) {
         $return = array();
         $puestos = array(
             PUESTO_AUDITOR,
@@ -393,6 +397,10 @@ class SAC_model extends MY_Model {
             PUESTO_AUXILIAR_DE_AUDITORIA,
             PUESTO_SUBDIRECTOR
         );
+        if (empty($periodos_id)) {
+            $p = $this->get_ultimo_periodo();
+            $periodos_id = $p['periodos_id'];
+        }
         if (!$mostrar_bajas) {
             $this->dbSAC
                     ->group_start()
@@ -400,7 +408,10 @@ class SAC_model extends MY_Model {
                     ->or_where('e.empleados_fecha_baja', NULL)
                     ->group_end();
         }
-        $this->dbSAC->where_in("e.empleados_puestos_id", $puestos)
+        $this->dbSAC
+                ->where("cc.cc_periodos_id", $periodos_id)
+                ->where("cc.cc_etiqueta_direccion", 5)
+                ->where_in("e.empleados_puestos_id", $puestos)
                 ->order_by("nombre_completo", "ASC");
         $return = $this->get_empleados($mostrar_bajas);
         return $return;
@@ -692,6 +703,23 @@ class SAC_model extends MY_Model {
                 default:
                     break;
             }
+        }
+        return $return;
+    }
+
+    function get_dias_inhabiles($anio = NULL, $incluir_eliminados = FALSE) {
+        $return = array();
+        if (!empty($anio)) {
+            $this->dbSAC->where("YEAR(dias_inhabiles_fecha)", $anio);
+        }
+        if (!$incluir_eliminados) {
+            $this->dbSAC->where("di.fecha_delete", NULL);
+        }
+        $result = $this->dbSAC
+                ->order_by("dias_inhabiles_fecha", "DESC")
+                ->get("dias_inhabiles di");
+        if ($result && $result->num_rows($result) > 0) {
+            $return = $result->result_array();
         }
         return $return;
     }
