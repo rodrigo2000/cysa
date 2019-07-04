@@ -43,13 +43,16 @@ class Auditorias_fechas_model extends MY_Model {
         return $return;
     }
 
-    function get_fechas_de_auditoria($auditorias_id = NULL) {
+    function get_fechas_de_auditoria($auditorias_id = NULL, $etapas_id = NULL) {
         $return = array();
         if (empty($auditorias_id)) {
             $session = $this->session->userdata(APP_NAMESPACE);
             $auditorias_id = $session['auditorias_id'];
         }
         if (!empty($auditorias_id)) {
+            if (!empty($etapas_id)) {
+                $this->db->where("auditorias_fechas_etapa", $etapas_id);
+            }
             $result = $this->db
                     ->where("auditorias_fechas_auditorias_id", $auditorias_id)
                     ->order_by("auditorias_fechas_etapa", "ASC")

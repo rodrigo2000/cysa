@@ -8,10 +8,10 @@
             <form id="filtros" class="form-inline m-b-1">
                 <div class="form-group">
                     <label class="sr-only" for="direcciones_id">Dirección</label>
-                    <select id="direcciones_id" name="direcciones_id" class="form-control">
+                    <select id="direcciones_id" name="direcciones_id" class="form-control" style="max-width: 250px;">
                         <option value="0">Todas las direcciones</option>
                         <?php foreach ($direcciones as $d): ?>
-                            <option value="<?= $d['direcciones_id']; ?>"><?= $d['direcciones_nombre']; ?></option>
+                            <option value="<?= $d['direcciones_id']; ?>"><?= $d['cc_etiqueta_direccion'] . " - " . $d['direcciones_nombre']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -53,18 +53,16 @@
                         <option value="6">Sustituída</option>
                     </select>
                 </div>
-                <!--<button id="btnBuscar" type="button" class="btn btn-primary"><i class="fa fa-search"></i></button>-->
+                <button id="btnBuscar" type="button" class="btn btn-primary"><i class="fa fa-search"></i></button>
             </form>
             <table id="tablaAuditorias" class="table table-sm table-hover table-striped dataTablePersonalizado">
-                <col span="6">
-                <col style="width: 150px;">
                 <thead class="thead-inverse">
                     <tr>
                         <th>No de Auditoría</th>
-                        <th>Dirección/Subdirección</th>
-                        <th>Fecha Inicio Programada</th>
-                        <th>Fecha Inicio Real</th>
-                        <th>Fecha Aprobación</th>
+                        <th>Rubro / Auditor</th>
+                        <th>Centro de costos</th>
+                        <th width="130">Inicio</th>
+                        <th width="130">Fin</th>
                         <th>Status</th>
                         <th>&nbsp;</th>
                     </tr>

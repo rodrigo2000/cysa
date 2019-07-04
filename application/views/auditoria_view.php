@@ -21,11 +21,11 @@
                     <a class="nav-link" data-toggle="tab" href="#tab-control_auditoria" role="tab">Control de auditoría</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#tab-herramientas" role="tab">Herramientras</a>
+                    <a class="nav-link" data-toggle="tab" href="#tab-herramientas" role="tab">Calendario</a>
                 </li>
-                <li class="nav-item">
+<!--                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tab-reciclaje" role="tab">Reciclaje</a>
-                </li>
+                </li>-->
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tab-timeline" role="tab">Línea de tiempo</a>
                 </li>
@@ -48,7 +48,9 @@
                 <div class="tab-pane" id="tab-control_auditoria" role="tabpanel">
                     <?php $this->load->view("auditoria/auditoria_view_tab_control_auditoria"); ?>
                 </div>
-                <div class="tab-pane" id="tab-herramientras" role="tabpanel">settings</div>
+                <div class="tab-pane" id="tab-herramientas" role="tabpanel">
+                    <?php $this->load->view("auditoria/auditoria_view_tab_herramientas"); ?>
+                </div>
                 <div class="tab-pane" id="tab-reciclaje" role="tabpanel">settings</div>
                 <div class="tab-pane" id="tab-timeline" role="tabpanel">settings</div>
             </div>

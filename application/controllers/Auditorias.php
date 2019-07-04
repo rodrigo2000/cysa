@@ -92,7 +92,7 @@ class Auditorias extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodos_id),
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
-            'auditores' => $this->SAC_model->get_auditores(),
+            'auditores' => $this->SAC_model->get_auditores($periodos_id),
             'r' => $r
         );
         parent::modificar($id, $data);
@@ -239,22 +239,27 @@ class Auditorias extends MY_Controller {
         $className = array(NULL, 'text-danger', 'text-info', 'text-success', 'text-warning', 'text-purple', 'text-purple');
         foreach ($data as $index => $r) {
             $datos[$index]['numero'] = '<span class="text-danger">SIN ASIGNAR</span>';
-            if (!empty($r['auditorias_numero'])) {
-                $aux = array(
-                    ($r['auditorias_segundo_periodo'] == 1 ? '2' : '') . $r['auditorias_areas_siglas'],
-                    $r['auditorias_tipos_siglas'],
-                    sprintf('%1$03d', $r['auditorias_numero']),
-                    $r['auditorias_anio'],
-                );
-                $datos[$index]['numero'] = implode('/', $aux);
+            if (!empty($r['numero_auditoria'])) {
+                $datos[$index]['numero'] = $r['numero_auditoria'];
             }
             if (!empty($r['auditorias_fechas_inicio_real'])) {
-                $datos[$index]['numero'] .= '<br><small>' . mysqlDate2Date($r['auditorias_fechas_inicio_real']) . "</small>";
+                $datos[$index]['numero'] .= '<br><small>OA: ' . mysqlDate2Date($r['auditorias_fechas_inicio_real']) . "</small>";
             }
-            $datos[$index]['direccion'] = $r['direcciones_nombre'] . "<br>" . $r['subdirecciones_nombre'];
-            $datos[$index]['fecha_inicio_programado'] = mysqlDate2Date($r['auditorias_fechas_inicio_programado']);
-            $datos[$index]['fecha_inicio_real'] = mysqlDate2Date($r['auditorias_fechas_inicio_real']);
-            $datos[$index]['aprobacion'] = mysqlDate2Date($r['auditorias_fechas_vobo_director']);
+            $datos[$index]['rubro_auditor'] = '<strong>' . $r['auditorias_rubro'] . '</strong>';
+            if (!empty($r['auditorias_auditor_lider'])) {
+                $datos[$index]['rubro_auditor'] .= '<br><cite class="text-deeppurple">' . $r['nombre_completo'] . "</cite>";
+            } else {
+                $datos[$index]['rubro_auditor'] .= '<br><cite>SIN AUDITOR LÍDER</cite>';
+            }
+            $datos[$index]['direccion'] = $r['direcciones_nombre'];
+            if (abs($r['cc_etiqueta_subdireccion']) !== 1) {
+                $datos[$index]['direccion'] .= "<br>" . $r['subdirecciones_nombre'];
+                if (abs($r['cc_etiqueta_departamento']) !== 1) {
+                    $datos[$index]['direccion'] .= "<br>" . $r['departamentos_nombre'];
+                }
+            }
+            $datos[$index]['inicio'] = "P: " . mysqlDate2Date($r['auditorias_fechas_inicio_programado']) . "<br>R: " . mysqlDate2Date($r['auditorias_fechas_inicio_real']);
+            $datos[$index]['fin'] = "P: " . mysqlDate2Date($r['auditorias_fechas_fin_programado']) . "<br>R: " . mysqlDate2Date($r['auditorias_fechas_fin_real']);
 
             $status_id = $this->Auditorias_status_model->get_status_auditoria($r);
 

@@ -35,10 +35,10 @@ $(document).ready(function () {
         },
         columns: [
             {data: 'numero', class: 'align-middle text-xs-center'},
+            {data:'rubro_auditor', class:'align-middle text-xs-center'},
             {data: 'direccion', class: 'align-middle text-xs-center'},
-            {data: 'fecha_inicio_programado', name: 'auditorias_fechas_inicio_programado', class: 'align-middle text-xs-center'},
-            {data: 'fecha_inicio_real', name: 'auditorias_fechas_inicio_real', class: 'align-middle text-xs-center'},
-            {data: 'aprobacion', name: 'auditorias_fechas_vobo_director', class: 'align-middle text-xs-center'},
+            {data: 'inicio', name: 'auditorias_fechas_inicio_programado', class: 'align-middle text-xs-center'},
+            {data: 'fin', name: 'auditorias_fechas_inicio_real', class: 'align-middle text-xs-center'},
             {data: 'status', name: 'auditorias_status_id', class: 'align-middle text-xs-center'},
             {data: 'acciones', class: 'align-middle text-xs-center'}
         ],

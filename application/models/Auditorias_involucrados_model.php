@@ -58,10 +58,36 @@ class Auditorias_involucrados_model extends MY_Model {
             if (is_numeric($empleados_id)) {
                 $emp = array($empleados_id);
             }
+            $this->db->where($this->id_field, $auditorias_id);
+            $aux = $this->get_todos();
+            $empleados_actuales = array_column($aux, 'auditorias_involucrados_empleados_id');
             foreach ($emp as $e) {
-
+                $result = $this->db
+                        ->where($this->id_field, $auditorias_id)
+                        ->where('auditorias_involucrados_empleados_id', $e)
+                        ->limit(1)
+                        ->get($this->table_name);
+                if ($result && $result->num_rows() == 0) {
+                    $insert = array(
+                        'auditorias_involucrados_auditorias_id' => $auditorias_id,
+                        'auditorias_involucrados_empleados_id' => $e
+                    );
+                    $return = $this->insert($insert);
+                } else {
+                    $index = array_search($e, $empleados_actuales);
+                    if ($index !== FALSE) {
+                        unset($empleados_actuales[$index]);
+                    }
+                }
             }
-//            $return = TRUE;
+            if (!empty($empleados_actuales)) {
+                foreach ($empleados_actuales as $e) {
+                    $this->db
+                            ->where($this->id_field, $auditorias_id)
+                            ->where('auditorias_involucrados_empleados_id', $e)
+                            ->delete($this->table_name);
+                }
+            }
         }
         return $return;
     }

@@ -84,8 +84,12 @@ function cargar_select_de_departamentos(grupo, periodos_id, direcciones_id, subd
             subdirecciones_id: subdirecciones_id
         }
         let url = base_url + "SAC/get_departamentos";
-        $("select.departamentos_dependiente" + grupo).html('<option value="0">Cargando departamentos...</option>').prop('disabled', true);
-        $("select.empleados_dependiente" + grupo).prop('disabled', true);
+        var select_empleados = $("select.empleados_dependiente" + grupo);
+        var has_dual_list = select_empleados.hasClass('dual-list');
+        if (!has_dual_list) {
+            $("select.departamentos_dependiente" + grupo).html('<option value="0">Cargando departamentos...</option>').prop('disabled', true);
+            $("select.empleados_dependiente" + grupo).prop('disabled', true);
+        }
         $.post(url, data, function (json) {
             if (json.success) {
                 let grupo = json.grupo;
@@ -123,16 +127,24 @@ function cargar_select_de_empleados(grupo, periodos_id, direcciones_id, subdirec
             departamentos_id: departamentos_id
         }
         let url = base_url + "SAC/get_empleados_de_departamento";
-        $("select.empleados_dependiente" + grupo).html('<option value="0">Cargando empleados...</option>');
+        var select_empleados = $("select.empleados_dependiente" + grupo);
+        var has_dual_list = select_empleados.hasClass('dual-list');
+        if (!has_dual_list) {
+            select_empleados.html('<option value="0" disabled="disabled">Cargando empleados...</option>');
+        }
         $.post(url, data, function (json) {
             if (json.success) {
                 let grupo = json.grupo;
+                var d = {
+                    empleados_id: 0,
+                    empleados_nombre_completo: 'No se encontraron empleados',
+                    empleados_numero_empleado: 0
+                };
+                var data = [d];
                 if (json.data.length > 0) {
-                    let html = '';
-                    mostrar_empleados_en_select(grupo, json.data);
-                } else {
-                    $("select.empleados_dependiente" + grupo).html('<option value="0">No se encontraron empleados</option>');
+                    data = json.data;
                 }
+                mostrar_empleados_en_select(grupo, data);
                 if (typeof (callback) === "function") {
                     callback(grupo);
                 }
@@ -143,11 +155,32 @@ function cargar_select_de_empleados(grupo, periodos_id, direcciones_id, subdirec
 
 function mostrar_empleados_en_select(grupo, empleados) {
     let html = '';
-    $.each(empleados, function (index, element) {
-        html += '<option value="' + element.empleados_numero_empleado + '">' + element.empleados_nombre_completo + ' (' + element.empleados_numero_empleado + ')</option>';
-    });
-    $("select.empleados_dependiente" + grupo).html(html).prop('disabled', false);
-    $("select.empleados_dependiente" + grupo).trigger("change");
+    var select = $("select.empleados_dependiente" + grupo);
+    var has_dual_list = select.hasClass('dual-list');
+    if (has_dual_list) {
+        var selected = [];
+        if ($("option:selected", select).length > 0) {
+            $("option:selected", select).each(function (index, element) {
+                html += '<option value="' + $(element).val() + '" selected="selected">' + $(element).text() + '</option>';
+                selected.push(parseInt($(element).val()));
+                selected.push($(element).val());
+            });
+        }
+        $.each(empleados, function (index, element) {
+            if ($.inArray(element.empleados_id, selected) == -1 && parseInt(element.empleados_nombre_completo) !== '') { // Si no lo encuentra, lo agregamos
+                html += '<option value="' + element.empleados_id + '" ' + (element.empleados_id == 0 ? 'disabled="disabled"' : '') + '>' + element.empleados_nombre_completo + (element.empleados_id > 0 ? ' (' + element.empleados_numero_empleado + ')' : '') + '</option>';
+            }
+        });
+        $(select).html(html).prop('disabled', false);
+        $(select).trigger("change");
+        $(select).multiSelect('refresh');
+    } else {
+        $.each(empleados, function (index, element) {
+            html += '<option value="' + element.empleados_id + '">' + element.empleados_nombre_completo + ' (' + element.empleados_id + ')</option>';
+        });
+        $(select).html(html).prop('disabled', false);
+        $(select).trigger("change");
+    }
 }
 
 var despues_de_cargar_direcciones = despues_de_cargar_subdirecciones = despues_de_cargar_departamentos = despues_de_cargar_empleados = function (grupo) {}

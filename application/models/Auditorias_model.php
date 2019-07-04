@@ -35,7 +35,8 @@ class Auditorias_model extends MY_Model {
         $subdirecciones_id = $data['auditorias_subdirecciones_id'];
         $departamentos_id = $data['auditorias_departamentos_id'];
         if (!empty($periodos_id) && !empty($direcciones_id) && !empty($subdirecciones_id) && !empty($departamentos_id)) {
-            $data2['auditorias_cc_id'] = $this->SAC_model->get_cc2($periodos_id, $direcciones_id, $subdirecciones_id, $departamentos_id);
+            $cc = $this->SAC_model->get_cc_por_datos($periodos_id, $direcciones_id, $subdirecciones_id, $departamentos_id);
+            $data2['auditorias_cc_id'] = $cc['cc_id'];
         }
         $return = parent::insert($data2);
         if ($return['state'] === 'success') {
@@ -97,6 +98,12 @@ class Auditorias_model extends MY_Model {
                     ->or_like("direcciones_nombre", $search['value'])
                     ->or_like("subdirecciones_nombre", $search['value'])
                     ->or_like("departamentos_nombre", $search['value'])
+                    ->or_like("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_siglas, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio)", $search['value'])
+                    ->or_like("empleados_nombre", $search['value'])
+                    ->or_like("empleados_apellido_paterno", $search['value'])
+                    ->or_like("empleados_apellido_materno", $search['value'])
+                    ->or_where("MATCH (empleados_nombre, empleados_apellido_paterno, empleados_apellido_materno) AGAINST ('" . $search['value'] . "' IN NATURAL LANGUAGE MODE) > 0")
+                    ->or_like("auditorias_rubro", $search['value'])
                     ->group_end();
 //                    ->or_like("e.empleados_numero_empleado", $search['value'])
 //                    ->where("e.fecha_delete IS NULL");
@@ -107,12 +114,11 @@ class Auditorias_model extends MY_Model {
         $this->db
                 ->select($this->table_prefix . ".*")
                 ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_siglas, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
-                ->select("cc_id, cc_periodos_id, cc_direcciones_id, cc_subdirecciones_id, cc_departamentos_id")
-                ->select("direcciones_nombre, direcciones_is_descentralizada, subdirecciones_nombre, departamentos_nombre")
                 ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
                 ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
-                ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")
-                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . $this->table_prefix . ".auditorias_cc_id ", "LEFT")
+                ->join("auditorias_fechas_2 af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")
+                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = " . $this->table_prefix . ".auditorias_auditor_lider", "LEFT")->select("e.*,CONCAT(e.empleados_nombre,' ',e.empleados_apellido_paterno, ' ',e.empleados_apellido_materno) AS 'nombre_completo'")
+                ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . $this->table_prefix . ".auditorias_cc_id ", "LEFT")->select("cc_id, cc_periodos_id, cc_direcciones_id, cc_subdirecciones_id, cc_departamentos_id, cc_etiqueta_direccion, cc_etiqueta_subdireccion, cc_etiqueta_departamento")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_is_descentralizada, direcciones_ubicacion")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("subdirecciones_nombre")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("departamentos_nombre");

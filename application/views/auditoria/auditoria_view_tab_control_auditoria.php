@@ -136,15 +136,15 @@
                                 <?php endforeach; ?>
                             </select>
                             <?php $involucrados = array_column($auditoria['empleados_involucrados'], 'empleados_id'); ?>
-                            <select name="empleados_involucrados" id="empleados_involucrados" class="form-control empleados_dependiente" size="5" grupo="auditorias" multiple="multiple" <?= $is_finalizada ? 'disabled="disabled"' : NULL; ?>>
+                            <select name="empleados_involucrados" id="empleados_involucrados" class="form-control empleados_dependiente dual-list" size="5" grupo="auditorias" multiple="multiple" <?= $is_finalizada ? 'disabled="disabled"' : NULL; ?>>
                                 <?php foreach ($empleados as $e): ?>
                                     <?php if (!in_array($e['empleados_id'], $involucrados)): ?>
-                                        <option value="<?= $e['empleados_id']; ?>"><?= $e['nombre_completo'] . (!empty($e['empleados_numero_empleado']) ? " (" . $e['empleados_numero_empleado'] . ")" : ''); ?></option>
+                                        <option value="<?= $e['empleados_id']; ?>"><?= $e['nombre_completo'] . (!empty($e['empleados_numero_empleado']) ? " (" . $e['empleados_id'] . ")" : ''); ?></option>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                                 <?php foreach ($auditoria['empleados_involucrados'] as $e): ?>
                                     <?php if (isset($e['empleados_id'])): ?>
-                                        <option value="<?= $e['empleados_id']; ?>" selected="selected"><?= $e['nombre_completo'] . (!empty($e['empleados_numero_empleado']) ? " (" . $e['empleados_numero_empleado'] . ")" : ''); ?></option>
+                                        <option value="<?= $e['empleados_id']; ?>" selected="selected"><?= $e['nombre_completo'] . (!empty($e['empleados_numero_empleado']) ? " (" . $e['empleados_id'] . ")" : ''); ?></option>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </select>
@@ -158,7 +158,7 @@
                     </div>
                     <?php if (!$is_finalizada): ?>
                         <div class="col-xs-12 text-xs-center m-t-1">
-                            <button id="btn-actualizar-empleados-involucrados" class="btn btn-primary w-200">Actualizar involucrados</button>
+                            <button id="btn-actualizar-empleados-involucrados" class="btn btn-primary" style="width: 220px;">Actualizar involucrados</button>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -166,7 +166,7 @@
         </div>
     </div>
     <?php $mostrar_bajas = $auditoria['auditorias_status_id'] > AUDITORIAS_STATUS_EN_PROCESO ? TRUE : FALSE; ?>
-    <?php $empleados_contraloria = $this->SAC_model->get_auditores($mostrar_bajas); ?>
+    <?php $empleados_contraloria = $this->SAC_model->get_auditores($auditoria['auditorias_periodos_id'], $mostrar_bajas); ?>
     <?php $equipo = array_column($auditoria['auditoria_equipo'], 'empleados_id'); ?>
     <div class="col-xs-12">
         <div class="card">

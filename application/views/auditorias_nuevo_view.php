@@ -45,7 +45,7 @@ echo validation_errors();
                             <select id="auditorias_tipo" name="auditorias_tipo" class="form-control">
                                 <option value="0">Tipo</option>
                                 <?php foreach ($tipos as $t): ?>
-                                    <option value="<?= $t['auditorias_tipos_id']; ?>"<?= isset($r) && $r['auditorias_tipo'] === $t['auditorias_tipos_id'] ? ' selected="selected"' : ''; ?>><?= $t['auditorias_tipos_nombre']; ?></option>
+                                    <option value="<?= $t['auditorias_tipos_id']; ?>"<?= isset($r) && $r['auditorias_tipo'] === $t['auditorias_tipos_id'] ? ' selected="selected"' : ''; ?>><?= $t['auditorias_tipos_siglas'] . " (" . $t['auditorias_tipos_nombre'] . ")"; ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <div class="input-group-addon">/</div>
