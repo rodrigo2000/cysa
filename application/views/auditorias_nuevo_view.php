@@ -49,8 +49,8 @@ echo validation_errors();
                                 <?php endforeach; ?>
                             </select>
                             <div class="input-group-addon">/</div>
-                            <input type="text" id="numero_auditoria" class="form-control" value="<?= isset($r) ? $r['auditorias_numero'] : ''; ?>" placeholder="Número" <?= $is_asignar_consecutivo ? 'disabled="disabled"' : ''; ?>>
-                            <input type="hidden" id="auditorias_numero" name="auditorias_numero" value="<?= isset($r) ? $r['auditorias_numero'] : ''; ?>">
+                            <input type="text" id="numero_auditoria" class="form-control" value="<?= isset($r) && intval($r['auditorias_numero']) > 0 ? $r['auditorias_numero'] : ''; ?>" placeholder="Número" <?= $is_asignar_consecutivo ? 'disabled="disabled"' : ''; ?>>
+                            <input type="hidden" id="auditorias_numero" name="auditorias_numero" value="<?= isset($r) && intval($r['auditorias_numero']) > 0 ? $r['auditorias_numero'] : ''; ?>">
                             <div class="input-group-addon">/</div>
                             <select id="auditorias_anio" name="auditorias_anio" class="form-control">
                                 <?php foreach ($anios as $a): ?>
@@ -207,7 +207,7 @@ echo validation_errors();
                         <a href="<?= base_url() . $this->uri->segment(1); ?>" class="btn btn-default">Cancelar</a>
                         <button type="submit" class="btn btn-primary"><?= $etiquetaBoton; ?></button>
                         <input type="hidden" name="accion" value="<?= $accion; ?>">
-                        <input type="hidden" name="<?= $this->module['id_field']; ?>" value="<?= isset($r) && $r[$this->module['id_field']] ? $r[$this->module['id_field']] : ''; ?>">
+                        <input type="hidden" name="<?= $this->module['id_field']; ?>" value="<?= isset($r, $r[$this->module['id_field']]) ? $r[$this->module['id_field']] : ''; ?>">
                     </div>
                 </fieldset>
             </form>

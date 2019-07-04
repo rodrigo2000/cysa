@@ -68,7 +68,7 @@ class Auditorias extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodo_actual['periodos_id']),
             'subdirecciones' => array(),
             'departamentos' => array(),
-            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc(),
+            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc($periodo_actual),
             'periodo_actual' => $periodo_actual
         );
         parent::nuevo($data);
@@ -92,7 +92,7 @@ class Auditorias extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodos_id),
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
-            'auditores' => $this->SAC_model->get_auditores($periodos_id),
+            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc($periodos_id),
             'r' => $r
         );
         parent::modificar($id, $data);

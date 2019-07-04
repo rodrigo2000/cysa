@@ -22,6 +22,9 @@ class Auditorias_model extends MY_Model {
                 $fechas[$index] = $d;
             }
         }
+        if (empty($data2['auditorias_numero'])) {
+            $data2['auditorias_numero'] = NULL;
+        }
         $data2['auditorias_is_programada'] = 0;
         if (isset($data['auditorias_is_programada'])) {
             $data2['auditorias_is_programada'] = intval($data['auditorias_is_programada']);
@@ -41,7 +44,7 @@ class Auditorias_model extends MY_Model {
         $return = parent::insert($data2);
         if ($return['state'] === 'success') {
             $fechas['auditorias_fechas_etapa'] = 1;
-            $fechas['auditorias_fechas_auditorias_id'] = $return['data']['inser_id'];
+            $fechas['auditorias_fechas_auditorias_id'] = $return['data']['insert_id'];
             $this->Auditorias_fechas_model->insert($fechas);
         }
         return $return;

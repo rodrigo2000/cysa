@@ -459,9 +459,12 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
-    function get_auditores_agrupados_por_cc() {
+    function get_auditores_agrupados_por_cc($periodos_id) {
         $return = array();
-        $periodo = $this->get_ultimo_periodo();
+        if (empty($periodos_id)) {
+            $p = $this->get_ultimo_periodo();
+            $periodos_id = $p['periodos_id'];
+        }
         $puestos = array(
             PUESTO_AUDITOR,
             PUESTO_COORDINADOR_AUDITORIA,
@@ -472,7 +475,7 @@ class SAC_model extends MY_Model {
                 ->join("subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "INNER")
                 ->join("departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "INNER")
                 ->where_in("empleados_puestos_id", $puestos)
-                ->where("cc_periodos_id", 2)
+                ->where("cc_periodos_id", $periodos_id)
                 ->where("cc_etiqueta_direccion", 5)
                 ->where("cc_etiqueta_subdireccion", 3)
                 ->where("e.fecha_delete IS NULL")
