@@ -45,7 +45,7 @@ function p($string) {
     return htmlentities($string, ENT_NOQUOTES, "UTF-8");
 }
 
-function mysqlDate2Date($f, $addBR = TRUE) {  // yyyy-mm-dd H:m:ss    ==>     13 de Febrero de 2015 <br> 00:00pm
+function mysqlDate2Date($f, $addBR = TRUE, $join = ' de ') {  // yyyy-mm-dd H:m:ss    ==>     13 de Febrero de 2015 <br> 00:00pm
     if (trim($f) == "")
         return "";
     $pos = strpos($f, " ");
@@ -65,7 +65,7 @@ function mysqlDate2Date($f, $addBR = TRUE) {  // yyyy-mm-dd H:m:ss    ==>     13
         $ampm = "pm";
         $hh -= 12;
     }
-    $cadena = $d . ' de ' . getNombreDelMes($m) . ' de ' . $a . ($hora != "" ? ($addBR ? "<br>" : '&nbsp;') . substr("0" . $hh, -2) . ":" . $mm . $ampm : '');
+    $cadena = $d . $join . getNombreDelMes($m) . $join . $a . ($hora != "" ? ($addBR ? "<br>" : '&nbsp;') . substr("0" . $hh, -2) . ":" . $mm . $ampm : '');
     return $cadena;
 }
 
