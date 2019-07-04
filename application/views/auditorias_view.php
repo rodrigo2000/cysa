@@ -64,7 +64,7 @@
                         <th width="130">Inicio</th>
                         <th width="130">Fin</th>
                         <th>Status</th>
-                        <th>&nbsp;</th>
+                        <th width="100">&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
