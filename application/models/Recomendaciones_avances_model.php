@@ -26,12 +26,13 @@ class Recomendaciones_avances_model extends MY_Model {
         return $return;
     }
 
-    function get_avances_de_recomendacion($recomendaciones_id, $numero_revision = 1) {
+    function get_avances_de_recomendacion($recomendaciones_id, $numero_revision = NULL) {
         $return = array();
         if (!empty($recomendaciones_id)) {
-            $this->db
-                    ->where($this->id_field, $recomendaciones_id)
-                    ->where("recomendaciones_avances_numero_revision", $numero_revision);
+            if (!empty($numero_revision)) {
+                $this->db->where("recomendaciones_avances_numero_revision", $numero_revision);
+            }
+            $this->db->where($this->id_field, $recomendaciones_id);
             $return = $this->get_todos();
         }
         return $return;

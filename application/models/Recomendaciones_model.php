@@ -73,6 +73,9 @@ class Recomendaciones_model extends MY_Model {
         if (!empty($observaciones_id)) {
             $this->db->where("recomendaciones_observaciones_id", $observaciones_id);
             $return = $this->get_todos();
+            foreach ($return as $index => $r) {
+                $return[$index]['avances'] = $this->Recomendaciones_avances_model->get_avances_de_recomendacion($r['recomendaciones_id']);
+            }
         }
         return $return;
     }
@@ -90,7 +93,7 @@ class Recomendaciones_model extends MY_Model {
         return $return;
     }
 
-    function get_avances_de_recomendacion($recomendaciones_id, $numero_revision = 1) {
+    function get_avances_de_recomendacion($recomendaciones_id, $numero_revision = NULL) {
         $return = array();
         if (!empty($recomendaciones_id)) {
             $return = $this->Recomendaciones_avances_model->get_avances_de_recomendacion($recomendaciones_id, $numero_revision);

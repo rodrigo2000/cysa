@@ -305,4 +305,8 @@ class Auditoria_model extends MY_Model {
         return $return;
     }
 
+    function get_documento_html($documentos_id) {
+        return $this->Documentos_blob_model->get_html($documentos_id);
+    }
+
 }

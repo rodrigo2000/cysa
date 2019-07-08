@@ -121,9 +121,11 @@ class Auditoria extends MY_Controller {
                 $this->module['title_list'] = "Oficio de Envío de Documentos";
                 break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
+                $mi_data['asistencias'] = $documentos[$index]['asistencias'];
+                $this->module['title_list'] = "Acta de Resultados";
+                break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_REVISION:
                 $mi_data['asistencias'] = $documentos[$index]['asistencias'];
-                $vista = "documentos/verificar_tipo_acta";
                 $this->module['title_list'] = "Acta de Resultados";
                 break;
             case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:
@@ -480,9 +482,13 @@ class Auditoria extends MY_Controller {
                 $this->module['title_list'] = "Oficio de Envío de Documentos";
                 break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_AUDITORIA:
+                $is_oficio = FALSE;
+                $mi_data['asistencias'] = $documento['asistencias'];
+                $this->module['title_list'] = "Acta de Resultados";
+                break;
             case TIPO_DOCUMENTO_ACTA_RESULTADOS_REVISION:
                 $is_oficio = FALSE;
-                $vista = "documentos/verificar_tipo_acta";
+                $mi_data['asistencias'] = $documento['asistencias'];
                 $this->module['title_list'] = "Acta de Resultados";
                 break;
             case TIPO_DOCUMENTO_ACTA_CIERRE_ENTREGA_INFORMACION:
@@ -573,7 +579,8 @@ class Auditoria extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($auditoria['auditorias_periodos_id']),
             'etiquetaBoton' => "Guardar",
             'id' => $auditorias_id,
-            'accion' => $accion
+            'accion' => $accion,
+            'is_finalizada' => $auditoria['auditorias_status_id'] >= AUDITORIAS_STATUS_FINALIZADA ? TRUE : FALSE,
         );
         if ($is_oficio) {
             $data['oficio_para'] = array(
@@ -665,9 +672,7 @@ class Auditoria extends MY_Controller {
     }
 
     function imprimir_portada($expedientes_id = NULL) {
-
-
-// La siguiente condición sirve para poder descagar el expediente desde SIMA, ya que impide cargar las funciones de validacion de sesion
+        // La siguiente condición sirve para poder descagar el expediente desde SIMA, ya que impide cargar las funciones de validacion de sesion
         if (!($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['forzar_descargar']) && intval($_GET['forzar_descargar']) == 1)) {
 
         }

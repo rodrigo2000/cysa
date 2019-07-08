@@ -70,35 +70,37 @@
                     </div>
                     <div class="col-sm-3 hidden-sm-down"></div>
                 </div>
-                <div class="row m-t-1">
-                    <div class="col-sm-6 text-xs-center m-b-1">
-                        <?php if (!$is_finalizada): ?>
-                            <div class="input-group">
-                                <span class="input-group-addon" id="basic-addon3">Folio de oficio</span>
-                                <input type="text" name="auditorias_folio_oficio_representante_designado" id="auditorias_folio_oficio_representante_designado" class="form-control text-xs-center" value="<?= isset($auditoria) ? $auditoria['auditorias_folio_oficio_representante_designado'] : ''; ?>">
-                                <span class="input-group-btn">
-                                    <a class="btn btn-default actualizar_campo" type="button" data-campo="auditorias_folio_oficio_representante_designado">Actualizar</a>
-                                </span>
-                            </div>
-                        <?php else: ?>
-                            <p class="lead">Folio de oficio: <?= isset($auditoria) ? $auditoria['auditorias_folio_oficio_representante_designado'] : ''; ?></p>
-                        <?php endif; ?>
+                <?php if (!$is_finalizada && !empty($auditoria['auditorias_folio_oficio_representante_designado']) && !empty($auditoria['auditorias_folio_oficio_representante_designado'])): ?>
+                    <div class="row m-t-1">
+                        <div class="col-sm-6 text-xs-center m-b-1">
+                            <?php if (!$is_finalizada): ?>
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-addon3">Folio de oficio</span>
+                                    <input type="text" name="auditorias_folio_oficio_representante_designado" id="auditorias_folio_oficio_representante_designado" class="form-control text-xs-center" value="<?= isset($auditoria) ? $auditoria['auditorias_folio_oficio_representante_designado'] : ''; ?>">
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-default actualizar_campo" type="button" data-campo="auditorias_folio_oficio_representante_designado">Actualizar</a>
+                                    </span>
+                                </div>
+                            <?php else: ?>
+                                <p class="lead">Folio de oficio: <?= isset($auditoria) && !empty($auditoria['auditorias_folio_oficio_representante_designado']) ? $auditoria['auditorias_folio_oficio_representante_designado'] : 'NO ESPECIFICADO'; ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-sm-6 text-xs-center">
+                            <?php if (!$is_finalizada): ?>
+                                <div class="input-group">
+                                    <span class="input-group-addon">Fecha de sello</span>
+                                    <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_sello_oficio_representante_designado" type="button" datepicker="auditorias_fechas_sello_oficio_representante_designado"><?= isset($auditoria) && !empty($auditoria['auditorias_fechas_sello_oficio_representante_designado']) && $auditoria['auditorias_fechas_sello_oficio_representante_designado'] !== '0000-00-00' ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_oficio_representante_designado']) : '<i class="fa fa-calendar"></i>'; ?></button>
+                                    <input type="hidden" id="auditorias_fechas_sello_oficio_representante_designado" name="auditorias_fechas_sello_oficio_representante_designado" value="<?= isset($auditoria) && $auditoria['auditorias_fechas_sello_oficio_representante_designado'] !== '0000-00-00' ? $auditoria['auditorias_fechas_sello_oficio_representante_designado'] : ''; ?>">
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-default actualizar_campo" id="mio" type="button" data-campo="auditorias_fechas_sello_oficio_representante_designado">Actualizar</a>
+                                    </span>
+                                </div>
+                            <?php else: ?>
+                                <p class="lead">Fecha de sello: <?= isset($auditoria) && !empty($auditoria['auditorias_fechas_sello_oficio_representante_designado']) && $auditoria['auditorias_fechas_sello_oficio_representante_designado'] !== '0000-00-00' ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_oficio_representante_designado']) : 'NO ESPECIFICADO'; ?></p>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <div class="col-sm-6 text-xs-center">
-                        <?php if (!$is_finalizada): ?>
-                            <div class="input-group">
-                                <span class="input-group-addon">Fecha de sello</span>
-                                <button class="btn btn-secondary btn-block component-daterangepicker" id="input_auditorias_fechas_sello_oficio_representante_designado" type="button" datepicker="auditorias_fechas_sello_oficio_representante_designado"><?= isset($auditoria) && !empty($auditoria['auditorias_fechas_sello_oficio_representante_designado']) && $auditoria['auditorias_fechas_sello_oficio_representante_designado'] !== '0000-00-00' ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_oficio_representante_designado']) : '<i class="fa fa-calendar"></i>'; ?></button>
-                                <input type="hidden" id="auditorias_fechas_sello_oficio_representante_designado" name="auditorias_fechas_sello_oficio_representante_designado" value="<?= isset($auditoria) && $auditoria['auditorias_fechas_sello_oficio_representante_designado'] !== '0000-00-00' ? $auditoria['auditorias_fechas_sello_oficio_representante_designado'] : ''; ?>">
-                                <span class="input-group-btn">
-                                    <a class="btn btn-default actualizar_campo" id="mio" type="button" data-campo="auditorias_fechas_sello_oficio_representante_designado">Actualizar</a>
-                                </span>
-                            </div>
-                        <?php else: ?>
-                            <p class="lead">Fecha de sello: <?= isset($auditoria) && !empty($auditoria['auditorias_fechas_sello_oficio_representante_designado']) && $auditoria['auditorias_fechas_sello_oficio_representante_designado'] !== '0000-00-00' ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_oficio_representante_designado']) : 'NO ESPECIFICADO'; ?></p>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -180,14 +182,18 @@
                     </select>
                 <?php else: ?>
                     <div class="row">
-                        <?php foreach ($empleados_contraloria as $e): ?>
-                            <?php if (in_array($e['empleados_id'], $equipo)) : ?>
-                                <div class="col-xs-4 col-sm-2 text-xs-center" style="min-height: 180px;">
-                                    <img class="img-thumbnail img-circle" src="<?= APP_SAC_URL; ?>resources/images/avatar.jpg">
-                                    <?= $e['empleados_nombre_titulado'] . (!empty($e['empleados_numero_empleado']) ? "<br>(#" . number_format($e['empleados_numero_empleado'], 0) . ")" : ''); ?>
-                                </div>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
+                        <?php if (count($empleados_contraloria) > 0): ?>
+                            <?php foreach ($empleados_contraloria as $e): ?>
+                                <?php if (in_array($e['empleados_id'], $equipo)) : ?>
+                                    <div class="col-xs-4 col-sm-2 text-xs-center" style="min-height: 180px;">
+                                        <img class="img-thumbnail img-circle" src="<?= APP_SAC_URL; ?>resources/images/avatar.jpg">
+                                        <?= $e['empleados_nombre_titulado'] . (!empty($e['empleados_numero_empleado']) ? "<br>(#" . number_format($e['empleados_numero_empleado'], 0) . ")" : ''); ?>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="lead">NINGUNO</p>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
                 <?php if (!$is_finalizada): ?>

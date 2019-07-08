@@ -23,14 +23,14 @@
                     <dd class="col-sm-9"><?= $auditoria['auditorias_areas_siglas']; ?></dd>
                     <?php if (!empty($auditoria['auditorias_origen_id'])): $aux = $this->Auditorias_model->get_auditoria($auditoria['auditorias_origen_id']); ?>
                         <?php if (!empty($aux)): ?>
-                            <dt class="col-sm-3">Auditoría Origen</dt>
-                            <dd class="col-sm-9"><a href="<?= base_url() . $this->module['controller'] . "/" . $aux['auditorias_id']; ?>"><?= $aux['numero_auditoria']; ?></a></dd>
+                            <dt class="col-sm-3 bg-warning">Auditoría Origen</dt>
+                            <dd class="col-sm-9 bg-warning"><a href="<?= base_url() . $this->module['controller'] . "/" . $aux['auditorias_id']; ?>"><?= $aux['numero_auditoria']; ?></a> <i class="fa fa-star faa-flash animated"></i></dd>
                         <?php endif; ?>
                     <?php endif; ?>
                     <?php $aux = $this->Auditoria_model->get_auditoria_de_seguimiento($auditoria['auditorias_id']); ?>
                     <?php if (!empty($aux)): ?>
-                        <dt class="col-sm-3">Auditoría de Seguimiento</dt>
-                        <dd class="col-sm-9"><a href="<?= base_url() . $this->module['controller'] . "/" . $aux['auditorias_id']; ?>"><?= $aux['numero_auditoria']; ?></a></dd>
+                        <dt class="col-sm-3 bg-warning">Auditoría de Seguimiento</dt>
+                        <dd class="col-sm-9 bg-warning"><a href="<?= base_url() . $this->module['controller'] . "/" . $aux['auditorias_id']; ?>"><?= $aux['numero_auditoria']; ?></a> <i class="fa fa-star faa-flash animated"></i></dd>
                     <?php endif; ?>
                 </dl>
             </div>
@@ -40,14 +40,16 @@
         <div class="card">
             <h3 class="card-header bg-info">Observaciones</h3>
             <div class="card-block">
-                <?php if ($auditoria['auditorias_status_id'] == AUDITORIAS_STATUS_EN_PROCESO): // Esta en proceso ?>
-                    <p><input type="checkbox" class="labelautyfy" name="auditorias_is_sin_observaciones" id="auditorias_is_sin_observaciones" data-labelauty="Sin observaciones"></p>
+                <?php if ($auditoria['auditorias_is_sin_observaciones'] == 0): // Es sin observaciones? ?>
+                    <?php if ($auditoria['auditorias_status_id'] == AUDITORIAS_STATUS_EN_PROCESO): // Esta en proceso ?>
+                        <p><input type="checkbox" class="labelautyfy" name="auditorias_is_sin_observaciones" id="auditorias_is_sin_observaciones" data-labelauty="Sin observaciones"></p>
+                    <?php endif; ?>
                     <?php if (isset($auditoria['observaciones']) && count($auditoria['observaciones']) > 0): ?>
                         <div id="accordion" role="tablist" aria-multiselectable="true">
                             <div class="card m-b-0">
                                 <?php if ($auditoria['observaciones'][0]['observaciones_auditorias_id'] !== $auditoria['auditorias_id']): ?>
                                     <?php $aa = $this->Auditorias_model->get_auditoria($auditoria['observaciones'][0]['observaciones_auditorias_id']); ?>
-                                    <div class="card-header bg-gray-darker" role="tab" id="headingOne">
+                                    <div class="card-header bg-warning" role="tab" id="headingOne">
                                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
                                             Observaciones de la auditoría <?= $aa['numero_auditoria']; ?>
                                         </a>
@@ -58,7 +60,10 @@
                                         <ul class="list-group list-group-flush" id="observaciones">
                                             <?php foreach ($auditoria['observaciones'] as $o): ?>
                                                 <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
-                                                    <li id="observacion_<?= $o['observaciones_id']; ?>" class="list-group-item" style="box-shadow: none;"><?= $o['observaciones_titulo']; ?></li>
+                                                    <li id="observacion_<?= $o['observaciones_id']; ?>" class="list-group-item" style="box-shadow: none;">
+                                                        <?= $o['observaciones_numero'] . " - " . $o['observaciones_titulo']; ?>
+                                                        <span class="badge badge-default badge-pill">14</span>
+                                                    </li>
                                                 <?php endif; ?>
                                             <?php endforeach; ?>
                                         </ul>
@@ -67,7 +72,7 @@
                             </div>
                         </div>
                     <?php endif; ?>
-                <?php elseif ($auditoria['auditorias_is_sin_observaciones'] == 1): ?>
+                <?php else: ?>
                     <p class="lead text-xs-center">SIN OBSERVACIONES</p>
                 <?php endif; ?>
             </div>
@@ -90,13 +95,14 @@
                     <tbody>
                         <tr>
                             <th>Programadas</th>
-                            <td class="text-xs-center"><?= mysqlDate2OnlyDate($auditoria['auditorias_fechas_inicio_programado']); ?></td>
-                            <td class="text-xs-center"><?= mysqlDate2OnlyDate($auditoria['auditorias_fechas_fin_programado']); ?></td>
+                            <td class="text-xs-center"><?= !empty($auditoria['auditorias_fechas_inicio_programado']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_inicio_programado']) : SIN_ESPECIFICAR; ?></td>
+                            <td class="text-xs-center"><?= !empty($auditoria['auditorias_fechas_fin_programado']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_fin_programado']) : SIN_ESPECIFICAR; ?></td>
                         </tr>
                         <tr>
                             <th>Reales</th>
-                            <td class="text-xs-center"><?= mysqlDate2OnlyDate($auditoria['auditorias_fechas_inicio_real']); ?></td>
-                            <td class="text-xs-center"><?= mysqlDate2OnlyDate($auditoria['auditorias_fechas_fin_real']); ?></td>
+                            <td class="text-xs-center"><?= !empty(mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_orden_entrada'])) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_orden_entrada']) : SIN_ESPECIFICAR; ?></td>
+                            <?php $fin_real = !empty($auditoria['auditorias_origen_id']) ? $auditoria['auditorias_fechas_vobo_director_etapa_1'] : $auditoria['auditorias_fechas_vobo_director']; ?>
+                            <td class="text-xs-center"><?= !empty($fin_real) ? mysqlDate2OnlyDate($fin_real) : SIN_ESPECIFICAR; ?></td>
                         </tr>
                         <?php if ($auditoria['auditorias_fechas_inicio_programado'] != $auditoria['auditorias_fechas_inicio_real']): ?>
                             <tr>

@@ -307,7 +307,7 @@ class Auditorias_model extends MY_Model {
             if (empty($datos_auditoria)) {
                 $datos_auditoria = $this->get_auditoria($auditorias_id);
             }
-            $status = array(AUDITORIAS_STATUS_FINALIZADA, AUDITORIAS_STATUS_FINALIZADA_RESERVADA);
+            $status = array(AUDITORIAS_STATUS_FINALIZADA, AUDITORIAS_STATUS_FINALIZADA_RESERVADA, AUDITORIAS_STATUS_FINALIZADA_MANUAL);
             if (in_array($datos_auditoria['auditorias_status_id'], $status)) {
                 $return = AUDITORIA_ETAPA_FIN;
             } elseif (empty($datos_auditoria['auditorias_fechas_lectura']) && intval($datos_auditoria['auditorias_is_sin_observaciones']) === 1) {
