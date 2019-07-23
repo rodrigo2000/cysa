@@ -32,21 +32,31 @@ class Recomendaciones_avances extends MY_Controller {
                 'recomendaciones_avances_recomendaciones_clasificaciones_id' => $post['recomendaciones_clasificaciones_id'][$index],
                 'recomendaciones_avances_recomendaciones_status_id' => $post['recomendaciones_status_id'][$index],
                 'recomendaciones_avances_empleados_id' => $post['recomendaciones_empleados_id'][$index],
-                    //'recomendaciones_avances_descripcion' => $post['recomendaciones_avaces_descripcion'][$index],
+                'recomendaciones_avances_descripcion' => $post['recomendaciones_avaces_descripcion'][$index],
             );
             if (empty($post['recomendaciones_id'][$index])) {
 //                $return = $this->Recomendaciones_model->insert($data);
 //                $return['data']['accion'] = "nuevo";
-//                $return['message'] = "Se ha agregado la recomendación.";
+//                $return['message'] = "Se ha agregado el avance de la recomendación.";
             } else {
-                $this->db
+                $result = $this->db
                         ->where('recomendaciones_avances_numero_revision', $post['recomendaciones_avances_numero_revision'][$index])
-                        ->where('recomendaciones_avances_recomendaciones_id', $post['recomendaciones_id'][$index]);
-                $return['success'] = $this->db->update($this->module['tabla'], $data);
-                $return['data']['accion'] = "actualizar";
-                $return['message'] = "Se ha actualizado el avance de la recomendación.";
-                unset($data['recomendaciones_avances_descripcion']);
-                $return['data'] = array_merge($return['data'], $data);
+                        ->where('recomendaciones_avances_recomendaciones_id', $post['recomendaciones_id'][$index])
+                        ->get($this->module['tabla']);
+                if ($result && $result->num_rows() == 0) {
+                    $return = $this->Recomendaciones_avances_model->insert($data);
+                    $return['data']['accion'] = "nuevo";
+                    $return['message'] = "Se ha agregado el avance de la recomendación.";
+                } else {
+                    $this->db
+                            ->where('recomendaciones_avances_numero_revision', $post['recomendaciones_avances_numero_revision'][$index])
+                            ->where('recomendaciones_avances_recomendaciones_id', $post['recomendaciones_id'][$index]);
+                    $return['success'] = $this->db->update($this->module['tabla'], $data);
+                    $return['data']['accion'] = "actualizar";
+                    $return['message'] = "Se ha actualizado el avance de la recomendación.";
+                    unset($data['recomendaciones_avances_descripcion']);
+                    $return['data'] = array_merge($return['data'], $data);
+                }
             }
             if ($return['success']) {
                 $return['state'] = 'success';

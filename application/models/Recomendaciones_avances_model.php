@@ -26,8 +26,24 @@ class Recomendaciones_avances_model extends MY_Model {
         return $return;
     }
 
+    /**
+     * Devuelve todos los avances de una recomendación
+     * @param integer $recomendaciones_id Identificador de la recomendación
+     * @param integer $numero_revision Número de revisión (1, 3, 5 ó 2, 4). Cero para todas las revisiones
+     * @return array Arreglo con la información de los avances
+     */
     function get_avances_de_recomendacion($recomendaciones_id, $numero_revision = NULL) {
         $return = array();
+        if (intval($numero_revision) === 0) {
+            $result = $this->db->select_max("recomendaciones_avances_numero_revision", 'maximo')
+                    ->where($this->id_field, $recomendaciones_id)
+                    ->limit(1)
+                    ->get($this->table_name);
+            if ($result && $result->num_rows() == 1) {
+                $numero_revision = $result->row()->maximo;
+            }
+        }
+
         if (!empty($recomendaciones_id)) {
             if (!empty($numero_revision)) {
                 $this->db->where("recomendaciones_avances_numero_revision", $numero_revision);

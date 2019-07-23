@@ -179,7 +179,19 @@ $(document).on('click', '.guardar-recomendacion-avance', function (e) {
     e.stopPropagation();
     var url = base_url + "Recomendaciones_avances/guardar";
     var $this = this;
-    var data = $(this).parents("form").serializeObject();
+    var form = $(this).parents('form');
+    var recomendaciones_id = form.find('input.recomendaciones_id').val();
+    var observaciones_id = form.find('input.recomendaciones_observaciones_id').val();
+    var etapa = form.find('input.recomendaciones_etapa_id').val();
+    var editor = 'recomendaciones_avaces_descripcion_' + observaciones_id + '_' + recomendaciones_id + '_' + etapa;
+    ////
+    var b = "<body>";
+    var be = "</body>";
+    var t = tinyMCE.get(editor).getContent();
+    t = t.substring((t.indexOf(b) + b.length), (t.indexOf(be) - 1));
+    t = $.trim(t);
+    $("textarea.editor_html", "#observacion_solventacion_" + observaciones_id + " #recomendacion_" + recomendaciones_id).val(t);
+    var data = form.serializeObject();
     $(this).addClass("disabled").html(ICON_SPINNER);
     $.post(url, data, function (json) {
         if (json.success) {

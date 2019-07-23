@@ -14,6 +14,7 @@ class Recomendaciones_model extends MY_Model {
     }
 
     function get_todos($limit = NULL, $start = NULL, $incluirEliminados = FALSE) {
+        $return = array();
         $this->db
                 ->join("recomendaciones_clasificaciones rc", "rc.recomendaciones_clasificaciones_id = " . $this->table_prefix . ".recomendaciones_clasificaciones_id", "LEFT")->select("rc.recomendaciones_clasificaciones_nombre")
                 ->join("recomendaciones_status rs", "rs.recomendaciones_status_id = " . $this->table_prefix . ".recomendaciones_status_id", "LEFT")->select("rs.recomendaciones_status_nombre")
@@ -50,16 +51,13 @@ class Recomendaciones_model extends MY_Model {
     /**
      *
      * @param integer $observaciones_id Identificador de la observación
-     * @param boolean $ordenados_por_numero TRUE para indiciar que las recomendaciones esten ordenadas por número, FALSE en caso contrario.
-     * @param mixed $recomendaciones_status_id Identificador o arreglo con del status de la recomendación.
+     * @param integer $numero_revision Indica el número de la revisión de la recomendación. Si no se especifica se toma la última revisión que se tenga.
+     * @param integer|array $recomendaciones_status_id Identificador o arreglo con del status de la recomendación.
      * @param boolean $incluir_eliminadas TRUE para indicar que contemple las recomendaciones eliminadas. FALSE en caso contrario
      * @return array Listado de recomendaciones
      */
-    function get_recomendaciones($observaciones_id, $ordenados_por_numero = FALSE, $recomendaciones_status_id = NULL, $incluir_eliminadas = FALSE) {
+    function get_recomendaciones($observaciones_id, $numero_revision = NULL, $recomendaciones_status_id = NULL, $incluir_eliminadas = FALSE) {
         $return = array();
-        if ($ordenados_por_numero) {
-            $this->db->order_by("recomendaciones_numero", "ASC");
-        }
         if (!empty($recomendaciones_status_id)) {
             if (is_scalar($recomendaciones_status_id) && is_numeric($recomendaciones_status_id)) {
                 $this->db->where("recomendaciones_status_id", $recomendaciones_status_id);
@@ -71,10 +69,12 @@ class Recomendaciones_model extends MY_Model {
             $this->db->where($this->table_prefix . ".fecha_delete", NULL);
         }
         if (!empty($observaciones_id)) {
-            $this->db->where("recomendaciones_observaciones_id", $observaciones_id);
+            $this->db
+                    ->where("recomendaciones_observaciones_id", $observaciones_id)
+                    ->order_by("recomendaciones_numero", "ASC");
             $return = $this->get_todos();
             foreach ($return as $index => $r) {
-                $return[$index]['avances'] = $this->Recomendaciones_avances_model->get_avances_de_recomendacion($r['recomendaciones_id']);
+                $return[$index]['avances'] = $this->Recomendaciones_avances_model->get_avances_de_recomendacion($r['recomendaciones_id'], $numero_revision);
             }
         }
         return $return;

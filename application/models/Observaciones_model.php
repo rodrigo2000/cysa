@@ -51,20 +51,35 @@ class Observaciones_model extends MY_Model {
                         ->or_where($this->table_prefix . ".fecha_delete", NULL)
                         ->group_end();
             }
-            $this->db->where("observaciones_auditorias_id", $real_auditoria_origen_id);
-            $return = $this->getResultados();
+            $numero_revision = 1;
+            if ($real_auditoria_origen_id != $auditorias_id) {
+                $numero_revision = 3;
+            }
+            // Este ciclo se hace porque para las auditorias 2018 en adelante cuando se marcan
+            // como SIN OBSERVACIONES no se muestran las observaciones pendientes por solventar
+            do {
+                $this->db->select($this->table_prefix . ".*")
+                        ->join("recomendaciones r", "r.recomendaciones_observaciones_id=o.observaciones_id AND r.fecha_delete IS NULL", "LEFT")
+                        ->join("recomendaciones_avances ra", "ra.recomendaciones_avances_recomendaciones_id=r.recomendaciones_id AND ra.fecha_delete IS NULL AND ra.recomendaciones_avances_numero_revision = " . $numero_revision, "LEFT")
+                        ->where("observaciones_auditorias_id", $real_auditoria_origen_id)
+                        ->where("observaciones_auditorias_id", $auditorias_id)
+                        ->group_by("o.observaciones_id");
+                $return = $this->getResultados();
+                $numero_revision--;
+            } while (empty($return) && $numero_revision > 0);
             foreach ($return as $index => $r) {
-                $recomendaciones = $this->get_recomendaciones_de_observacion($r[$this->id_field], $recomendaciones_status_id, $incluir_observaciones_eliminadas, $incluir_recomendaciones_eliminadas);
+                //unset($return[$index]['observaciones_descripcion']);
+                $recomendaciones = $this->get_recomendaciones_de_observacion($r[$this->id_field], $numero_revision, $recomendaciones_status_id, $incluir_observaciones_eliminadas, $incluir_recomendaciones_eliminadas);
                 $return[$index]['recomendaciones'] = $recomendaciones;
             }
         }
         return $return;
     }
 
-    function get_recomendaciones_de_observacion($observaciones_id, $recomendaciones_status_id = NULL, $incluir_eliminadas = FALSE) {
+    function get_recomendaciones_de_observacion($observaciones_id, $numero_revision = NULL, $recomendaciones_status_id = NULL, $incluir_eliminadas = FALSE) {
         $return = array();
         if (!empty($observaciones_id)) {
-            $return = $this->Recomendaciones_model->get_recomendaciones($observaciones_id, FALSE, $recomendaciones_status_id, $incluir_eliminadas);
+            $return = $this->Recomendaciones_model->get_recomendaciones($observaciones_id, $numero_revision, $recomendaciones_status_id, $incluir_eliminadas);
         }
         return $return;
     }

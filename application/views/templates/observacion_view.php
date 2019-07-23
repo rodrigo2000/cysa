@@ -18,11 +18,6 @@
     </ul>
     <div class="tab-content">
         <?php
-        $recomendaciones = array();
-        if (isset($o, $o['observaciones_id'])) {
-            $recomendaciones = $this->Recomendaciones_model->get_recomendaciones($o['observaciones_id'], TRUE);
-        }
-        $o['recomendaciones'] = $recomendaciones;
         $data = array('index' => $index, 'o' => $o);
         $this->load->view('templates/observacion_detalles_view', $data);
         $this->load->view('templates/observacion_solventacion_view', $data);
