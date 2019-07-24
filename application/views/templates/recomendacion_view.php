@@ -19,7 +19,7 @@
             <?php if ($etapa_auditoria == AUDITORIA_ETAPA_AP): ?>
                 <textarea name="recomendaciones_descripcion[]" class="form-control autosize font-barlow text-justify"><?= isset($rr, $rr['recomendaciones_descripcion']) ? trim($rr['recomendaciones_descripcion']) : NULL; ?></textarea>
             <?php else: ?>
-                <div class="text-2-html" style="max-height: 250px; overflow-y: scroll;"><?= $rr['recomendaciones_descripcion']; ?></div>
+                <div class="text-2-html" style="max-height: 250px; overflow-y: scroll;"><?= isset($rr, $rr['recomendaciones_descripcion']) ? $rr['recomendaciones_descripcion'] : ''; ?></div>
             <?php endif; ?>
         </div>
         <?php if (isset($avance)): ?>
@@ -31,7 +31,7 @@
                     <?php endif; ?>
                 </h4>
                 <?php if ($etapa_auditoria < AUDITORIA_ETAPA_FIN): ?>
-                    <textarea id="recomendaciones_avaces_descripcion_<?= $rr['recomendaciones_observaciones_id'] . "_" . $rr['recomendaciones_id'] . "_" . $etapa_auditoria; ?>" name="recomendaciones_avaces_descripcion[]" class="editor_html"><?= isset($avance['recomendaciones_avances_descripcion']) ? $avance['recomendaciones_avances_descripcion'] : ''; ?></textarea>
+                    <textarea id="recomendaciones_avaces_descripcion_<?= isset($rr, $rr['recomendaciones_observaciones_id']) ? $rr['recomendaciones_observaciones_id'] : ''; ?>_<?= isset($rr, $rr['recomendaciones_id']) ? $rr['recomendaciones_id'] : ''; ?>_<?= $etapa_auditoria; ?>" name="recomendaciones_avaces_descripcion[]" class="editor_html"><?= isset($avance['recomendaciones_avances_descripcion']) ? $avance['recomendaciones_avances_descripcion'] : ''; ?></textarea>
                     <input type="hidden" class="recomendaciones_avances_numero_revision" name="recomendaciones_avances_numero_revision[]" value="<?= isset($avance['recomendaciones_avances_numero_revision']) ? $avance['recomendaciones_avances_numero_revision'] : 3; ?>">
                 <?php else: ?>
                     <div class="font-barlow font-size-1rem" style="max-height: 250px; overflow-y: scroll;"><?= $avance['recomendaciones_avances_descripcion']; ?></div>

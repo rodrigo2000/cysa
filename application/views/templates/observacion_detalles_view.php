@@ -9,10 +9,10 @@
             </div>
         </form>
     <?php else: ?>
-        <h5 class="m-b-1"><?= $o['observaciones_titulo']; ?></h5>
-        <div class="font-barlow font-size-1rem" style="height: 100px; overflow-y: scroll;"><?php echo $o['observaciones_descripcion']; ?></div>
+        <h5 class="m-b-1"><?= isset($o, $o['observaciones_titulo']) ? $o['observaciones_titulo'] : ''; ?></h5>
+        <div class="font-barlow font-size-1rem" style="height: 100px; overflow-y: scroll;"><?= isset($o, $o['observaciones_descripcion']) ? $o['observaciones_descripcion'] : ''; ?></div>
     <?php endif; ?>
-    <input type="hidden" class="observaciones_id" name="observaciones_id[]" value="<?= isset($o['observaciones_id']) ? $o['observaciones_id'] : 0; ?>">
+    <input type="hidden" class="observaciones_id" name="observaciones_id[]" value="<?= isset($o, $o['observaciones_id']) ? $o['observaciones_id'] : 0; ?>">
     <div id="recomendaciones" class="m-t-2">
         <?php if (isset($o['recomendaciones'])): ?>
             <?php foreach ($o['recomendaciones'] as $rr): ?>
