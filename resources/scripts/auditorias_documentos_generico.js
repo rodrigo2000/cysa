@@ -220,22 +220,6 @@ function get_form_data(async = false) {
     var data = $("#frmOficios").serializeObject();
     data.headers_id = $(".dd-selected-value", "#headers_id").attr('value');
     data.footers_id = $(".dd-selected-value", "#footers_id").attr('value');
-    var oficio = $("#oficio-hoja").clone(true);
-    // Eliminamos elementos del oficios (el que se guardará en HTML) que no son necesarios para que el HTML quede lo
-    // más limpio que se pueda.
-    $("button,.btn,.autocomplete_empleados_delete,.hidden-print,.watermark,input[type=hidden]", oficio).remove();
-    $(".xeditable", oficio).editable("destroy");
-    $(".resaltar, .editable, .bg-white>span", oficio).each(function (index, element) {
-        let txt = $(element).text();
-        $(element).replaceWith(txt);
-    });
-    $(".dd-selected-image", oficio).each(function (index, element) {
-        let obj = $(element).css('margin-bottom', '1em').removeClass();
-        let div = $(element).parents('div.dd-container');
-        div.parent('td').addClass('text-xs-center');
-        div.replaceWith(obj);
-    });
-    /////////////////////////////////////////////////////////////////////////
     data.constantes = $.extend({}, data.constantes);
     $(".editable, span[name^=constantes]", "#frmOficios").each(function (index, element) {
         var id = $(element).prop('id');
@@ -256,13 +240,30 @@ function get_form_data(async = false) {
             }
         }
     });
-    $(".xeditable").each(function (index, element) {
+    $(".xeditable", "#oficio-hoja").each(function (index, element) {
         var id = $(element).prop("id");
         var arr = $("#" + id).editable('getValue');
         data.constantes[id] = arr[id];
     });
-    // Guardamos el oficio
-    data.html = $(oficio).get(0).outerHTML;
+    // Eliminamos elementos del oficios (el que se guardará en HTML) que no son necesarios para que el HTML quede lo
+    // más limpio que se pueda.
+//    var oficio = $("#oficio-hoja").clone(true);
+//    $("button, .btn, .autocomplete_empleados_delete, .hidden-print, .watermark, input[type=hidden]", oficio).remove();
+//    $(".xeditable", oficio).each(function (index, element) {
+//        $(element, oficio).editable("destroy");
+//    });
+//    $(".resaltar, .editable, .bg-white>span", oficio).each(function (index, element) {
+//        let txt = $(element).text();
+//        $(element).replaceWith(txt);
+//    });
+//    $(".dd-selected-image", oficio).each(function (index, element) {
+//        let obj = $(element).css('margin-bottom', '1em').removeClass();
+//        let div = $(element).parents('div.dd-container');
+//        div.parent('td').addClass('text-xs-center');
+//        div.replaceWith(obj);
+//    });
+//    data.html = $(oficio).get(0).outerHTML;
+    /////////////////////////////////////////////////////////////////////////
     var url = base_url + 'Documentos/guardar';
     $("button.boton_guardar").prop('disabled', true).addClass('disabled').html('Guardando...');
     $.post(url, data, function (json) {
