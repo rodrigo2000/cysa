@@ -127,7 +127,7 @@
                                         <p class="text-justify texto-sangria">
                                             <?php $fechaMaximaSolicitudInformacion = isset($r) && isset($r[ORD_ENT_FECHA_SI]) ? $r[ORD_ENT_FECHA_SI] : agregar_dias($fechaDelOficio, 3); // Aumentamos 3 días  ?>
                                             Para el desarrollo de la auditoría, solicito su colaboración para que a más tardar el día
-                                            <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA_SI; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="<?= $fechaMaximaSolicitudInformacion; ?>"><?= mysqlDate2Date($fechaMaximaSolicitudInformacion); ?></a>
+                                            <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA_SI; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="<?= ORD_ENT_FECHA_SI; ?>" data-title="Seleccione fecha:" data-value="<?= $fechaMaximaSolicitudInformacion; ?>"><?= mysqlDate2Date($fechaMaximaSolicitudInformacion); ?></a>
                                             proporcione al equipo de auditoría, quien podrá actuar en forma individual y/o conjunta durante el desarrollo
                                             de la misma, los registros, reportes, informes, correspondencia, acceso a los sistemas y demás documentación
                                             relativa a sus operaciones financieras, presupuestales y de consecución de metas, detallada en el documento anexo que
@@ -146,7 +146,7 @@
                                         <p class="text-justify texto-sangria">
                                             <?php $fechaVisitaAuditor = isset($r) ? $r[ORD_ENT_FECHA_VISITA] : agregar_dias($fechaDelOficio, 5); // +5 días, pero solo aumentamos dos porque ya habiamos aumentado 3 días  ?>
                                             De igual forma, me permito informarle que con fecha
-                                            <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA_VISITA; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="1" data-title="Seleccione fecha:" data-value="<?= $fechaVisitaAuditor; ?>"><?= mysqlDate2Date($fechaVisitaAuditor); ?></a>,
+                                            <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA_VISITA; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="<?= ORD_ENT_FECHA_VISITA; ?>" data-title="Seleccione fecha:" data-value="<?= $fechaVisitaAuditor; ?>"><?= mysqlDate2Date($fechaVisitaAuditor); ?></a>,
                                             el Auditor Líder a cargo de la auditoría se presentará en el domicilio donde habrá de efectuarse ésta,
                                             para formalizar el acto de inicio de los trabajos de auditoría, por lo que se solicita su presencia o la
                                             del enlace designado, así como de los testigos asignados, en el horario de
@@ -189,6 +189,37 @@
                                                 <?= $this->Auditorias_model->get_siglas_de_empleados_para_documento_de_auditoria($auditoria['auditorias_auditor_lider'], $auditoria['auditorias_id']); ?><br><br>
                                                 <?= $documento['documentos_versiones_prefijo_iso'] . $documento['documentos_versiones_codigo_iso'] . " " . $documento['documentos_versiones_numero_iso']; ?>
                                             </div>
+                                        </div>
+                                        <div class="salto-de-pagina">
+                                            <p class="text-xs-center bold">
+                                                <?= mb_strtoupper(LABEL_CONTRALORIA); ?><br>
+                                                SOLICITUD DE DOCUMENTACIÓN E INFORMACIÓN PRELIMINAR <?= $auditoria['numero_auditoria']; ?><br>
+                                                ANEXO
+                                            </p>
+                                            <p class="bold">Disposiciones Generales:</p>
+                                            <ol type="I" class="text-justify">
+                                                <li>La documentación e información deberá entregarse a través de oficio firmado por el titular de la dependencia o entidad, indicando si es original, copia fotostática o si se pondrá a disposición. El contenido deberá identificarse por cada punto, con el propósito de dar respuesta a todos ellos. Asimismo, en caso de no contar con alguno de los documentos solicitados, deberá notificar dicha situación.</li>
+                                                <li>La documentación e información proporcionada de forma impresa para la ejecución de auditoría, deberá estar validada por quien la elaboró y por el responsable del área.</li>
+                                                <li>La documentación requerida es enunciativa, mas no limitativa, por tanto, se deberá presentar adicionalmente toda aquella documentación que se considere complemente el rubro, objetivo, proceso, sistema, etc., objeto de la auditoría.</li>
+                                                <li>De requerirse durante la práctica de la auditoría documentación e información no contenida en el requerimiento preliminar, será solicitada por escrito de manera fundada y motivada, la cual deberá proporcionarse dentro de los cinco días hábiles contados a partir del día siguiente de notificada la solicitud.</li>
+                                            </ol>
+                                            <p class="bold">Requerimiento:</p>
+                                            <p class="texto-sangria">
+                                                Se solicita la siguiente información preliminar para efectos del desarrollo de la
+                                                presente<?= span_editable($r, ORD_ENT_REQUERIMIENTOS_SI_FECHA_CORTE, ', con corte al DD de MMMMM de AAAA'); ?>
+                                            </p>
+                                            <?php
+                                            $aux = "1. Organigrama vigente.<br>
+  2. Descriptivas y/o manuales vigentes autorizados de los procedimientos aplicados para (objeto de la auditor&iacute;a)<br>
+  3. Reglamento interior.<br>
+  4. Programa Operativo Anual.<br>
+  5. Copia de la Reglamentaci&oacute;n vigente aplicable.<br>
+  6. Otros (informaci&oacute;n adicional requerida para la auditor&iacute;a).";
+                                            ?>
+                                            <div style="margin-left: 1cm;">
+                                                <?= span_editable($r, ORD_ENT_REQUERIMIENTOS_SI, $aux, NULL, NULL, TRUE); ?>
+                                            </div>
+                                            <p></p>
                                         </div>
                                     </td>
                                 </tr>
