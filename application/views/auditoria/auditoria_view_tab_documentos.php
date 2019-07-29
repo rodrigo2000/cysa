@@ -41,11 +41,12 @@
                     <a class="list-group-item" href="<?= $this->module['documentos_url'] . "/OED"; ?>">Oficio de Envío de Documentos (OED)</a>
                 <?php endif; ?>
                 <a class="list-group-item" href="<?= $this->module['url'] . "/portada"; ?>">Imprimir portada o guarda exterior</a>
+                <a class="list-group-item" href="#">Responsabilidad Administrativa</a>
             </div>
         </div>
         <div class="card">
             <div class="card-block">
-                <h4 class="card-title">Actas</h4>
+                <h4 class="card-title">Oficios generales</h4>
             </div>
             <div class="list-group">
                 <a class="list-group-item" href="<?= $this->module['documentos_url'] . "/ORP"; ?>">Oficio de Resolución de Prórroga (ORP)</a>
@@ -55,12 +56,12 @@
         </div>
         <div class="card">
             <div class="card-block">
-                <h4 class="card-title">Oficios generales</h4>
+                <h4 class="card-title">Actas</h4>
             </div>
             <div class="list-group">
                 <a class="list-group-item" href="<?= $this->module['documentos_url'] . "/ARA"; ?>">Acta de Resultados (ARA/ARR)</a>
                 <a class="list-group-item" href="<?= $this->module['documentos_url'] . "/ACEI"; ?>">Acta de Cierre de Entrega de Información (ACEI)</a>
-                <a class="list-group-item" href="<?= $this->module['documentos_url'] . "/AA"; ?>">Autirozación Administrativa (AA)</a>
+                <a class="list-group-item" href="<?= $this->module['documentos_url'] . "/AA"; ?>">Acta Administrativa (AA)</a>
             </div>
         </div>
     </div>
