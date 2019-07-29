@@ -17,15 +17,19 @@ class Oficios extends MY_Controller {
         $this->_initialize();
     }
 
+    /**
+     * Esta función NO ACTUALIZA NINGÚN VALOR EN LA BASE DE DATOS, solo sirve para devolverle al componente
+     * los valores que debe mostrar
+     */
     function actualizar_campo_de_oficio() {
         $return = array('state' => 'success');
-        $id = $this->input->post('pk');
-        $nombre_campo = $this->input->post("name");
+        $documentos_id = $this->input->post('pk');
+        $constante = $this->input->post("name");
         $valor = $this->input->post("value");
 
         $return['nuevo_valor_por_mostrar'] = mysqlDate2OnlyDate($valor);
         $return['nuevo_valor_guardado'] = $valor;
-        $return['nombre_campo'] = $nombre_campo;
+        $return['nombre_campo'] = $constante;
 
         header("Content-type: application/json");
         echo json_encode($return);
