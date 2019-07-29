@@ -5,7 +5,7 @@ $(document).ready(function () {
     $(".autosize").each(function (index, element) {
         autosize(element);
     });
-    $(".nav-tabs").on("click", "a", function (e) {
+    $(".nav-tabs").on("click", "> li > a", function (e) {
         e.preventDefault();
         if (!$(this).hasClass('add-contact')) {
             $(this).tab('show');
