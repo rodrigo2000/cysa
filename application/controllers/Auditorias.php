@@ -257,13 +257,13 @@ class Auditorias extends MY_Controller {
             }
             $datos[$index]['inicio'] = $datos[$index]['fin'] = SIN_ESPECIFICAR_BOLD;
             if (!empty($r['auditorias_fechas_inicio_programado'])) {
-                $datos[$index]['inicio'] = "P: " . mysqlDate2Date($r['auditorias_fechas_inicio_programado'], TRUE, '/') . "<br>R: " . mysqlDate2Date($r['auditorias_fechas_inicio_real'], TRUE, '/');
+                $datos[$index]['inicio'] = "P: " . mysqlDate2Date($r['auditorias_fechas_inicio_programado'], TRUE, '/') . (!empty($r['auditorias_fechas_inicio_real']) ? "<br>R: " . mysqlDate2Date($r['auditorias_fechas_inicio_real'], TRUE, '/') : '');
                 if ($r['auditorias_fechas_inicio_programado'] === $r['auditorias_fechas_inicio_real']) {
                     $datos[$index]['inicio'] = mysqlDate2Date($r['auditorias_fechas_inicio_real'], TRUE, '/');
                 }
             }
             if (!empty($r['auditorias_fechas_fin_programado'])) {
-                $datos[$index]['fin'] = "P: " . mysqlDate2Date($r['auditorias_fechas_fin_programado'], TRUE, '/') . "<br>R: " . mysqlDate2Date($r['auditorias_fechas_fin_real'], TRUE, '/');
+                $datos[$index]['fin'] = "P: " . mysqlDate2Date($r['auditorias_fechas_fin_programado'], TRUE, '/') . (!empty($r['auditorias_fechas_fin_real']) ? "<br>R: " . mysqlDate2Date($r['auditorias_fechas_fin_real'], TRUE, '/') : '');
                 if ($r['auditorias_fechas_fin_programado'] === $r['auditorias_fechas_fin_real']) {
                     $datos[$index]['fin'] = mysqlDate2Date($r['auditorias_fechas_fin_real'], TRUE, '/');
                 }
