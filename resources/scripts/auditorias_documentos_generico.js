@@ -221,9 +221,11 @@ function get_form_data(async = false) {
     data.headers_id = $(".dd-selected-value", "#headers_id").attr('value');
     data.footers_id = $(".dd-selected-value", "#footers_id").attr('value');
     var oficio = $("#oficio-hoja").clone(true);
-    // Eliminamos elementos del oficios que no son necesarios
+    // Eliminamos elementos del oficios (el que se guardará en HTML) que no son necesarios para que el HTML quede lo
+    // más limpio que se pueda.
     $("button,.btn,.autocomplete_empleados_delete,.hidden-print,.watermark,input[type=hidden]", oficio).remove();
-    $('.resaltar, .editable, .bg-white>span', oficio).each(function (index, element) {
+    $(".xeditable", oficio).editable("destroy");
+    $(".resaltar, .editable, .bg-white>span", oficio).each(function (index, element) {
         let txt = $(element).text();
         $(element).replaceWith(txt);
     });
@@ -233,6 +235,7 @@ function get_form_data(async = false) {
         div.parent('td').addClass('text-xs-center');
         div.replaceWith(obj);
     });
+    /////////////////////////////////////////////////////////////////////////
     data.constantes = $.extend({}, data.constantes);
     $(".editable, span[name^=constantes]", "#frmOficios").each(function (index, element) {
         var id = $(element).prop('id');
