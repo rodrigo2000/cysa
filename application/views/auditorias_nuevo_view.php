@@ -1,16 +1,4 @@
 <?php
-if ($accion === 'modificar' && isset($r) && isset($r['auditorias_id'])) {
-    $aux = $this->Auditorias_fechas_model->get_primera_etapa($r['auditorias_id']);
-    if (empty($aux)) {
-        $aux = array(
-            'auditorias_fechas_inicio_programado' => NULL,
-            'auditorias_fechas_inicio_real' => NULL,
-            'auditorias_fechas_fin_programado' => NULL,
-            'auditorias_fechas_fin_real' => NULL
-        );
-    }
-    $r = array_merge($r, $aux);
-}
 $is_asignar_consecutivo = FALSE;
 if ($this->input->server('REQUEST_METHOD') === "POST" && $this->input->post('asignar_consecutivo') == 1) {
     $is_asignar_consecutivo = TRUE;

@@ -13,6 +13,15 @@ class Auditorias_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
+    function get_uno($id) {
+        $return = array();
+        if (!empty($id)) {
+            $this->db->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . "." . $this->id_field, "LEFT");
+            $return = parent::get_uno($id);
+        }
+        return $return;
+    }
+
     function insert($data) {
         $data2 = $fechas = array();
         foreach ($data as $index => $d) {
@@ -119,7 +128,7 @@ class Auditorias_model extends MY_Model {
                 ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_siglas, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
                 ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas")
                 ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
-                ->join("auditorias_fechas_2 af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")
+                ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = " . $this->table_prefix . ".auditorias_auditor_lider", "LEFT")->select("e.*,CONCAT(e.empleados_nombre,' ',e.empleados_apellido_paterno, ' ',e.empleados_apellido_materno) AS 'nombre_completo'")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . $this->table_prefix . ".auditorias_cc_id ", "LEFT")->select("cc_id, cc_periodos_id, cc_direcciones_id, cc_subdirecciones_id, cc_departamentos_id, cc_etiqueta_direccion, cc_etiqueta_subdireccion, cc_etiqueta_departamento")
                 ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_is_descentralizada, direcciones_ubicacion")

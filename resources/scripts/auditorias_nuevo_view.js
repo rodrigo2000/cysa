@@ -22,7 +22,6 @@ $(document).ready(function () {
         }
         $("#" + alternativo).val(picker.startDate.format("YYYY-MM-DD")).trigger("change");
     });
-
     $("select#direccion").on("change", function () {
         idDireccion = parseInt(this.value, 10);
         if (idDireccion > 0) {
@@ -44,8 +43,6 @@ $(document).ready(function () {
             $("select#departamento").html('').attr("disabled", true);
         }
     });
-
-
     $("select#subdireccion").on("change", function () {
         idDireccion = $("select#direccion").val();
         idSubdireccion = parseInt(this.value);
@@ -66,12 +63,14 @@ $(document).ready(function () {
             $("select#departamento").html('').attr("disabled", true);
         }
     });
-
     $("#asignar_consecutivo").on('change', function () {
         get_consecutivo();
     });
     $("#auditorias_segundo_periodo").on('change', function () {
         get_consecutivo();
+    });
+    $("#numero_auditoria").on('blur', function () {
+        $("#auditorias_numero").val(this.value);
     });
 });
 

@@ -58,32 +58,28 @@ class Auditorias extends MY_Controller {
     }
 
     function nuevo($data = array(), $modal = FALSE) {
-        $this->module['function'] = ucfirst(__FUNCTION__);
-        $periodo_actual = $this->SAC_model->get_ultimo_periodo();
+        $periodo = $this->SAC_model->get_ultimo_periodo();
+        $periodos_id = $periodo['periodos_id'];
         $data = array(
             'areas' => $this->Auditorias_areas_model->get_todos(),
             'tipos' => $this->Auditorias_tipos_model->get_todos(),
             'anios' => array(date("Y") - 1, date("Y"), date("Y") + 1),
             'periodos' => $this->SAC_model->get_periodos(),
-            'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodo_actual['periodos_id']),
+            'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodo['periodos_id']),
             'subdirecciones' => array(),
             'departamentos' => array(),
-            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc($periodo_actual),
-            'periodo_actual' => $periodo_actual
+            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc($periodos_id),
+            'periodo_actual' => $periodo
         );
         parent::nuevo($data);
     }
 
     function modificar($id = NULL, $data = array()) {
-        $res = $this->db
-                ->select($this->module['prefix'] . ".*")
-                ->where($this->module['prefix'] . "." . $this->module['id_field'], $id)
-                ->get($this->module['tabla'] . " " . $this->module['prefix']);
-        $r = $res->row_array();
-        $periodos_id = intval($r['auditorias_periodos_id']);
-        $direcciones_id = intval($r['auditorias_direcciones_id']);
-        $subdirecciones_id = intval($r['auditorias_subdirecciones_id']);
-        $departamentos_id = intval($r['auditorias_departamentos_id']);
+        $auditoria = $this->Auditorias_model->get_uno($id);
+        $periodos_id = intval($auditoria['auditorias_periodos_id']);
+        $direcciones_id = intval($auditoria['auditorias_direcciones_id']);
+        $subdirecciones_id = intval($auditoria['auditorias_subdirecciones_id']);
+        $departamentos_id = intval($auditoria['auditorias_departamentos_id']);
         $data = array(
             'areas' => $this->Auditorias_areas_model->get_todos(),
             'tipos' => $this->Auditorias_tipos_model->get_todos(),
@@ -93,7 +89,7 @@ class Auditorias extends MY_Controller {
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
             'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc($periodos_id),
-            'r' => $r
+            'r' => $auditoria
         );
         parent::modificar($id, $data);
     }
@@ -216,12 +212,13 @@ class Auditorias extends MY_Controller {
         }
 
         if (!empty($direcciones_id) && $direcciones_id != 0) {
-            $cc_id = 0;
-            $ccs = $this->SAC_model->get_cc_asociados_a_direccion($direcciones_id);
+            $cc_id = NULL;
+            $periodos_id = 2;
+            $ccs = $this->SAC_model->get_cc_asociados_a_direccion($direcciones_id, $periodos_id);
             if (!empty($ccs)) {
                 $cc_id = array_column($ccs, 'cc_id');
+                $this->db->where_in('cc_id', $cc_id);
             }
-            $this->db->where_in('cc_id', $cc_id);
         }
         $result = $this->Auditorias_model->get_auditorias_ajax($search, $columns, $order);
         if (is_array($result['result'])) {

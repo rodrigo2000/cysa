@@ -378,7 +378,7 @@ class SAC_model extends MY_Model {
             $result = $this->dbSAC
                     ->select("cc_id")
                     ->where("cc_periodos_id", $periodos_id)
-                    ->where("cc_etiqueta_direccion", $direcciones_id)
+                    ->where("cc_direcciones_id", $direcciones_id)
                     ->get("centros_costos");
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();

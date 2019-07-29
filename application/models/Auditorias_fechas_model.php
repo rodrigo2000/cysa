@@ -13,50 +13,21 @@ class Auditorias_fechas_model extends MY_Model {
         $this->model_name = __CLASS__;
     }
 
-    function get_ultima_etapa($auditorias_id) {
-        $return = array();
-        if (!empty($auditorias_id)) {
-            $result = $this->db
-                    ->where("auditorias_fechas_auditorias_id", $auditorias_id)
-                    ->limit(1)
-                    ->order_by("auditorias_fechas_etapa", "DESC")
-                    ->get("auditorias_fechas");
-            if ($result && $result->num_rows() > 0) {
-                $return = $result->row_array();
-            }
-        }
-        return $return;
-    }
-
-    function get_primera_etapa($auditorias_id) {
-        $return = array();
-        if (!empty($auditorias_id)) {
-            $result = $this->db
-                    ->where("auditorias_fechas_auditorias_id", $auditorias_id)
-                    ->limit(1)
-                    ->order_by("auditorias_fechas_etapa", "ASC")
-                    ->get("auditorias_fechas");
-            if ($result && $result->num_rows() > 0) {
-                $return = $result->row_array();
-            }
-        }
-        return $return;
-    }
-
-    function get_fechas_de_auditoria($auditorias_id = NULL, $etapas_id = NULL) {
+    /**
+     * Función que devuelve todas las fechas de una auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
+     * @return array Arreglo que contiene las fechas de una auditoría
+     */
+    function get_fechas_de_auditoria($auditorias_id = NULL) {
         $return = array();
         if (empty($auditorias_id)) {
             $session = $this->session->userdata(APP_NAMESPACE);
             $auditorias_id = $session['auditorias_id'];
         }
         if (!empty($auditorias_id)) {
-            if (!empty($etapas_id)) {
-                $this->db->where("auditorias_fechas_etapa", $etapas_id);
-            }
             $result = $this->db
                     ->where("auditorias_fechas_auditorias_id", $auditorias_id)
-                    ->order_by("auditorias_fechas_etapa", "ASC")
-                    ->get("auditorias_fechas");
+                    ->get($this->table_name);
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
             }

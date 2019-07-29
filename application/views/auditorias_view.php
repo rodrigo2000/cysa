@@ -28,7 +28,7 @@
                     <select id="auditorias_area" name="auditorias_area" class="form-control">
                         <option value="0" selected="selected">Área</option>
                         <?php foreach ($areas as $a): ?>
-                            <option value="<?= $a['auditorias_areas_siglas']; ?>"><?= $a['auditorias_areas_siglas']; ?></option>
+                            <option value="<?= $a['auditorias_areas_id']; ?>"><?= $a['auditorias_areas_siglas']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -37,7 +37,7 @@
                     <select id="auditorias_tipo" name="auditorias_tipo" class="form-control">
                         <option value="0" selected="selected">Tipo</option>
                         <?php foreach ($tipos as $t): ?>
-                            <option value="<?= $t['auditorias_tipos_nombre']; ?>"><?= $t['auditorias_tipos_nombre']; ?></option>
+                            <option value="<?= $t['auditorias_tipos_id']; ?>"><?= $t['auditorias_tipos_nombre']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
