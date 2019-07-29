@@ -330,13 +330,45 @@ class Auditoria extends MY_Controller {
     }
 
     function set_equipo_de_auditoria() {
-        $empleados_id = $this->input->post("empleados_id");
-        echo "<pre>" . print_r($empleados_id, true) . "</pre>";
+        $empleados = $this->input->post("empleados_id");
+        $cysa = $this->session->userdata(APP_NAMESPACE);
+        $auditorias_id = $cysa['auditorias_id'];
+        $this->Auditorias_equipo_model->eliminar_equipo_de_auditoria($auditorias_id);
+        if (!empty($empleados)) {
+            foreach ($empleados as $empleados_id) {
+                $insert = array(
+                    'auditorias_equipo_auditorias_id' => $auditorias_id,
+                    'auditorias_equipo_empleados_id' => $empleados_id,
+                    'auditorias_equipo_tipo' => TIPO_PERMISO_EQUIPO_TRABAJO
+                );
+                $return = $this->Auditorias_equipo_model->insert($insert);
+            }
+        } else {
+            $return['state'] = "success";
+        }
+        $return['success'] = $return['state'] === 'success' ? TRUE : FALSE;
+        echo json_encode($return);
     }
 
     function set_permisos_adicionales() {
-        $empleados_id = $this->input->post("empleados_id");
-        echo "<pre>" . print_r($empleados_id, true) . "</pre>";
+        $empleados = $this->input->post("empleados_id");
+        $cysa = $this->session->userdata(APP_NAMESPACE);
+        $auditorias_id = $cysa['auditorias_id'];
+        $this->Auditorias_equipo_model->eliminar_equipo_adicional_auditoria($auditorias_id);
+        if (!empty($empleados)) {
+            foreach ($empleados as $empleados_id) {
+                $insert = array(
+                    'auditorias_equipo_auditorias_id' => $auditorias_id,
+                    'auditorias_equipo_empleados_id' => $empleados_id,
+                    'auditorias_equipo_tipo' => TIPO_PERMISO_EQUIPO_TRABAJO
+                );
+                $return = $this->Auditorias_equipo_model->insert($insert);
+            }
+        } else {
+            $return['state'] = "success";
+        }
+        $return['success'] = $return['state'] === 'success' ? TRUE : FALSE;
+        echo json_encode($return);
     }
 
     function autorizar($documentos_id = NULL) {
