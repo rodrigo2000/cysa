@@ -110,6 +110,7 @@ class Documentos extends MY_Controller {
         }
         $this->Documentos_model->update($documentos_id, array('documentos_logotipos_id' => $logotipos_id));
         $constantes = array_map('trim', $constantes);
+        $constantes = array_map('strip_tags',$constantes);
         foreach ($constantes as $constantes_id => $valor) {
             $insert = array(
                 'documentos_valores_documentos_constantes_id' => $constantes_id,
