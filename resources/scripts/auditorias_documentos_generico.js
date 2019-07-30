@@ -215,6 +215,11 @@ $(document).ready(function () {
         $(this).html(opciones[n]).trigger('change', [n]);
         event.stopPropagation();
     });
+
+    // Aplicamos que el PEGAR sea sin formato
+    $("span.editable[contenteditable]").each(function (index, element) {
+        element.addEventListener("paste", handlePaste);
+    });
 });
 function get_form_data(async = false) {
     var data = $("#frmOficios").serializeObject();
@@ -419,4 +424,29 @@ function ocultar_span(id, obj) {
                 .removeClass('hidden-xs-up');
     }
     return false;
+}
+
+function insertTextAtCursor(text) {
+    var sel, range, html;
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(document.createTextNode(text));
+        }
+    } else if (document.selection && document.selection.createRange) {
+        document.selection.createRange().text = text;
+    }
+}
+
+function handlePaste(e) {
+    e.preventDefault();
+    if (e.clipboardData && e.clipboardData.getData) {
+        var text = e.clipboardData.getData("text/plain");
+        document.execCommand("insertText", false, text);
+    } else if (window.clipboardData && window.clipboardData.getData) {
+        var text = window.clipboardData.getData("Text");
+        insertTextAtCursor(text);
+    }
 }
