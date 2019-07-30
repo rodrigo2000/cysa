@@ -22,33 +22,41 @@ echo validation_errors();
                 <fieldset class="form-group">
                     <label for="area" class="col-sm-2 form-control-label">Número de auditoría</label>
                     <div class="col-sm-10">
-                        <div class="input-group">
-                            <select id="auditorias_area" name="auditorias_area" class="form-control">
-                                <option value="0">Área</option>
-                                <?php foreach ($areas as $a): ?>
-                                    <option value="<?= $a['auditorias_areas_id']; ?>"<?= isset($r) && $r['auditorias_area'] === $a['auditorias_areas_id'] ? ' selected="selected"' : ''; ?>><?= $a['auditorias_areas_siglas']; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="input-group-addon">/</div>
-                            <select id="auditorias_tipo" name="auditorias_tipo" class="form-control">
-                                <option value="0">Tipo</option>
-                                <?php foreach ($tipos as $t): ?>
-                                    <option value="<?= $t['auditorias_tipos_id']; ?>"<?= isset($r) && $r['auditorias_tipo'] === $t['auditorias_tipos_id'] ? ' selected="selected"' : ''; ?>><?= $t['auditorias_tipos_siglas'] . " (" . $t['auditorias_tipos_nombre'] . ")"; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="input-group-addon">/</div>
-                            <input type="text" id="numero_auditoria" class="form-control" value="<?= isset($r) && intval($r['auditorias_numero']) > 0 ? $r['auditorias_numero'] : ''; ?>" placeholder="Número" <?= $is_asignar_consecutivo ? 'disabled="disabled"' : ''; ?>>
-                            <input type="hidden" id="auditorias_numero" name="auditorias_numero" value="<?= isset($r) && intval($r['auditorias_numero']) > 0 ? $r['auditorias_numero'] : ''; ?>">
-                            <div class="input-group-addon">/</div>
-                            <select id="auditorias_anio" name="auditorias_anio" class="form-control">
-                                <?php foreach ($anios as $a): ?>
-                                    <option value="<?= $a; ?>" <?= isset($r) ? ($r['auditorias_anio'] == $a ? 'selected="selected"' : '') : ($a == date("Y") ? 'selected="selected"' : ''); ?>><?= $a; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <?= form_error('auditorias_area'); ?>
-                        <?= form_error('auditorias_tipo'); ?>
-                        <?= form_error('auditorias_numero'); ?>
+                        <?php if (isset($r, $r['auditorias_fechas_sello_orden_entrada']) && empty($r['auditorias_fechas_sello_orden_entrada'])): ?>
+                            <div class="input-group">
+                                <select id="auditorias_area" name="auditorias_area" class="form-control">
+                                    <option value="0">Área</option>
+                                    <?php foreach ($areas as $a): ?>
+                                        <option value="<?= $a['auditorias_areas_id']; ?>"<?= isset($r) && $r['auditorias_area'] === $a['auditorias_areas_id'] ? ' selected="selected"' : ''; ?>><?= $a['auditorias_areas_siglas']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <div class="input-group-addon">/</div>
+                                <select id="auditorias_tipo" name="auditorias_tipo" class="form-control">
+                                    <option value="0">Tipo</option>
+                                    <?php foreach ($tipos as $t): ?>
+                                        <option value="<?= $t['auditorias_tipos_id']; ?>"<?= isset($r) && $r['auditorias_tipo'] === $t['auditorias_tipos_id'] ? ' selected="selected"' : ''; ?>><?= $t['auditorias_tipos_siglas'] . " (" . $t['auditorias_tipos_nombre'] . ")"; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <div class="input-group-addon">/</div>
+                                <input type="text" id="numero_auditoria" class="form-control" value="<?= isset($r) && intval($r['auditorias_numero']) > 0 ? $r['auditorias_numero'] : ''; ?>" placeholder="Número" <?= $is_asignar_consecutivo ? 'disabled="disabled"' : ''; ?>>
+                                <input type="hidden" id="auditorias_numero" name="auditorias_numero" value="<?= isset($r) && intval($r['auditorias_numero']) > 0 ? $r['auditorias_numero'] : ''; ?>">
+                                <div class="input-group-addon">/</div>
+                                <select id="auditorias_anio" name="auditorias_anio" class="form-control">
+                                    <?php foreach ($anios as $a): ?>
+                                        <option value="<?= $a; ?>" <?= isset($r) ? ($r['auditorias_anio'] == $a ? 'selected="selected"' : '') : ($a == date("Y") ? 'selected="selected"' : ''); ?>><?= $a; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <?= form_error('auditorias_area'); ?>
+                            <?= form_error('auditorias_tipo'); ?>
+                            <?= form_error('auditorias_numero'); ?>
+                        <?php else: ?>
+                            <span class="lead"><?= ($r['numero_auditoria']); ?></span>
+                            <input type="hidden" name="auditorias_area" value="<?= $r['auditorias_area']; ?>">
+                            <input type="hidden" name="auditorias_tipo" value="<?= $r['auditorias_tipo']; ?>">
+                            <input type="hidden" name="auditorias_numero" value="<?= $r['auditorias_numero']; ?>">
+                            <input type="hidden" name="auditorias_anio" value="<?= $r['auditorias_anio']; ?>">
+                        <?php endif; ?>
                     </div>
                 </fieldset>
                 <fieldset class="form-group">

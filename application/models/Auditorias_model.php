@@ -16,7 +16,12 @@ class Auditorias_model extends MY_Model {
     function get_uno($id) {
         $return = array();
         if (!empty($id)) {
-            $this->db->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . "." . $this->id_field, "LEFT");
+            $this->db
+                    ->select($this->table_prefix . ".*")
+                    ->select("CONCAT(IF(" . $this->table_prefix . ".auditorias_segundo_periodo=1,'2',''), aa.auditorias_areas_siglas, '/', at.auditorias_tipos_siglas, '/', LPAD(a.auditorias_numero,3,'0'), '/', " . $this->table_prefix . ".auditorias_anio) AS 'numero_auditoria'")
+                    ->join("auditorias_areas aa", "aa.auditorias_areas_id = a.auditorias_area", "INNER")->select("aa.auditorias_areas_siglas, aa.auditorias_areas_nombre")
+                    ->join("auditorias_tipos at", "at.auditorias_tipos_id = a.auditorias_tipo", "INNER")->select("at.auditorias_tipos_nombre, at.auditorias_tipos_siglas")
+                    ->join("auditorias_fechas af", "af.auditorias_fechas_auditorias_id = " . $this->table_prefix . ".auditorias_id", "LEFT")->select("af.*");
             $return = parent::get_uno($id);
         }
         return $return;

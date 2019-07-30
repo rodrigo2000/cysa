@@ -52,6 +52,14 @@ class Documentos extends MY_Controller {
             }
         }
         switch ($documentos_tipos_id) {
+            case TIPO_DOCUMENTO_ORDEN_AUDITORIA:
+                if (isset($constantes[ORD_ENT_REQUERIMIENTOS_SI])) {
+                    $constantes[ORD_ENT_REQUERIMIENTOS_SI] = str_replace("&nbsp;", " ", $constantes[ORD_ENT_REQUERIMIENTOS_SI]);
+                }
+                if (isset($constantes[ORD_ENT_CCP])) {
+                    $constantes[ORD_ENT_CCP] = str_replace("&nbsp;", " ", $constantes[ORD_ENT_CCP]);
+                }
+                break;
             case TIPO_DOCUMENTO_ACTA_INICIO_AUDITORIA:
                 if (!isset($constantes[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS])) { // ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS
                     $constantes[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] = 0;
@@ -110,7 +118,17 @@ class Documentos extends MY_Controller {
         }
         $this->Documentos_model->update($documentos_id, array('documentos_logotipos_id' => $logotipos_id));
         $constantes = array_map('trim', $constantes);
-        $constantes = array_map('strip_tags',$constantes);
+        foreach ($constantes as $index => $c) {
+            switch ($index) {
+                case 177: // ORD_ENT_REQUERIMIENTOS_SI
+                case 184: // ORD_ENT_CCP
+                    $constantes[$index] = strip_tags($c, '<br>');
+                    break;
+                default :
+                    $constantes[$index] = strip_tags($c);
+                    break;
+            }
+        }
         foreach ($constantes as $constantes_id => $valor) {
             $insert = array(
                 'documentos_valores_documentos_constantes_id' => $constantes_id,
