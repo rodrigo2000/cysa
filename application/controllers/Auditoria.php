@@ -393,12 +393,12 @@ class Auditoria extends MY_Controller {
             $informacion['state'] = 'success';
             $informacion['message'] = 'Documento autorizado';
             $documento = $this->Documentos_model->get_documento($documentos_id);
-            $fecha = $documento['valores'][ORD_ENT_FECHA];
-            $this->db
-                    ->set("auditorias_fechas_sello_orden_entrada", $fecha)
-                    ->set("auditorias_fechas_inicio_real", $fecha)
-                    ->where("auditorias_fechas_auditorias_id", $documento['documentos_auditorias_id'])
-                    ->update("auditorias_fechas");
+//            $fecha = $documento['valores'][ORD_ENT_FECHA];
+//            $this->db
+//                    ->set("auditorias_fechas_sello_orden_entrada", $fecha)
+//                    ->set("auditorias_fechas_inicio_real", $fecha)
+//                    ->where("auditorias_fechas_auditorias_id", $documento['documentos_auditorias_id'])
+//                    ->update("auditorias_fechas");
         }
         $this->session->set_flashdata('informacion', $informacion);
         if (!empty($documentos_tipo)) {
