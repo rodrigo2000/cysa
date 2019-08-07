@@ -407,3 +407,69 @@ function my_strip_tags($html = NULL) {
     }
     return $txt;
 }
+
+/**
+ * Regresa la cantidad de días entres dos fechas proporcionadas
+ * @param string $fecha1 Cadena de fecha en formato YYYY-MM-DD
+ * @param string $fecha2 Cadena de fecha en formato YYYY-MM-DD
+ * @return integer Número de dias entre las fechas. Si el número es positivo significa que fecha1 es mayor a fecha. Si el número es negativo significa que fecha2 es mayor a fecha1.
+ */
+function diferencia_entre_fechas($fecha1, $fecha2) {
+    if (empty($fecha1) || empty($fecha2)) {
+        return NULL;
+    }
+    $date1 = strtotime($fecha1);
+    $date2 = strtotime($fecha2);
+    $subTime = $date2 - $date1;
+    $y = ($subTime / (60 * 60 * 24 * 365));
+    $d = ($subTime / (60 * 60 * 24)) % 365;
+    $h = ($subTime / (60 * 60)) % 24;
+    $m = ($subTime / 60) % 60;
+
+//    echo "Difference between " . date('Y-m-d H:i:s', $date1) . " and " . date('Y-m-d H:i:s', $date2) . " is:\n";
+//    echo $y . " years\n";
+//    echo $d . " days\n";
+//    echo $h . " hours\n";
+//    echo $m . " minutes\n";
+
+    $fecha1 = new DateTime($fecha1);
+    $fecha2 = new DateTime($fecha2);
+    $signo = "+";
+    if ($fecha1 > $fecha2) {
+        $signo = "-";
+    }
+
+    return intval($signo . abs($d));
+}
+
+/**
+ * Regresa la cantidad de días hábiles entre dos fechas
+ * @param string $fecha1 Cadena de fecha en formato YYYY-MM-DD
+ * @param string $fecha2 Cadena de fecha en formato YYYY-MM-DD
+ * @return integer Cantidad de días hábiles
+ */
+function get_dias_habiles_entre_fechas($fecha1, $fecha2) {
+    $dias = 0;
+    if (empty($fecha1) || empty($fecha2)) {
+        return NULL;
+    }
+    $fecha1 = strtotime($fecha1);
+    $fecha2 = strtotime($fecha2);
+
+    $signo = "";
+    if ($fecha1 > $fecha2) {
+        $aux = $fecha1;
+        $fecha1 = $fecha2;
+        $fecha2 = $aux;
+        $signo = "-";
+    }
+
+    for ($fecha1; $fecha1 < $fecha2; $fecha1 = strtotime('+1 day ' . date('Y-m-d', $fecha1))) {
+        $dia = date("N", $fecha1);
+        if ($dia < 6) {
+            $dias++;
+        }
+    }
+
+    return intval($signo . $dias);
+}

@@ -69,13 +69,19 @@ function mysqlDate2Date($f, $addBR = TRUE, $join = ' de ') {  // yyyy-mm-dd H:m:
     return $cadena;
 }
 
+/**
+ * Convierte una variable Fecha/hora en su represetación de fecha legible para un humano
+ * @param date $f Fecha en formto YYYY-MM-DD HH:MM:SS
+ * @param boolean $addDayName Si es VERDADERO se antepone el nombre del d�a a la fecha
+ * @return string Devuelve la fecha en su representación de frase la cual es legible con más facilidad por un ser humano
+ */
 function mysqlDate2OnlyDate($f, $addDayName = FALSE) { // yyyy-mm-dd H:m:ss    ==>     Lunes, 13 de Febrero de 2015
     $cadena = "";
     if (!empty($f)) {
         $pos = strpos($f, " ");
         $fecha = "";
         if ($pos !== false) {
-            list($fecha, $hora) = explode(" ", $f);
+            list ($fecha, $hora) = explode(" ", $f);
         } else {
             $fecha = $f;
         }
@@ -84,7 +90,7 @@ function mysqlDate2OnlyDate($f, $addDayName = FALSE) { // yyyy-mm-dd H:m:ss    =
             list($a, $m, $d) = preg_split("/[\/|-]/", $fecha);
             $dateVal = new DateTime($a . "-" . $m . "-" . $d);
             $dia = $dateVal->format("w"); // w = 0 (para domingo) hasta 6 (para sábado)
-            $cadena = ($addDayName ? getNombreDelDia($dia) . ', ' : '') . $d . ' de ' . getNombreDelMes($m) . ' de ' . $a;
+            $cadena = ($addDayName ? getNombreDelDia($dia) . ', ' : '' ) . $d . ' de ' . getNombreDelMes($m) . ' de ' . $a;
         }
     }
     return $cadena;
@@ -408,10 +414,10 @@ function get_nombre_titulado(&$empleado) {
 }
 
 /**
- * Agrega la cantidad de daas hábiles a una fecha especificada.
+ * Agrega la cantidad de días hábiles a una fecha especificada.
  * @param date $fechaInicio Fecha base en formato YYYY-MM-DD.
  * @param integer $dias Cantidad de días hábiles a agregar o quitar a la fecha
- * @param boolean $solo_habiles TRUE para indicar que agregue o quite dias hábiles. FALSE para agregar todos los días
+ * @param boolean $solo_habiles TRUE para indicar que agregue o quite días hábiles. FALSE para agregar todos los días
  * @return string Devuelve la fecha con la cantidad de días agregados
  */
 function agregar_dias($fechaInicio, $dias, $solo_habiles = TRUE) {
@@ -428,7 +434,11 @@ function agregar_dias($fechaInicio, $dias, $solo_habiles = TRUE) {
             $fechaFin = $DT_FechaFin->format('Y-m-d');
             $isWeekend = is_fin_de_semana($fechaFin);
         }
-        $dias--;
+        if ($dias > 0) {
+            $dias--;
+        } else {
+            $dias++;
+        }
     }
     $dias_inhabiles = get_dias_inabiles_entre_fechas($fechaInicio, $fechaFin);
     foreach ($dias_inhabiles as $dh) {
