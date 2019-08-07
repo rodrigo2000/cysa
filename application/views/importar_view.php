@@ -10,7 +10,7 @@
                     <div class="form-check">
                         <label class="form-check-label">
                             <input class="form-check-input" type="checkbox" name="catalogo[]" value="documentos_tipos">
-                            Catálogo de Tipos de documentos
+                            Catálogo de Tipos de documentos <span class="label label-danger">Cuidado!</span>
                             <span id="documentos_tipos"></span>
                         </label>
                     </div>
@@ -91,20 +91,44 @@
     $(document).ready(function () {
         $("#btn-importar").click(function () {
             let d = $("#frm-importar").serializeArray();
+            var urls = [];
             $.each(d, function (index, element) {
-                $("#" + element.value)
-                        .html('<i class="fa fa-spinner fa-pulse fa-fw"></i>')
-                        .removeClass();
-                let data = {'catalogo[]': element.value};
-                $.post(base_url + controller + "/iniciar_importacion", data, function (json) {
-                    if (json.success) {
-                        $("#" + json.id)
-//                                .html('<i class="fa fa-check" title="' + json.message + '"></i>')
-                                .html('<i class="material-icons" aria-hidden="true" title="' + json.message + '">check</i>')
-                                .addClass("label label-success");
-                    }
-                }, "json");
+                urls.push(element.value);
             });
+            ajaxRequest(urls);
+//            $.each(d, function (index, element) {
+//                $("#" + element.value)
+//                        .html('<i class="fa fa-spinner fa-pulse fa-fw"></i>')
+//                        .removeClass();
+//                let data = {'catalogo[]': element.value};
+//                $.post(base_url + controller + "/iniciar_importacion", data, function (json) {
+//                    if (json.success) {
+//                        $("#" + json.id)
+////                                .html('<i class="fa fa-check" title="' + json.message + '"></i>')
+//                                .html('<i class="material-icons" aria-hidden="true" title="' + json.message + '">check</i>')
+//                                .addClass("label label-success");
+//                    }
+//                }, "json");
+//            });
         });
     });
+
+    function ajaxRequest(urls) {
+        if (urls.length > 0) {
+            var element = urls.shift();
+            var url = base_url + controller + "/iniciar_importacion";
+            $("#" + element)
+                    .html('<i class="fa fa-spinner fa-pulse fa-fw"></i>')
+                    .removeClass();
+            let data = {'catalogo[]': element};
+            $.post(url, data, function (json) {
+                if (json.success) {
+                    $("#" + json.id)
+                            .html('<i class="material-icons" aria-hidden="true" title="' + json.message + '">check</i>')
+                            .addClass("label label-success");
+                }
+                ajaxRequest(urls);
+            }, "json");
+        }
+    }
 </script>

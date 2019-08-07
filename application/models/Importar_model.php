@@ -59,6 +59,23 @@ class Importar_model extends MY_Model {
             array_push($batch, $insert);
         }
         $this->dbNuevoCYSA->insert_batch('documentos_tipos', $batch);
+        $update = array(
+            array('documentos_tipos_id' => 3, 'documentos_tipos_abreviacion' => 'ARA'),
+            array('documentos_tipos_id' => 4, 'documentos_tipos_abreviacion' => 'ORP'),
+            array('documentos_tipos_id' => 5, 'documentos_tipos_abreviacion' => 'ARR'),
+            array('documentos_tipos_id' => 6, 'documentos_tipos_abreviacion' => 'ARIC'),
+            array('documentos_tipos_id' => 7, 'documentos_tipos_abreviacion' => 'ARM'),
+            array('documentos_tipos_id' => 8, 'documentos_tipos_abreviacion' => 'ARRM'),
+            array('documentos_tipos_id' => 9, 'documentos_tipos_abreviacion' => 'OSI'),
+            array('documentos_tipos_id' => 10, 'documentos_tipos_abreviacion' => 'OE|OA'),
+            array('documentos_tipos_id' => 11, 'documentos_tipos_abreviacion' => 'ACEI'),
+            array('documentos_tipos_id' => 12, 'documentos_tipos_abreviacion' => 'OC'),
+            array('documentos_tipos_id' => 18, 'documentos_tipos_abreviacion' => 'OED'),
+            array('documentos_tipos_id' => 21, 'documentos_tipos_abreviacion' => 'AA'),
+            array('documentos_tipos_id' => 29, 'documentos_tipos_abreviacion' => 'AIA'),
+            array('documentos_tipos_id' => 31, 'documentos_tipos_abreviacion' => 'RAP'),
+        );
+        $this->dbNuevoCYSA->update_batch('documentos_tipos', $update, 'documentos_tipos_id');
         $return = "Catálogo de documentos importado.";
         if ($flush) {
             echo $return . "<br>";
@@ -153,7 +170,7 @@ class Importar_model extends MY_Model {
         $areas = array_column($aux, 'auditorias_areas_siglas', 'auditorias_areas_id');
         $aux = $this->dbNuevoCYSA->get("auditorias_tipos")->result_array();
         $tipos = array_column($aux, 'auditorias_tipos_siglas', 'auditorias_tipos_id');
-        $batch_aa = $batch_aaf = $batch_aafRev1 = $batch_aafRev2 = array();
+        $batch_auditorias = $batch_auditorias_fechas = array();
         foreach ($auditorias as $a) {
             $cc = $this->SAC_model->get_cc_por_etiquetas(2, $a['clv_dir'], $a['clv_subdir'], $a['clv_depto']);
             if (empty($cc)) {
@@ -181,7 +198,8 @@ class Importar_model extends MY_Model {
             if (!empty($ed)) {
                 $enlace_designado = $ed['empleados_id'];
             }
-            $aa = array(
+            $ahora = date("Y-m-d H:i:s");
+            $insert = array(
                 'auditorias_id' => $a['idAuditoria'],
                 'auditorias_origen_id' => $a['idAuditoriaOrigen'],
                 'auditorias_area' => array_search($a['area'], $areas),
@@ -211,79 +229,65 @@ class Importar_model extends MY_Model {
                 'fecha_update' => NULL,
                 'fecha_delete' => NULL,
             );
-            $aaf = array(
+            array_push($batch_auditorias, $insert);
+
+            $insert = array(
                 'auditorias_fechas_auditorias_id' => $a['idAuditoria'],
-                'auditorias_fechas_etapa' => 0,
+                // *********  ETAPA AUDITORIA PROGRAMADA  ********* */
                 'auditorias_fechas_inicio_programado' => $a['fechaIniAudit'],
                 'auditorias_fechas_inicio_real' => $a['fechaIniReal'],
                 'auditorias_fechas_fin_programado' => $a['fechaFinAudit'],
                 'auditorias_fechas_fin_real' => $a['fechaFinAudit'],
                 'auditorias_fechas_sello_orden_entrada' => $a['fechaSelloOEA'],
+                'auditorias_fechas_solicitud_informacion' => $a['fechas_envios_osi'],
+                'auditorias_fechas_sello_oficio_representante_designado' => $a['fechas_oficio_representante_designado'],
+                'auditorias_fechas_acei' => $a['fechas_acei'],
                 'auditorias_fechas_vobo_jefe' => $a['fechaAprovacionJ'],
                 'auditorias_fechas_vobo_subdirector' => $a['fechaAprovacionS'],
                 'auditorias_fechas_vobo_director' => $a['fechaAprovacion'],
+                'auditorias_fechas_citatorio' => $a['fechas_envio_citatorio'],
                 'auditorias_fechas_lectura' => $a['fechaLectura'],
                 'auditorias_fechas_oficio_envio_documentos' => $a['fechaOEDRes'],
-                'auditorias_fechas_recibe_informacion' => $a['fechas_oficio_representante_designado'],
-                'auditorias_fechas_sello_oficio_representante_designado' => $a['fechas_oficio_representante_designado'],
+                'auditorias_fechas_envio_evaluacion_general' => $a['fechas_evaluacion_general'],
+                // *********  ETAPA DE PRIMERA REVISION (Para auditorías menores a 2018)  *********
+                // *********  ETAPA DE SOLVENTACIÓN  *********
+                'auditorias_fechas_recibir_informacion_etapa_1' => $a['fechaRecibeInfoRev1'],
+                'auditorias_fechas_limite_recibir_informacion_etapa_1' => $a['fLimiteInfoRev1'],
+                'auditorias_fechas_inicio_programado_etapa_1' => $a['fechaIniRev1'],
+                'auditorias_fechas_inicio_real_etapa_1' => $a['fechaIniRealRev1'],
+                'auditorias_fechas_fin_programado_etapa_1' => $a['fechaFinRev1'],
+                'auditorias_fechas_fin_real_etapa_1' => $a['fechaFinRealRev1'],
+                'auditorias_fechas_vobo_jefe_etapa_1' => $a['fechaAprovacionRev1J'],
+                'auditorias_fechas_vobo_subdirector_etapa_1' => $a['fechaAprovacionRev1S'],
+                'auditorias_fechas_vobo_director_etapa_1' => $a['fechaAprovacionRev1'],
+                'auditorias_fechas_citatorio_etapa_1' => $a['fechas_envio_citatorioRev1'],
+                'auditorias_fechas_lectura_etapa_1' => $a['fechaLecturaRev1'],
+                'auditorias_fechas_oficio_envio_documentos_etapa_1' => $a['fechaOEDRev1'],
+                // *********  ETAPA DE SEGUNDA REVISIÓN (Para auditorías menores a 2018)  ********* */
+                'auditorias_fechas_recibir_informacion_etapa_2' => $a['fechaRecibeInfoRev2'],
+                'auditorias_fechas_limite_recibir_informacion_etapa_2' => $a['fLimiteInfoRev2'],
+                'auditorias_fechas_inicio_programado_etapa_2' => $a['fechaIniRev2'],
+                'auditorias_fechas_inicio_real_etapa_2' => $a['fechaIniRealRev2'],
+                'auditorias_fechas_fin_programado_etapa_2' => $a['fechaFinRev2'],
+                'auditorias_fechas_fin_real_etapa_2' => $a['fechaFinRealRev2'],
+                'auditorias_fechas_acei_etapa_2' => NULL,
+                'auditorias_fechas_vobo_jefe_etapa_2' => $a['fechaAprovacionRev2J'],
+                'auditorias_fechas_vobo_subdirector_etapa_2' => $a['fechaAprovacionRev2S'],
+                'auditorias_fechas_vobo_director_etapa_2' => $a['fechaAprovacionRev2'],
+                'auditorias_fechas_citatorio_etapa_2' => NULL,
+                'auditorias_fechas_lectura_etapa_2' => $a['fechaLecturaRev2'],
+                'auditorias_fechas_oficio_envio_documentos_etapa_2' => $a['fechaOEDRev2'],
+                // *********  OTROS  ********* */
+                'auditorias_fechas_compromiso_observaciones' => $a['fechasCompromisoObservaciones'],
+                // ***************************** */
+                'fecha_insert' => $ahora,
+                'fecha_update' => NULL,
+                'fecha_delete' => NULL,
             );
-
-            $aafRev1 = array(
-                'auditorias_fechas_auditorias_id' => $a['idAuditoria'],
-                'auditorias_fechas_etapa' => 1,
-                'auditorias_fechas_inicio_programado' => $a['fechaIniAudit'],
-                'auditorias_fechas_inicio_real' => $a['fechaIniRev1'],
-                'auditorias_fechas_fin_programado' => $a['fechaFinAudit'],
-                'auditorias_fechas_fin_real' => $a['fechaFinRev1'],
-                'auditorias_fechas_sello_orden_entrada' => $a['fechaSelloOEA'],
-                'auditorias_fechas_vobo_jefe' => $a['fechaAprovacionRev1J'],
-                'auditorias_fechas_vobo_subdirector' => $a['fechaAprovacionRev1S'],
-                'auditorias_fechas_vobo_director' => $a['fechaAprovacionRev1'],
-                'auditorias_fechas_lectura' => $a['fechaLecturaRev1'],
-                'auditorias_fechas_oficio_envio_documentos' => $a['fechaOEDRev1'],
-                'auditorias_fechas_recibe_informacion' => $a['fechas_oficio_representante_designado'],
-                'auditorias_fechas_sello_oficio_representante_designado' => $a['fechas_oficio_representante_designado'],
-            );
-
-            $aafRev2 = array(
-                'auditorias_fechas_auditorias_id' => $a['idAuditoria'],
-                'auditorias_fechas_etapa' => 2,
-                'auditorias_fechas_inicio_programado' => $a['fechaIniAudit'],
-                'auditorias_fechas_inicio_real' => $a['fechaIniRev2'],
-                'auditorias_fechas_fin_programado' => $a['fechaFinAudit'],
-                'auditorias_fechas_fin_real' => $a['fechaFinRev2'],
-                'auditorias_fechas_sello_orden_entrada' => $a['fechaSelloOEA'],
-                'auditorias_fechas_vobo_jefe' => $a['fechaAprovacionRev2J'],
-                'auditorias_fechas_vobo_subdirector' => $a['fechaAprovacionRev2S'],
-                'auditorias_fechas_vobo_director' => $a['fechaAprovacionRev2'],
-                'auditorias_fechas_lectura' => $a['fechaLecturaRev2'],
-                'auditorias_fechas_oficio_envio_documentos' => $a['fechaOEDRev2'],
-                'auditorias_fechas_recibe_informacion' => $a['fechas_oficio_representante_designado'],
-                'auditorias_fechas_sello_oficio_representante_designado' => $a['fechas_oficio_representante_designado'],
-            );
-            $result = $this->dbNuevoCYSA->insert('auditorias', $aa);
-            $error = $this->dbNuevoCYSA->error();
-            if (empty($error['error'])) {
-                if (!empty($a['fechaIniReal'])) {
-                    array_push($batch_aaf, $aaf);
-                }
-                if (!empty($a['fechaIniRev1'])) {
-                    array_push($batch_aafRev1, $aafRev1);
-                }
-                if (!empty($a['fechaIniRev2'])) {
-                    array_push($batch_aafRev2, $aafRev2);
-                }
-            } else {
-                $errores[] = "Error en la auditoria con ID: " . $a['idAuditoria'] . "<br>";
-                if ($flush) {
-                    ob_flush();
-                    flush();
-                }
-            }
+            array_push($batch_auditorias_fechas, $insert);
         }
-        $this->dbNuevoCYSA->insert_batch('auditorias_fechas', $batch_aaf);
-        $this->dbNuevoCYSA->insert_batch('auditorias_fechas', $batch_aafRev1);
-        $this->dbNuevoCYSA->insert_batch('auditorias_fechas', $batch_aafRev2);
+        $this->dbNuevoCYSA->insert_batch('auditorias', $batch_auditorias);
+        $this->dbNuevoCYSA->insert_batch('auditorias_fechas', $batch_auditorias_fechas);
         $return = "Auditorías importadas.";
         if ($flush) {
             echo $return . "<br>";
