@@ -404,7 +404,7 @@ class Auditorias_model extends MY_Model {
     function get_observaciones_de_auditoria($auditorias_id) {
         $return = array();
         if (!empty($auditorias_id)) {
-            $return = $this->Observaciones_model->get_observaciones_de_auditoria($auditorias_id);
+            $return = $this->Observaciones_model->get_observaciones($auditorias_id);
         }
         return $return;
     }
