@@ -10,3 +10,7 @@ div.espaciado select {
 .w-200 {
     width: 200px;
 }
+
+#catalogo_documentos ul a {
+    font-size: 1em;
+}

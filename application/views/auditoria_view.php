@@ -114,8 +114,7 @@
                 <div class="tab-pane" id="tab-reciclaje" role="tabpanel">settings</div>
                 <div class="tab-pane" id="tab-timeline" role="tabpanel">
                     <?php $timeline = $this->Timeline_model->get_timeline($auditorias_id); ?>
-                    <?php var_dump($timeline);?>
-                    <?php //$this->load->view("auditoria/auditoria_view_tab_timeline"); ?>
+                    <?php $this->load->view("auditoria/auditoria_view_tab_timeline", $timeline); ?>
                 </div>
             </div>
         <?php endif; ?>

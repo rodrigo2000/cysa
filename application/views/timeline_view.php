@@ -1,12 +1,11 @@
 <?php
 include_once('timeline_funciones.php');
-extract($data, EXTR_OVERWRITE);
 $etapasNombre = array(
     ETAPA_AP => 'Auditoría programada',
     ETAPA_RV1 => 'Solventación de Observaciones',
     ETAPA_RV2 => 'Segunda revisión'
 );
-$aux = getEtapaAuditoria($auditorias_id);
+
 $etapaAuditoria = 0;
 switch ($aux['etapa']) {
     case ETAPA_FIN:
@@ -321,11 +320,11 @@ if (isset($auditoria['prorrogas_fecha_maxima_para_generarlas']) && !empty($audit
                                                         <strong><?= $t['tareas_nombre']; ?><?= ($e['etapas_codigo'] == ETAPA_AP && $indexTarea == count($tareas) - 1) ? '<br>' . $auditoria['nombreAuditoria'] : ''; ?></strong>
                                                         <?php //if ($etapaAuditoria == $e['etapas_codigo']):        ?>
                                                         <input type="text" class="input_campo_ejecucion" name="fecha_ejecucion_alt" id="fecha_ejecucion_alt_<?= $t['configuraciones_id'] ?>" value="<?= isset($t['tareas_fecha_ejecucion']) && $t['tareas_fecha_ejecucion'] > 0 ? $t['tareas_fecha_ejecucion'] : $t['tareas_fecha_programada']; ?>" data-tareas-nombre="<?= $t['tareas_nombre']; ?>" data-tipo-mysql="<?= isset($t['campo_ejecucion_real']) ? get_tipo_campo_mysql($t['campo_ejecucion_real']) : ''; ?>">
-                                                        <a href="#" class="campo_ejecucion <?= ($t['tareas_nombre'] != "Inicio de Auditoría" && $mostrarBtnEditar) ? '' : 'hidden-xs-up'; ?>" 
-                                                           data-campo-ejecucion="<?= isset($t['campo_ejecucion_real']) ? $t['campo_ejecucion_real'] : ''; ?>" 
-                                                           data-tareas-fecha-programada="<?= $t['tareas_fecha_programada']; ?>" 
-                                                           data-tareas-nombre="<?= $t['tareas_nombre']; ?>" 
-                                                           data-configuraciones-id="<?= $t['configuraciones_id']; ?>" 
+                                                        <a href="#" class="campo_ejecucion <?= ($t['tareas_nombre'] != "Inicio de Auditoría" && $mostrarBtnEditar) ? '' : 'hidden-xs-up'; ?>"
+                                                           data-campo-ejecucion="<?= isset($t['campo_ejecucion_real']) ? $t['campo_ejecucion_real'] : ''; ?>"
+                                                           data-tareas-fecha-programada="<?= $t['tareas_fecha_programada']; ?>"
+                                                           data-tareas-nombre="<?= $t['tareas_nombre']; ?>"
+                                                           data-configuraciones-id="<?= $t['configuraciones_id']; ?>"
                                                            data-tareas-fecha-ejecucion="<?= isset($t['tareas_fecha_ejecucion']) && $t['tareas_fecha_ejecucion'] > 0 ? $t['tareas_fecha_ejecucion'] : ''; ?>">
                                                             <i class="fa fa-calendar-check-o"></i>
                                                         </a>
@@ -335,7 +334,7 @@ if (isset($auditoria['prorrogas_fecha_maxima_para_generarlas']) && !empty($audit
                                                     </div>
                                                     <?php if ($indexTarea != count($tareas) - 1): ?>
                                                         <?php if (isset($t['diferencia_dias_habiles']) && intval($t['diferencia_dias_habiles']) > 0): ?>
-                                                            <p class="message-retraso m-b-0">Esta acción se ejecutó con 
+                                                            <p class="message-retraso m-b-0">Esta acción se ejecutó con
                                                                 <strong class="text text-danger" data-toggle="tooltip" title="Se debió realizar a más tardar el<br><?= mysqlDate2OnlyDate($t['tareas_fecha_programada']) ?>">
                                                                     <?= $t['diferencia_dias_habiles']; ?> día<?= $plural ? 's' : ''; ?> hábil<?= $plural ? 'es' : ''; ?> de atraso
                                                                 </strong>

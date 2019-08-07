@@ -109,28 +109,28 @@ $anio_select = isset($this->session->cysa['auditorias_anio']) ? $this->session->
     <div class="col-xs-6 col-sm-4 col-md-3">
         <select name="mis_auditorias_id" class="mis_auditorias_id form-control">
             <?php if (empty($auditorias_id)): ?>
-            <option value="0">SELECCIONE</option>
-        <?php endif; ?>
-        <?php foreach ($mis_auditorias_id as $tipos => $aa): ?>
-            <?php if ($tipos === 'auditorias_AP' && count($aa) > 0): ?>
-                <optgroup label="AUDITORIÁS (AP/AE/SA)">
-                    <?php foreach ($aa as $r): ?>
-                        <?php if ($r['auditorias_status_id'] > 0): ?>
-                            <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= !empty($r['numero_auditoria']) ? $r['numero_auditoria'] : 'S/N - ' . $r['auditorias_rubro']; ?></option>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </optgroup>
+                <option value="0">SELECCIONE</option>
             <?php endif; ?>
-            <?php if ($tipos === 'auditorias_IC' && count($aa) > 0): ?>
-                <optgroup label="INTERVENCIÓN DE CONTROL">
-                    <?php foreach ($aa as $r): ?>
-                        <?php if ($r['auditorias_status_id'] > 0): ?>
-                            <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= !empty($r['numero_auditoria']) ? $r['numero_auditoria'] : 'S/N - ' . $r['auditorias_rubro']; ?></option>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </optgroup>
-            <?php endif; ?>
-        <?php endforeach; ?>
+            <?php foreach ($mis_auditorias_id as $tipos => $aa): ?>
+                <?php if ($tipos === 'auditorias_AP' && count($aa) > 0): ?>
+                    <optgroup label="AUDITORIÁS (AP/AE/SA)">
+                        <?php foreach ($aa as $r): ?>
+                            <?php if ($r['auditorias_status_id'] > 0): ?>
+                                <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= !empty($r['numero_auditoria']) ? $r['numero_auditoria'] : 'S/N - ' . $r['auditorias_rubro']; ?></option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </optgroup>
+                <?php endif; ?>
+                <?php if ($tipos === 'auditorias_IC' && count($aa) > 0): ?>
+                    <optgroup label="INTERVENCIÓN DE CONTROL">
+                        <?php foreach ($aa as $r): ?>
+                            <?php if ($r['auditorias_status_id'] > 0): ?>
+                                <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= !empty($r['numero_auditoria']) ? $r['numero_auditoria'] : 'S/N - ' . $r['auditorias_rubro']; ?></option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </optgroup>
+                <?php endif; ?>
+            <?php endforeach; ?>
         </select>
     </div>
 </div>

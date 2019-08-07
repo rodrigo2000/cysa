@@ -1,0 +1,2 @@
+.dropdown-toggle.active-dropdown::after{transform:rotate(-90deg)}
+.show{display: block;}

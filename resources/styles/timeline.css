@@ -1,0 +1,115 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    Created on : 4/11/2016, 11:54:04 AM
+    Author     : rodrigo.sevilla
+*/
+
+.dl-horizontal { margin-left: 0px !important; }
+.list-group-item { box-shadow: none; }
+div#tareas_pendientes {
+    display:none;
+    border: 1px dotted #C5C5EC;
+    background-color: #ececec;
+    padding-top: 20px;
+    margin-top: -20px;
+}
+.tooltip-inner {
+    max-width:none;
+}
+.stacked .timeline-date-day { display: none; }
+@media(max-width: 991px){
+    .timeline-date-day { display: none; }
+}
+
+.timeline .timeline-content .timeline-body {
+    background: rgba(0,0,0,.05);
+}
+
+.timeline-icon span.label {
+    float: right;
+    position: absolute;
+    top: -2px;
+    right: 0px;
+}
+.swal2-input { text-align: center; }
+input.input_campo_ejecucion { width: 0px; visibility: hidden;}
+a.campo_ejecucion { margin-left: -10px; }
+.content-view { padding-top:10px !important; overflow: hidden; }
+@media screen and (min-width:1135px) {
+    .stick {
+        position: fixed;
+        top: 10px;
+        z-index: 1050;
+        right:24px;
+        left:24px;
+        margin: auto;
+        width: 289px;
+        color: #1194c5;
+        padding: 0px;
+    }
+}
+@media screen and (max-width:1135px) {
+    .stick {
+        position: fixed;
+        top: 55px;
+        z-index: 1000;
+        right:24px;
+        left:24px;
+        padding: 0px;
+    }
+}
+
+@media (max-width: 991px){
+    .navbar-toggleable-md .navbar-nav .dropdown-menu {
+        position: static;
+        float: none;
+    }
+}
+
+.tachado { text-decoration: line-through; }
+.ball-pulse {
+    margin-top: 8px;
+}
+.ball-pulse > div {
+    background: #983e28;
+}
+
+.datepicker table tr td span.disabled {
+    color: #CCCCCC !important;
+}
+
+table#documentos_vobos thead th {text-align: center;}
+table#documentos_vobos tbody td input {text-align: center;}
+
+
+::-webkit-scrollbar{
+    width: 10px;
+}
+
+::-webkit-scrollbar-track-piece{
+    background-color: #FFF;
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: #CBCBCB;
+    outline: 2px solid #FFF;
+    outline-offset: -2px;
+    border: .1px solid #B7B7B7;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background-color: #909090;
+}
+
+.timeline .disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
+}
+
+.timeline:before {
+    background: #e8e8e8!important;
+}

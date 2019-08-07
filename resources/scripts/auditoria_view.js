@@ -33,4 +33,11 @@ $(document).ready(function () {
     if (!isEmpty(hash)) {
         $('#tab-menu-auditoria a[href="' + hash + '"]').tab('show');
     }
+
+    $("#tab-menu-auditoria").on('shown.bs.tab', function(event){
+        var hashtag = event.target.hash;
+        if(hashtag === "#tab-timeline"){
+            corregirLineaCentralDeTimeLine();
+        }
+    });
 });

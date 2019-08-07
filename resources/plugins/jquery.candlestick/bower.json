@@ -1,0 +1,35 @@
+{
+  "name": "candlestick",
+  "homepage": "https://github.com/EdouardTack/candlestick",
+  "version": "1.4.1",
+  "authors": [
+    "Tackacoder <edouard@tackacoder.fr>"
+  ],
+  "description": "This is a switch and stylish jquery plugin that converts checkbox to toggle switch button. This plugin allows to choose between three options. Checked / Unchecked / Indeterminate",
+  "main": [
+    "dist/candlestick.min.js",
+    "dist/candlestick.min.css"
+  ],
+  "keywords": [
+    "javascript",
+    "jquery",
+    "candlestick",
+    "checkbox",
+    "toggle"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "font-awesome": "~4.4.0",
+    "hammerjs": "~2.0.6",
+    "jquery-hammerjs": "~2.0.0",
+    "bootstrap": "~3.3.6"
+  }
+}
