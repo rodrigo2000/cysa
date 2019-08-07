@@ -43,3 +43,7 @@
 <?php endif; ?>
 <a id="btn-regresar" class="btn btn-default m-l-2" href="<?= base_url() . $this->uri->segment(1) . "/" . $auditoria['auditorias_id']; ?>#tab-documentos">Regresar</a>
 <a id="btn-eliminar" class="btn btn-danger m-l-2 actualizar_id <?= $hidden; ?>" href="<?= base_url() . "Documentos/eliminar" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>">Eliminar</a>
+<?php if ($documento['documentos_versiones_id'] != $vigente_documentos_versiones_id['documentos_versiones_id']): ?>
+    <link href="<?= base_url(); ?>resources/styles/bootstrap-animated-buttons.css" rel="stylesheet" type="text/css"/>
+    <a href="<?= base_url() . $this->module['controller'] . "/actualizar_version_documento/" . (isset($documento['documentos_id']) ? $documento['documentos_id'] : ''); ?>" class="btn btn-warning m-l-2 actualizar_id"><i class="fa fa-fw fa-warning faa-flash animated"></i> Actualizar versión</a>
+<?php endif; ?>
