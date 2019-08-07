@@ -132,6 +132,12 @@ define('OBSERVACIONES_STATUS_NO_SE_ACEPTA', 3);
 define('OBSERVACIONES_STATUS_ATENDIDA', 4);
 define('OBSERVACIONES_STATUS_NO_ATENDIDA', 5);
 
+if(ENVIRONMENT === "production"){
+    @define('PATH_ARCHIVOS_ARTICULO_70',"J:\Art 70 LGTyAIP\\");
+}else{
+    @define('PATH_ARCHIVOS_ARTICULO_70',"F:\Art 70 LGTyAIP\\");
+}
+
 /*
   |--------------------------------------------------------------------------
   | Display Debug backtrace
