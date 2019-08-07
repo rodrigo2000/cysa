@@ -244,6 +244,7 @@ class Auditoria extends MY_Controller {
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
             'is_finalizada' => $auditoria['auditorias_status_id'] >= AUDITORIAS_STATUS_FINALIZADA ? TRUE : FALSE,
+            'vigente_documentos_versiones_id' => $this->Documentos_versiones_model->get_version_vigente_del_tipo_de_documento($documentos_tipos_id)
         );
         $data = array_merge($data, $mi_data);
         $this->visualizar($vista, $data);
@@ -499,7 +500,7 @@ class Auditoria extends MY_Controller {
         $accion = "descargar";
         $is_oficio = TRUE;
         $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
-        $vista = "documentos/" . basename($documento['documentos_versiones_archivo_impresion'], ".php");
+        $vista = "documentos" . DIRECTORY_SEPARATOR . basename($documento['documentos_versiones_archivo_impresion'], ".php");
         $index = 0;
         $mi_data = array();
         switch ($documentos_tipos_id) {
@@ -1037,6 +1038,27 @@ class Auditoria extends MY_Controller {
         }
         //var_dump($result, $this->db->last_query());
         echo json_encode($return);
+    }
+
+    function actualizar_version_documento($documentos_id = NULL) {
+        $return = FALSE;
+        if (!empty($documentos_id)) {
+            $documento = $this->Documentos_model->get_uno($documentos_id);
+            $tipo = $this->Documentos_tipos_model->get_uno($documento['documentos_documentos_tipos_id']);
+            $vigente = $this->Documentos_versiones_model->get_version_vigente_del_tipo_de_documento($documento['documentos_documentos_tipos_id']);
+            $result = $this->db->set("documentos_documentos_versiones_id", $vigente['documentos_versiones_id'])
+                    ->where("documentos_id", $documentos_id)
+                    ->limit(1)
+                    ->update("documentos");
+            if ($result && $this->db->affected_rows() > 0) {
+                $s['informacion'] = array(
+                    'state' => 'success',
+                    'message' => 'Se ha actualizado la versión del documento.'
+                );
+                $this->session->set_flashdata($s);
+            }
+            redirect($this->module['url'] . "/documento/" . $tipo['documentos_tipos_abreviacion']);
+        }
     }
 
 }
