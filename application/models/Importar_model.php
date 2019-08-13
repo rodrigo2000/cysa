@@ -541,7 +541,7 @@ class Importar_model extends MY_Model {
         $this->dbNuevoCYSA->truncate('documentos');
         $this->dbNuevoCYSA->truncate('documentos_valores');
         $data = $this->dbProtoCYSA
-                ->where("idAuditoria", 1012)
+                ->where("idAuditoria >=", 639)
                 ->get("documentos")
                 ->result_array();
         $tabla = $this->equivalencias_detalles_valores();
