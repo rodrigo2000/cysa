@@ -10,7 +10,7 @@
                     <div class="form-check">
                         <label class="form-check-label">
                             <input class="form-check-input" type="checkbox" name="catalogo[]" value="documentos_tipos">
-                            Catálogo de Tipos de documentos <span class="label label-danger">Cuidado!</span>
+                            Catálogo de Tipos de documentos
                             <span id="documentos_tipos"></span>
                         </label>
                     </div>
@@ -26,6 +26,13 @@
                             <input class="form-check-input" type="checkbox" name="catalogo[]" value="versiones">
                             Catálogo de Versiones de documentos
                             <span id="versiones"></span>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" name="catalogo[]" value="documentos">
+                            Catálogo de Documentos
+                            <span id="documentos"></span>
                         </label>
                     </div>
                     <div class="form-check">
@@ -78,6 +85,7 @@
                         </label>
                     </div>
                 </div>
+                <div id="error-message"></div>
             </div>
             <div class="form-group row">
                 <div class="offset-sm-2 col-sm-10">
@@ -85,6 +93,7 @@
                 </div>
             </div>
         </form>
+        </div>
     </div>
 </div>
 <script>
@@ -124,8 +133,11 @@
             $.post(url, data, function (json) {
                 if (json.success) {
                     $("#" + json.id)
-                            .html('<i class="material-icons" aria-hidden="true" title="' + json.message + '">check</i>')
+                            .html('<i class="material-icons" aria-hidden="true">check</i>')
                             .addClass("label label-success");
+                }
+                if (json.message != "") {
+                    $("#error-message").html(json.message);
                 }
                 ajaxRequest(urls);
             }, "json");

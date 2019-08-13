@@ -537,4 +537,83 @@ class Importar_model extends MY_Model {
         return $return;
     }
 
+    function importar_documentos($flush = FALSE) {
+        $this->dbNuevoCYSA->truncate('documentos');
+        $this->dbNuevoCYSA->truncate('documentos_valores');
+        $data = $this->dbProtoCYSA
+                ->where("idAuditoria", 1012)
+                ->get("documentos")
+                ->result_array();
+        $tabla = $this->equivalencias_detalles_valores();
+        $ahora = ahora();
+        $batch = $batch_valores = array();
+        foreach ($data as $d) {
+            $insert = array(
+                'documentos_id' => $d['idDocto'],
+                'documentos_documentos_tipos_id' => $d['idTipoDocto'],
+                'documentos_documentos_versiones_id' => $d['idVersion'],
+                'documentos_periodos_id' => 2,
+                'documentos_auditorias_id' => $d['idAuditoria'],
+                'documentos_logotipos_id' => 2,
+                'documentos_misiones_id' => 1,
+                'documentos_is_cancelado' => $d['bCancelado'],
+                'documentos_is_aprobado' => $d['bAprovado'],
+                'fecha_insert' => $d['fechaCreacion']
+            );
+            array_push($batch, $insert);
+            // DETALLES
+            $detalles = $this->dbProtoCYSA
+                    ->select("dd.*")
+                    ->where('idDocto', $d['idDocto'])
+                    ->join("cat_documentos_detalle cdd", "cdd.idParrafo = dd.idParrafo", "INNER")->select("cdd.denParrafo")
+                    ->get("documentos_detalle dd")
+                    ->result_array();
+            foreach ($detalles as $dd) {
+                $tipo = $d['idTipoDocto'];
+                $c = $dd['idParrafo'];
+
+                if (!isset($tabla[$tipo][$c])) {
+                    //var_dump($dd['idDocto'], $tipo, $c);
+                } else {
+                    $insert_valores = array(
+                        'documentos_valores_documentos_constantes_id' => $tabla[$tipo][$c],
+                        'documentos_valores_documentos_id' => $dd['idDocto'],
+                        'documentos_valores_valor' => trim($dd['valor'])
+                    );
+                    array_push($batch_valores, $insert_valores);
+                }
+            }
+        }
+
+        $this->dbNuevoCYSA->insert_batch('documentos', $batch);
+        $this->dbNuevoCYSA->insert_batch('documentos_valores', $batch_valores);
+        $return = "Catálogo de documentos importado.";
+        if ($flush) {
+            echo $return . "<br>";
+            ob_flush();
+            flush();
+            $return = TRUE;
+        }
+        return $return;
+    }
+
+    private function equivalencias_detalles_valores() {
+        $return = array();
+        $data = $this->dbNuevoCYSA
+                ->select("cdd.idTipoDocto,c.documentos_constantes_id, cdd.idParrafo, cdd.denParrafo")
+                ->join("proto_cysa.cat_documentos_detalle cdd", "cdd.denParrafo LIKE c.documentos_constantes_nombre AND c.documentos_constantes_documentos_tipos_id=cdd.idTipoDocto", "LEFT")
+                ->order_by("cdd.idTipoDocto", "ASC")
+                ->order_by("cdd.idParrafo", "ASC")
+                ->get("documentos_constantes c")
+                ->result_array();
+        foreach ($data as $d) {
+            $tipos_documento_id = intval($d['idTipoDocto']);
+            if (!isset($return[$tipos_documento_id])) {
+                $return[$tipos_documento_id] = array();
+            }
+            $return[$tipos_documento_id][$d['idParrafo']] = intval($d['documentos_constantes_id']);
+        }
+        return $return;
+    }
+
 }
