@@ -76,9 +76,10 @@ function get_frase_de_ua($a) {
  * @param string $title Cadena de texto a mostrar en el atributo TITLE de la etiqueta. Este atributo sirve para el tour de Ayuda.
  * @param string $description Descrpición del elemento
  * @param boolean $aceptar_enter TRUE para que en la etiqueta se acepte el ENTER dentro del Texto. FALSE para cualquier otro caso.
+ * @param boolean $nl2br TRUE para indicar que se usará la función nl2br() para la constante. FALSE para indicar que NO se use.
  * @return string Código HTML de la etiqueta SPAN
  */
-function span_editable($r, $constante, $default_value = NULL, $title = NULL, $descripcion = NULL, $aceptar_enter = FALSE) {
+function span_editable($r, $constante, $default_value = NULL, $title = NULL, $descripcion = NULL, $aceptar_enter = FALSE, $nl2br = FALSE) {
     if (empty($default_value)) {
         $default_value = SIN_ESPECIFICAR;
     }
@@ -103,7 +104,7 @@ function span_editable($r, $constante, $default_value = NULL, $title = NULL, $de
             . (!empty($real_title) ? 'data-tour-title="' . htmlentities($real_title) . '" ' : '')
             . (!empty($real_descripcion) ? 'data-tour-description="' . htmlentities($real_descripcion) . '" ' : '')
             . '>'
-            . (isset($r, $r[$constante]) ? $r[$constante] : '')
+            . (isset($r, $r[$constante]) ? ($nl2br ? nl2br($r[$constante]) : $r[$constante]) : '')
             . '</span>';
     return $html;
 }
@@ -275,7 +276,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = N
     $CI->load->model("SAC_model");
     $total_asistentes = 0;
     foreach ($asistencias as $direcciones_id => $d) {
-        if (isset($d[$tipo_asistencia]) && is_array($d[$tipo_asistencia]) && !empty($d[$tipo_asistencia])) {
+        if (isset($d[$tipo_asistencia]) && is_array($d[$tipo_asistencia]) && !empty($d[$tipo_asistencia]) && $direcciones_id > 0) {
             $aux = $CI->SAC_model->get_direccion($direcciones_id);
             $html .= '<span class="resaltar" id="direcciones_' . $direcciones_id . '">';
             $aux['nombre_completo_direccion'];
