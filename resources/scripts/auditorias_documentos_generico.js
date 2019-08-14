@@ -274,12 +274,12 @@ function get_form_data(async = false) {
     $.post(url, data, function (json) {
         if (json.success) {
             if ($("#documentos_id").val() === '0') {
-                $(".actualizar_id", "#oficio-menu-opciones").each(function (index, element) {
+                $(".actualizar_id", ".oficio-menu-opciones").each(function (index, element) {
                     element.href += "/" + json.documentos_id;
                 });
             }
             $("#documentos_id").val(json.documentos_id);
-            $(".actualizar_id", "#oficio-menu-opciones").removeClass('hidden-xs-up');
+            $(".actualizar_id", ".oficio-menu-opciones").removeClass('hidden-xs-up');
             $("#accion").val('modificar');
             //alert("Cambios actualizados");
         }

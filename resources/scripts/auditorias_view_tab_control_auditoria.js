@@ -143,7 +143,7 @@ $('a.actualizar_campo').on('click', function (e) {
     var data = {
         campo: campo,
         valor: valor,
-        auditorias_id: $("select[name=mis_auditorias_id]").val()
+        auditorias_id: auditorias_id
     }
     $(e.target).html(ICON_SPINNER).addClass('disabled');
     $.post(url, data, function (json) {
