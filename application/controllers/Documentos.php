@@ -54,6 +54,7 @@ class Documentos extends MY_Controller {
         switch ($documentos_tipos_id) {
             case TIPO_DOCUMENTO_ORDEN_AUDITORIA:
                 if (isset($constantes[ORD_ENT_REQUERIMIENTOS_SI])) {
+                    $constantes[ORD_ENT_REQUERIMIENTOS_SI] = str_replace("<br>", "", $constantes[ORD_ENT_REQUERIMIENTOS_SI]);
                     $constantes[ORD_ENT_REQUERIMIENTOS_SI] = str_replace("&nbsp;", " ", $constantes[ORD_ENT_REQUERIMIENTOS_SI]);
                 }
                 if (isset($constantes[ORD_ENT_CCP])) {

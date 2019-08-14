@@ -85,10 +85,12 @@ class Documentos_model extends MY_Model {
                 $this->db->where("documentos_documentos_tipos_id", $documentos_tipos_id);
             }
             $result = $this->db
-                    ->join("documentos_versiones dv", "dv.documentos_versiones_id = " . $this->table_prefix . ".documentos_documentos_versiones_id", "INNER")
+                    ->join("documentos_versiones dv", "dv.documentos_versiones_id = " . $this->table_prefix . ".documentos_documentos_versiones_id", "LEFT")
                     ->join("logotipos l", "l.logotipos_id = " . $this->table_prefix . ".documentos_logotipos_id", "LEFT")
                     ->where("documentos_auditorias_id", $auditorias_id)
                     ->where($this->table_prefix . ".fecha_delete IS NULL")
+                    ->order_by("documentos_versiones_id", "DESC")
+                    ->limit(1)
                     ->get($this->table_name . " " . $this->table_prefix);
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
