@@ -1,4 +1,5 @@
 <?php if (!$is_finalizada): ?>
+    <!-- BOTON de NUEVO DOCUMENTO -->
     <div class="btn-group" role="group">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Nuevo</button>
         <div class="dropdown-menu" style="height: 300px; overflow: auto;">
@@ -8,16 +9,20 @@
         </div>
     </div>
     <?php if (!$documento_autorizado): ?>
+        <!-- BOTON de GUARDAR DOCUMENTO -->
         <button type="button" class="btn btn-primary boton_guardar m-l-2"><?= $etiquetaBoton; ?></button>
         <?php if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_AUTORIZAR_DOCUMENTO)): ?>
+            <!-- BOTON de AUTORIZAR DOCUMENTO -->
             <a id="btn-autorizar" href="<?= $this->module['autorizar_url'] . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" class="actualizar_id btn btn-default btn-warning m-l-2 <?= $hidden; ?>">Autorizar</a>
         <?php endif; ?>
     <?php else: ?>
         <?php if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_DESAUTORIZAR_DOCUMENTO)): ?>
+            <!-- BOTON de DESAUTORIZAR DOCUMENTO -->
             <a id="btn-autorizar" href="<?= $this->module['desautorizar_url'] . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" class="actualizar_id btn btn-default btn-danger m-l-2">Desautorizar</a>
         <?php endif; ?>
     <?php endif; ?>
 <?php endif; ?>
+<!-- BOTON de IMPRIMIR DOCUMENTO -->
 <div id="btn-vista-impresion" class="btn-group actualizar_id <?= $hidden; ?>">
     <a href="<?= base_url() . $this->module['controller'] . "/" . ($documento_autorizado ? 'imprimir' : 'descargar') . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" class="actualizar_id btn btn-info m-l-2" target="_blank">Imprimir</a>
     <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -30,6 +35,7 @@
         <a class="dropdown-item actualizar_id" href="<?= base_url() . $this->module['controller'] . "/html" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" target="_blank">HTML</a>
     </div>
 </div>
+<!-- BOTON de DOCUMENTO DE LAS DIFERENTES UA -->
 <?php if (!$is_finalizada && count($documentos) > 1): ?>
     <div class="btn-group" role="group">
         <button type="button" class="btn btn-default dropdown-toggle m-l-2" data-toggle="dropdown">Oficios</button>
@@ -41,9 +47,11 @@
         </div>
     </div>
 <?php endif; ?>
+<!-- BOTON de REGRESAR -->
 <a id="btn-regresar" class="btn btn-default m-l-2" href="<?= base_url() . $this->uri->segment(1) . "/" . $auditoria['auditorias_id']; ?>#tab-documentos">Regresar</a>
+<!-- BOTON de ELIMINAR DOCUMENTO -->
 <a id="btn-eliminar" class="btn btn-danger m-l-2 actualizar_id <?= $hidden; ?>" href="<?= base_url() . "Documentos/eliminar" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>">Eliminar</a>
+<!-- BOTON de ACTUALIZAR VERSIÓN DE DOCUMENTO -->
 <?php if ($documento['documentos_versiones_id'] != $vigente_documentos_versiones_id['documentos_versiones_id']): ?>
-    <link href="<?= base_url(); ?>resources/styles/bootstrap-animated-buttons.css" rel="stylesheet" type="text/css"/>
     <a href="<?= base_url() . $this->module['controller'] . "/actualizar_version_documento/" . (isset($documento['documentos_id']) ? $documento['documentos_id'] : ''); ?>" class="btn btn-warning m-l-2 actualizar_id"><i class="fa fa-fw fa-warning faa-flash animated"></i> Actualizar versión</a>
 <?php endif; ?>

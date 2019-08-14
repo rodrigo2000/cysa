@@ -31,7 +31,7 @@
         <?php if (!empty($this->session->userdata(APP_NAMESPACE))) : ?>
             <?php echo validation_errors(); ?>
             <form id="frmOficios" name="frmOficios" class="acta <?= $documento_autorizado || $is_finalizada ? 'autorizado' : ''; ?><?= $accion === "descargar" ? ' impresion' : ''; ?>" method="post" action="<?= $urlAction; ?>">
-                <div id="oficio-menu-opciones" class="text-xs-center m-b-1 hidden-print">
+                <div class="text-xs-center hidden-print oficio-menu-opciones">
                     <?php $this->load->view('documentos/menu_opciones'); ?>
                 </div>
                 <?php if ($is_finalizada || $documento_autorizado): ?>
@@ -276,12 +276,8 @@
                             </tfoot>
                         </table>
                     </div>
-                    <div class="form-group row hidden-print">
+                    <div class="form-group hidden-print">
                         <div class="col-sm-12 text-xs-center">
-                            <a href="<?= base_url() . $this->uri->segment(1); ?>" class="btn btn-default">Cancelar</a>
-                            <?php if (!$documento_autorizado && $this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_MODIFICAR, APP_NAMESPACE, 'Documentos')): ?>
-                                <button type="button" class="btn btn-primary m-l-2 boton_guardar"><?= $etiquetaBoton; ?></button>
-                            <?php endif; ?>
                             <input type="hidden" name="<?= $this->module['id_field'] ?>" value="<?= $id; ?>">
                             <input type="hidden" name="documentos_id" id="documentos_id" value="<?= isset($documento['documentos_id']) && $accion === "modificar" ? $documento['documentos_id'] : 0; ?>">
                             <input type="hidden" name="accion" id="accion" value="<?= $accion; ?>">
@@ -290,6 +286,9 @@
                         </div>
                     </div>
                 <?php endif; ?>
+                <div class="text-xs-center hidden-print oficio-menu-opciones">
+                    <?php $this->load->view('documentos/menu_opciones'); ?>
+                </div>
             </form>
         <?php endif; ?>
     </div>
