@@ -131,6 +131,7 @@
 <link href="<?= base_url(); ?>resources/plugins/bootstrap-4-multi-dropdown-navbar/css/bootstrap-4-navbar.min.css" rel="stylesheet" type="text/css"/>
 <script src="<?= base_url(); ?>resources/plugins/bootstrap-4-multi-dropdown-navbar/js/bootstrap-4-navbar.min.js" type="text/javascript"></script>
 <!-- Personalizados -->
+<link href="<?= base_url(); ?>resources/styles/bootstrap-animated-buttons.css" rel="stylesheet" type="text/css"/>
 <script src="<?= base_url(); ?>resources/scripts/select_dependientes.js" type="text/javascript"></script>
 <link href="<?= base_url(); ?>resources/styles/auditoria_view.css" rel="stylesheet" type="text/css"/>
 <script src="<?= base_url(); ?>resources/scripts/auditoria_view.js" type="text/javascript"></script>

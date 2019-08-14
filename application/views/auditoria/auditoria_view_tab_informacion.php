@@ -40,18 +40,16 @@
         <div class="card">
             <h3 class="card-header bg-info">Observaciones</h3>
             <div class="card-block">
-                <?php if ($auditoria['auditorias_is_sin_observaciones'] == 0): // Es sin observaciones? ?>
-                    <?php if ($auditoria['auditorias_status_id'] == AUDITORIAS_STATUS_EN_PROCESO): // Esta en proceso ?>
-                        <p><input type="checkbox" class="labelautyfy" name="auditorias_is_sin_observaciones" id="auditorias_is_sin_observaciones" data-labelauty="Sin observaciones"></p>
-                    <?php endif; ?>
-                    <?php if (isset($auditoria['observaciones']) && count($auditoria['observaciones']) > 0): ?>
+                <?php if ($auditoria['auditorias_status_id'] == AUDITORIAS_STATUS_EN_PROCESO): // Esta en proceso ?>
+                    <p><input type="checkbox" class="labelautyfy" name="auditorias_is_sin_observaciones" id="auditorias_is_sin_observaciones" data-labelauty="Sin observaciones" <?= $auditoria['auditorias_is_sin_observaciones'] == 1 ? 'checked' : ''; ?>></p>
+                    <?php if (isset($auditoria['observaciones']) && count($auditoria['observaciones']) > 0 && $auditoria['observaciones'][0]['observaciones_titulo'] !== "SIN OBSERVACIONES"): ?>
                         <div id="accordion" role="tablist" aria-multiselectable="true">
                             <div class="card m-b-0">
                                 <?php if ($auditoria['observaciones'][0]['observaciones_auditorias_id'] !== $auditoria['auditorias_id']): ?>
                                     <?php $aa = $this->Auditorias_model->get_auditoria($auditoria['observaciones'][0]['observaciones_auditorias_id']); ?>
                                     <div class="card-header bg-warning" role="tab" id="headingOne">
                                         <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                            Observaciones de la auditoría <?= $aa['numero_auditoria']; ?>
+                                            Observaciones de la auditoría <?= $aa['numero_auditoria']; ?> pendientes por solventar
                                         </a>
                                     </div>
                                 <?php endif; ?>
@@ -61,8 +59,15 @@
                                             <?php foreach ($auditoria['observaciones'] as $o): ?>
                                                 <?php if ($o['observaciones_titulo'] !== 'SIN OBSERVACIONES'): ?>
                                                     <li id="observacion_<?= $o['observaciones_id']; ?>" class="list-group-item" style="box-shadow: none;">
-                                                        <?= $o['observaciones_numero'] . " - " . $o['observaciones_titulo']; ?>
-                                                        <span class="badge badge-default badge-pill">14</span>
+                                                        <?php echo $o['observaciones_numero'] . " - " . $o['observaciones_titulo']; ?>
+                                                        <?php $numero_revision = empty($auditoria['auditorias_origen_id']) ? 1 : 3; ?>
+                                                        <?php $recomendaciones = $this->Observaciones_model->get_recomendaciones_de_observacion($o['observaciones_id'], $numero_revision); ?>
+                                                        <?php foreach ($recomendaciones as $rec): ?>
+                                                            <?php if (isset($rec['avances']) && !empty($rec['avances'])) : ?>
+                                                                <?php $avances = $rec['avances'][0]; ?>
+                                                                <span class="label label-<?= ($avances['recomendaciones_avances_recomendaciones_status_id'] == OBSERVACIONES_STATUS_SOLVENTADA ? 'success' : 'warning'); ?> tag-pill" title="<?= $avances['recomendaciones_status_nombre']; ?>">Recomendación <?= $rec['recomendaciones_numero']; ?></span>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
                                                     </li>
                                                 <?php endif; ?>
                                             <?php endforeach; ?>
@@ -140,3 +145,23 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+        <div class="card">
+            <h3 class="card-header bg-info">Productos No Conforme</h3>
+            <div class="card-block">
+                SIN PRODUCTOS NO CONFORME
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6">
+        <div class="card">
+            <h3 class="card-header bg-info">Notas</h3>
+            <div class="card-block">
+                SIN NOTAS
+            </div>
+        </div>
+    </div>
+</div>
+<script>let auditorias_id = <?= $auditoria['auditorias_id']; ?>; </script>
+<script src="<?= base_url(); ?>resources/scripts/auditorias_view_tab_informacion.js" type="text/javascript"></script>
