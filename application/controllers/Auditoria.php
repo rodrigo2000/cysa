@@ -80,7 +80,12 @@ class Auditoria extends MY_Controller {
         $vista = NULL;
         $documentos[$index] = $this->Documentos_model->get_template($documentos_tipos_id);
         if ($documentos_id !== "nuevo") {
-            $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
+            $aux = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
+            if (empty($aux[0]['documentos_versiones_archivo_impresion'])) {
+                $documentos[0] = array_merge($aux[0], $documentos[$index]);
+            } else {
+                $documentos = $aux;
+            }
             $accion = "modificar";
             if (intval($documentos_id) > 0) {
                 $index = array_search($documentos_id, array_column($documentos, 'documentos_id'));
@@ -928,30 +933,6 @@ class Auditoria extends MY_Controller {
             $error = "Error con el Query: " . $strSQL;
         }
         die($error);
-    }
-
-    function demodemo() {
-        $this->db->select('auditorias_id, auditorias_origen_id')
-                ->where("auditorias_anio", 2018);
-        $auditorias = $this->Auditorias_model->get_todos();
-        foreach ($auditorias as $auditoria) {
-            $auditorias_id = intval($auditoria['auditorias_id']);
-            if (!empty($auditoria['auditorias_origen_id'])) {
-                $r = 1; //$this->Auditorias_model->get_etapa_de_auditoria($a['auditorias_id']);
-                $origen = $this->Auditorias_model->get_real_auditoria_origen($auditorias_id);
-                if ($auditorias_id != $origen) {
-                    $a = $this->Auditorias_model->get_auditoria($auditorias_id);
-                    $partes = array(
-                        $a['auditorias_areas_siglas'],
-                        $a['auditorias_tipos_siglas'],
-                        $a['auditorias_numero'],
-                        $a['auditorias_anio']
-                    );
-                    $numero = implode("/", $partes);
-                    echo "<p>" . $numero . " [" . $auditorias_id . "] // " . $origen . ": " . $r . "</p>";
-                }
-            }
-        }
     }
 
     function word($documentos_id) {
