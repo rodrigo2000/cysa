@@ -162,7 +162,7 @@ $(document).ready(function () {
                 $.each(json.data, function (tipo, auditorias) {
                     var optgroup = '<optgroup label="' + tipo + '"><option value="0">SELECCIONE UNA AUDITORIA</option>';
                     $.each(auditorias, function (index, element) {
-                        optgroup += '<option value="' + element.id + '" ' + (idAuditoria == element.id ? 'selected="selected"' : '') + ' title="' + element.objetivo + '">' + (element.num != null ? (element.valnum + " - " + element.num) : 'S/N - ' + element.rubro) + '</option>';
+                        optgroup += '<option value="' + element.id + '" ' + (auditorias_id == element.id ? 'selected="selected"' : '') + ' title="' + element.objetivo + '">' + (element.num != null ? (element.valnum + " - " + element.num) : 'S/N - ' + element.rubro) + '</option>';
                     });
                     optgroup += '</optgroup>';
                     $("#selectAuditoria").append(optgroup);
@@ -237,7 +237,7 @@ $(document).ready(function () {
         var postData = {
             anioHistorico: $("select#selectAnio").val(),
             permisoChange: 0,
-            idAuditoria: $("select#selectAuditoria").val()
+            auditorias_id: $("select#selectAuditoria").val()
         }
         $.post("c_pant_auditoria.php", postData, function (html) {
             d1.resolve();
@@ -310,7 +310,7 @@ $(document).ready(function () {
         }
     }).bind('fileuploadsubmit', function (e, data) {
         data.formData = {
-            idAuditoria: idAuditoria,
+            auditorias_id: auditorias_id,
             tipoDocto: $(e.target).attr('tipoDocto'),
             app: $(e.target).attr('app')
         }
@@ -411,7 +411,7 @@ $(document).ready(function () {
             modal: true,
             //timeout: 5000
         });
-        window.location.href = "timeline_exportar.php?idAuditoria=" + idAuditoria + "&formato=" + formato;
+        window.location.href = "timeline_exportar.php?auditorias_id=" + auditorias_id + "&formato=" + formato;
         setTimeout(function () {
             n.close()
         }, 2000);
@@ -489,7 +489,7 @@ $(document).ready(function () {
             fechaConvocada = $(this).prev('a.campo_ejecucion').attr('data-tareas-fecha-ejecucion');
             tituloVentana = "Reunión para el " + $(this).parents('.timeline-body').children('p.m-b-0').children('.fecha_ejecucion_valor').text();
         }
-        $.post('../vista/timeline_encuesta_satisfaccion_view.php', {idAuditoria: idAuditoria, fechaConvocada: fechaConvocada, tipoEncuesta: idElemento}, function (html) {
+        $.post('../vista/timeline_encuesta_satisfaccion_view.php', {auditorias_id: auditorias_id, fechaConvocada: fechaConvocada, tipoEncuesta: idElemento}, function (html) {
             var winBootbox = bootbox.dialog({
                 message: html,
                 size: 'large',
@@ -546,7 +546,7 @@ $(document).ready(function () {
                             });
                             if (items.length > 0) {
                                 var fechaConvocada = $("#fechaConvocada", "#winBootbox").val();
-                                var deferreds = aplicarDeffered(items, idAuditoria, director, idElemento, fechaConvocada, empleado_cco, idEmpleados);
+                                var deferreds = aplicarDeffered(items, auditorias_id, director, idElemento, fechaConvocada, empleado_cco, idEmpleados);
                                 $.when.apply($, deferreds).done(function () {
                                     var success = false; // Inicializamos la variable
                                     var message = [];
@@ -606,7 +606,7 @@ $(document).ready(function () {
         return false;
     });
     $("a#datosAuditoria").on('click', function () {
-        $.post('../vista/timeline_datos_auditoria_view.php', {id_auditoria: idAuditoria}, function (html) {
+        $.post('../vista/timeline_datos_auditoria_view.php', {id_auditoria: auditorias_id}, function (html) {
             bootbox.dialog({
                 message: html,
                 title: "Auditoría " + $("a#datosAuditoria").attr("nombreAuditoria"),
@@ -622,7 +622,7 @@ $(document).ready(function () {
     });
 });
 var miFecha = null;
-function aplicarDeffered(items, idAuditoria, director, idElemento, fechaConvocada, empleado_cco, idEmpleados) {
+function aplicarDeffered(items, auditorias_id, director, idElemento, fechaConvocada, empleado_cco, idEmpleados) {
     var deferreds = [];
     if (idElemento === "enviarEncuestaSatisfaccion") {
         for (var d = 0; d < director.length; d++) {
@@ -630,7 +630,7 @@ function aplicarDeffered(items, idAuditoria, director, idElemento, fechaConvocad
                     $.post("timeline_enviar_correo.php",
                             {
                                 correos: items,
-                                idAuditoria: idAuditoria,
+                                auditorias_id: auditorias_id,
                                 correoDirector: director[d],
                                 idElemento: idElemento,
                                 fechaConvocada: fechaConvocada,
@@ -645,7 +645,7 @@ function aplicarDeffered(items, idAuditoria, director, idElemento, fechaConvocad
                 $.post("timeline_enviar_correo.php",
                         {
                             correos: items,
-                            idAuditoria: idAuditoria,
+                            auditorias_id: auditorias_id,
                             correoDirector: director,
                             idElemento: idElemento,
                             fechaConvocada: fechaConvocada,
@@ -662,7 +662,7 @@ function cb(start) {
     var inputValue = start.format("YYYY-MM-DD H:mm");
     var diaDeLaSemana = parseInt(start.format('d')); // 1=Lunes, 7=Domingo
     if (diaDeLaSemana < 6) {
-        $.post('../vista/timeline_post.php', {idAuditoria: idAuditoria, idConfiguraciones: configuracionesID, campoEjecucion: campoEjecucion, fecha: inputValue, fechaAlt: inputValue}, function (json) {
+        $.post(base_url + "Timeline/guardar_fecha", {auditorias_id: auditorias_id, idConfiguraciones: configuracionesID, campoEjecucion: campoEjecucion, fecha: inputValue, fechaAlt: inputValue}, function (json) {
             if (json.success) {
                 if (json.campoEjecucion.indexOf("fLimiteInfoRev1") > 0) {
                     $("span#campo_ejecucion_fLimiteInfoRev1").html(json.message);

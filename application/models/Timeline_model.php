@@ -76,20 +76,20 @@ class Timeline_model extends MY_Model {
 
     /**
      * Devuelve la información del proceso asociado a la auditoría
-     * @param integer $idAuditoria Identificador de la auditoria
+     * @param integer $auditorias_id Identificador de la auditoria
      * @param integer $tipoAuditoria [opcional]<br>Identificador del tipo de auditoria (AP,SA,IC)
      * @return integer Devuelve el identificador del proceso al que corresponde la auditoria
      */
-    function get_proceso_de_auditoria($idAuditoria) {
+    function get_proceso_de_auditoria($auditorias_id) {
         $return = array();
 
         $dbTimeline = $this->getDatabase(APP_DATABASE_TIMELINE);
-        $result = $dbTimeline->where("auditorias_id", $idAuditoria)->limit(1)->get("auditorias");
+        $result = $dbTimeline->where("auditorias_id", $auditorias_id)->limit(1)->get("auditorias");
         if ($result && $result->num_rows() == 1) {
             $idProceso = $result->row()->procesos_id;
         } else {
             // Como nunca se ha asignado a un proceso, entonces vemos qué tipo de auditoría es
-            $r = $this->Auditorias_model->get_uno($idAuditoria);
+            $r = $this->Auditorias_model->get_uno($auditorias_id);
             // Obtenemos el proceso correspondiente al tipo de auditoría
             if ($r['auditorias_anio'] >= 2018 && $r['auditorias_tipos_siglas'] !== 'IC' && empty($r['auditorias_origen_id'])) {
                 $dbTimeline
@@ -105,7 +105,7 @@ class Timeline_model extends MY_Model {
             }
             $idProceso = $dbTimeline->get("procesos")->row()->procesos_id;
             $insert = array(
-                'auditorias_id' => $idAuditoria,
+                'auditorias_id' => $auditorias_id,
                 'procesos_id' => $idProceso
             );
             $dbTimeline->insert("auditorias", $insert);
@@ -135,17 +135,17 @@ class Timeline_model extends MY_Model {
 
     /**
      * Esta función permite obtener las etapas correspondientes a un procreso de auditoría
-     * @param mixed $idAuditoria Identificador de la auditoría
+     * @param mixed $auditorias_id Identificador de la auditoría
      * @param mixed $idProceso Identificador del proceso
      * @return array Las etapas que corresponden al proceso
      */
-    function get_etapas($idAuditoria, $idProceso = NULL, $audi = array()) {
+    function get_etapas($auditorias_id, $idProceso = NULL, $audi = array()) {
         $return = array();
         if (!empty($idProceso)) {
             if (empty($audi)) {
-                $audi = $this->Auditorias_model->get_auditoria($idAuditoria);
+                $audi = $this->Auditorias_model->get_auditoria($auditorias_id);
             }
-            $etapaAuditoria = $this->Auditorias_model->get_etapa_de_auditoria($idAuditoria);
+            $etapaAuditoria = $this->Auditorias_model->get_etapa_de_auditoria($auditorias_id);
             $dbTimeline = $this->getDatabase(APP_DATABASE_TIMELINE);
             $dbTimeline->where("etapas_procesos_id", $idProceso)
                     ->where("etapas_codigo <=", $etapaAuditoria + VALOR);
@@ -160,7 +160,7 @@ class Timeline_model extends MY_Model {
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
                 foreach ($return as $index => $r) {
-                    $return[$index]['tareas'] = $this->get_tareas($idAuditoria, $r['etapas_id'], $audi);
+                    $return[$index]['tareas'] = $this->get_tareas($auditorias_id, $r['etapas_id'], $audi);
                 }
             }
         }
@@ -169,12 +169,12 @@ class Timeline_model extends MY_Model {
 
     /**
      * Esta función permite obtener las tareas de un etapa
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @param integer $idEtapa Identificador de la etapa
      * @param array $audi Array con información de la auditoría
      * @return array Esta función regresa un arreglo con la información de las tareas de una etapa
      */
-    function get_tareas($idAuditoria = NULL, $idEtapa = NULL, $audi = array()) {
+    function get_tareas($auditorias_id = NULL, $idEtapa = NULL, $audi = array()) {
         $ocultarTareas = array(
             'Envío de Citatorio',
             'Agendar Lectura por Correo Electrónico',
@@ -220,7 +220,7 @@ class Timeline_model extends MY_Model {
             if ($result && $result->num_rows() > 0) {
                 $return = $result->result_array();
                 if (empty($audi)) {
-                    $audi = $this->Auditorias_model->get_auditoria($idAuditoria);
+                    $audi = $this->Auditorias_model->get_auditoria($auditorias_id);
                 }
                 // Revisamos si todas las observaciones estan solventadas
                 $observacionesSolventadas = FALSE;
@@ -229,7 +229,7 @@ class Timeline_model extends MY_Model {
                     $observacionesSolventadas = (((array_sum($observaciones) / count($observaciones)) == 2) ? TRUE : FALSE);
                 }
                 // Revisamos si es una auditoría sin observaciones
-                $isAuditoriaSinObservaciones = $this->is_sin_observaciones($idAuditoria);
+                $isAuditoriaSinObservaciones = $this->is_sin_observaciones($auditorias_id);
 
                 $indexes = array();
                 foreach ($return as $index => $r) {
@@ -269,17 +269,17 @@ class Timeline_model extends MY_Model {
                             if ($result && $result->num_rows() == 1) {
                                 $aux = $result->row_array();
                                 $idConfAux = $aux['configuraciones_id'];
-                                $diferenciaReprogramacion = $this->get_diferencia_de_reprogramacion($idAuditoria, $idConfAux);
+                                $diferenciaReprogramacion = $this->get_diferencia_de_reprogramacion($auditorias_id, $idConfAux);
                             }
                         }
                         // Generamos la fecha programada
-                        list($fechaProgramada, $nombreCampoProgramada) = $this->get_fecha_programada_de_tarea($idAuditoria, $r['configuraciones_id'], TRUE);
-                        $return[$index]['tareas_fecha_programada'] = $fechaProgramada;
+                        list($fecha_programada, $nombreCampoProgramada) = $this->get_fecha_programada_de_tarea($auditorias_id, $r['configuraciones_id'], TRUE);
+                        $return[$index]['tareas_fecha_programada'] = $fecha_programada;
                         $return[$index]['campo_programada_real'] = $nombreCampoProgramada;
 
                         // Tuvo ampliación de plazo?
                         if (trim($r['tareas_nombre']) === "Inicia Pruebas de Auditoría") {
-                            $documentos_RAP = $this->Documentos_model->get_documentos_de_auditoria($idAuditoria, TIPO_DOCUMENTO_RESOLUCION_AMPLIACION_PLAZO);
+                            $documentos_RAP = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, TIPO_DOCUMENTO_RESOLUCION_AMPLIACION_PLAZO);
                             foreach ($documentos_RAP as $RAP) {
                                 if (isset($RAP['documentos_is_aprobado']) && $RAP['documentos_is_aprobado'] == 1) {
                                     $dias_RAP = $is_procedente = FALSE;
@@ -293,7 +293,7 @@ class Timeline_model extends MY_Model {
                                         }
                                     }
                                     if ($is_procedente !== FALSE && $dias_RAP !== FALSE) {
-                                        $return[$index]['tareas_fecha_reprogramada'] = agregar_dias($fechaProgramada, $dias_RAP);
+                                        $return[$index]['tareas_fecha_reprogramada'] = agregar_dias($fecha_programada, $dias_RAP);
                                     }
                                 }
                             }
@@ -301,7 +301,7 @@ class Timeline_model extends MY_Model {
 
                         // Tuvo reprogramaciones?
                         if (trim($r['tareas_nombre']) === "Inicio de Revisión de Solventación") {
-                            $documentos_ORP = $this->Auditorias_model->get_documentos_de_auditoria($idAuditoria, TIPO_DOCUMENTO_RESOLUCION_PRORROGA);
+                            $documentos_ORP = $this->Auditorias_model->get_documentos_de_auditoria($auditorias_id, TIPO_DOCUMENTO_RESOLUCION_PRORROGA);
                             foreach ($documentos_ORP as $ORP) {
                                 if (isset($ORP['documentos_is_aprobado']) && $ORP['documentos_is_aprobado'] == 1) {
                                     $dias_ORP = 0;
@@ -311,8 +311,8 @@ class Timeline_model extends MY_Model {
                                         }
                                     }
                                     if ($dias_ORP > 0) {
-                                        $return[$index]['tareas_fecha_reprogramada'] = getTotalHabiles_v2($fechaProgramada, 1);
-                                        $return[$index]['tareas_fecha_programada'] = getTotalHabiles_v2($fechaProgramada, -$dias_ORP);
+                                        $return[$index]['tareas_fecha_reprogramada'] = getTotalHabiles_v2($fecha_programada, 1);
+                                        $return[$index]['tareas_fecha_programada'] = getTotalHabiles_v2($fecha_programada, -$dias_ORP);
                                     }
                                 }
                             }
@@ -320,45 +320,45 @@ class Timeline_model extends MY_Model {
 
                         // Calculamos la fecha reprogramada
 //                    if ($diferenciaReprogramacion != 0) {
-//                        $return[$index]['tareas_fecha_reprogramada'] = $fechaProgramada;
-//                        $return[$index]['tareas_fecha_programada'] = getTotalHabiles_v2($fechaProgramada, intval($diferenciaReprogramacion));
+//                        $return[$index]['tareas_fecha_reprogramada'] = $fecha_programada;
+//                        $return[$index]['tareas_fecha_programada'] = getTotalHabiles_v2($fecha_programada, intval($diferenciaReprogramacion));
 //                    } else {
 //                        unset($return[$index]['tareas_fecha_reprogramada']);
 //                    }
                         // Verifico si la tarea se ejecutó antes de la fecha limite
                         if (!empty($r['configuraciones_fecha_ejecucion'])) {
                             $return[$index]['success'] = FALSE;
-                            list($fechaEjecucion, $nombreCampoEjecucion) = $this->get_fecha_ejecucion_de_tarea($idAuditoria, $r['configuraciones_id'], TRUE);
-                            $return[$index]['tareas_fecha_ejecucion'] = $fechaEjecucion;
+                            list($fecha_ejecucion, $nombreCampoEjecucion) = $this->get_fecha_ejecucion_de_tarea($auditorias_id, $r['configuraciones_id'], TRUE);
+                            $return[$index]['tareas_fecha_ejecucion'] = $fecha_ejecucion;
                             $return[$index]['campo_ejecucion_real'] = $nombreCampoEjecucion;
-                            $fechaEjecucionAux = new DateTime($fechaEjecucion);
+                            $fecha_ejecucionAux = new DateTime($fecha_ejecucion);
                             // Esta validación sirve para mostrar correctamente el icono y color de la tarea,
                             // ya que la tarea "Convocar revisión de avances con el área auditada" tiene como fecha
                             // programa un intervalo de fechas, por lo tanto a la fecha programa establecida se le añaden 4 días
                             // para que se considere el intervalo de tiempo
                             if (trim($r['tareas_nombre']) === "Convocar revisión de avances con el área auditada") {
-                                $fechaProgramada = agregar_dias($fechaProgramada, 4);
+                                $fecha_programada = agregar_dias($fecha_programada, 4);
                             }
-                            $retraso = diferencia_entre_fechas($fechaProgramada, $fechaEjecucion);
+                            $retraso = diferencia_entre_fechas($fecha_programada, $fecha_ejecucion);
                             $return[$index]['diferencia_dias_naturales'] = $retraso;
-                            $return[$index]['diferencia_dias_habiles'] = diferencia_entre_fechas($fechaProgramada, $fechaEjecucion);
-                            $return[$index]['icon'] = $this->get_icono_de_timeline($fechaProgramada, $fechaEjecucion, $audi['fechaIniReal']);
-                            $return[$index]['class'] = $this->get_clase_de_timeline($fechaProgramada, $fechaEjecucion);
+                            $return[$index]['diferencia_dias_habiles'] = diferencia_entre_fechas($fecha_programada, $fecha_ejecucion);
+                            $return[$index]['icon'] = $this->get_icono_de_timeline($fecha_programada, $fecha_ejecucion, $audi['fechaIniReal']);
+                            $return[$index]['class'] = $this->get_clase_de_timeline($fecha_programada, $fecha_ejecucion);
 
                             // Verificamos si las fechas de Revision de Jefe y Aprobacion del Subdirector suman máximo 10 días
                             if (stripos($r['tareas_nombre'], " jefe/coordinador") > 10 || stripos($r['tareas_nombre'], " subdirector") > 10) {
                                 array_push($indexes, $index);
                             }
                         } else {
-                            if (!empty($fechaProgramada)) {
+                            if (!empty($fecha_programada)) {
                                 // Elegimos class
-                                $DTFechaProgramada = new DateTime($fechaProgramada);
+                                $DT_fecha_programada = new DateTime($fecha_programada);
 
-                                if ($DTFechaProgramada < $hoy) {
+                                if ($DT_fecha_programada < $hoy) {
                                     $return[$index]['icon'] = "check";
-                                    $return[$index]['class'] = "info"; //get_clase_de_timeline($fechaProgramada, $fechaEjecucion);
+                                    $return[$index]['class'] = "info"; //get_clase_de_timeline($fecha_programada, $fecha_ejecucion);
                                 } else {
-                                    $fechaEjecucionDeMiFechaProgramada = NULL;
+                                    $fecha_ejecucionDeMiFechaProgramada = NULL;
                                     // Verificamos si la fecha de ejecución de la tarea con la cual se obtiene la fecha programada tiene valor
                                     // en caso de que el campo configuraciones_duracion sea negativo
                                     if ($r['configuraciones_duracion'] < 0) {
@@ -371,12 +371,12 @@ class Timeline_model extends MY_Model {
                                                 ->get("configuraciones");
 
                                         if ($result && $result->num_rows() == 1) {
-                                            $aux = $result->result_array();
-                                            $fechaEjecucionDeMiFechaProgramada = get_fecha_ejecucion_de_tarea($idAuditoria, $aux['configuraciones_id']);
+                                            $aux = $result->row_array();
+                                            $fecha_ejecucionDeMiFechaProgramada = $this->get_fecha_ejecucion_de_tarea($auditorias_id, $aux['configuraciones_id']);
                                         }
                                     }
 
-                                    if (!empty($fechaEjecucionDeMiFechaProgramada)) {
+                                    if (!empty($fecha_ejecucionDeMiFechaProgramada)) {
                                         $return[$index]['icon'] = 'check';
                                         $return[$index]['class'] = 'info';
                                     } else {
@@ -404,7 +404,7 @@ class Timeline_model extends MY_Model {
                                 if (count($matches) > 0) {
                                     list($basedatos, $tabla, $campo) = explode(".", $matches[0]);
                                     $result = $this->db->select($campo)
-                                            ->where("auditorias_id", $idAuditoria)
+                                            ->where("auditorias_id", $auditorias_id)
                                             ->limit(1)
                                             ->get(APP_DATABASE_PREFIX . $basedatos . "." . $tabla);
                                     if ($result && $result->num_rows() == 1) {
@@ -446,13 +446,13 @@ class Timeline_model extends MY_Model {
                         }
 
                         // Verificamos si tiene documentos para Vo.Bo.
-                        $documentos = $this->get_documentos_de_configuracion($r['configuraciones_id'], $idAuditoria);
+                        $documentos = $this->get_documentos_de_configuracion($r['configuraciones_id'], $auditorias_id);
                         if (!empty($documentos)) {
                             $conex = conectarBD();
-                            $datosAudit = getAuditoria($idAuditoria);
-                            $firmas = getFirmasContraloria($idAuditoria);
+                            $datosAudit = getAuditoria($auditorias_id);
+                            $firmas = getFirmasContraloria($auditorias_id);
                             $jefe = getJefesDepto($datosAudit['area']);
-                            $coord = get_coordinador_de_auditoria($idAuditoria);
+                            $coord = get_coordinador_de_auditoria($auditorias_id);
                             if (!empty($coord)) {
                                 $return[$index]['titulares_vobos']['coordinador'] = $coord;
                             }
@@ -525,23 +525,23 @@ class Timeline_model extends MY_Model {
 
     /**
      * Esta función permite conocer la fecha programada (plazo máximo) en la cual se debe realizar la tarae
-     * @param integer $idAuditoria Indentificador de la auditoría en la cual se ejecutará la tarea
-     * @param integer $idConfiguracion Identificador de la configuracion
+     * @param integer $auditorias_id Indentificador de la auditoría en la cual se ejecutará la tarea
+     * @param integer $configuraciones_id Identificador de la configuracion
      * @param boolean $returnCampoReal Indica si se desea solo la fecha o un array[fecha, nombre del campo]
      * @return mixed Si $returnCampoReal es FALSO entonces solo se regresa la cadena con la fecha obtenida en formato YYYY-MM-DD. Cuando es VERDADERO se regresa un arreglo que contiene la fecha y el nombre del campo real que hace referencia a la fecha
      */
-    function get_fecha_programada_de_tarea($idAuditoria, $idConfiguracion, $returnCampoReal = FALSE) {
-        $fechaProgramada = NULL;
+    function get_fecha_programada_de_tarea($auditorias_id, $configuraciones_id, $returnCampoReal = FALSE) {
+        $fecha_programada = NULL;
         $expresionRegular = '/(([A-z\d\-}]{1,})\.){2}([A-z\d-]){1,}/';
         $dbTimeline = $this->getDatabase(APP_DATABASE_TIMELINE);
         $tarea = $dbTimeline
                 ->select("configuraciones_fecha_programada, configuraciones_duracion AS 'tareas_duracion'")
-                ->where("configuraciones_id", $idConfiguracion)
+                ->where("configuraciones_id", $configuraciones_id)
                 ->limit(1)
                 ->get("configuraciones")
                 ->row_array();
         $tarea['tareas_fecha_programada'] = $this->get_campo($tarea['configuraciones_fecha_programada']);
-        $auditoria = $this->Auditorias_model->get_uno($idAuditoria);
+        $auditoria = $this->Auditorias_model->get_uno($auditorias_id);
         if (!empty($tarea['tareas_fecha_programada'])) {
             // Obtengo el campo real del cual se obtendrá el valor
             //$return[$index]['campo_programada'] = $tarea['tareas_fecha_programada'];
@@ -554,47 +554,47 @@ class Timeline_model extends MY_Model {
             }
             $duracion = intval($tarea['tareas_duracion']);
             $result = $dbTimeline->select("DATE(" . str_replace("cysa", APP_DATABASE_PREFIX . "cysa", $tarea['tareas_fecha_programada']) . ") AS 'fecha_programada'")
-                    ->where("auditorias_fechas_auditorias_id", $idAuditoria)
+                    ->where("auditorias_fechas_auditorias_id", $auditorias_id)
                     ->limit(1)
                     ->from(APP_DATABASE_PREFIX . $basedatos . "." . $tabla)
                     ->get();
             if ($result && $result->num_rows() > 0) {
-                $fechaProgramada = $result->row()->fecha_programada;
+                $fecha_programada = $result->row()->fecha_programada;
             }
 
-            if (!is_null($fechaProgramada) && $duracion != 0) {
-                $fechaProgramada = agregar_dias($fechaProgramada, $duracion);
+            if (!is_null($fecha_programada) && $duracion != 0) {
+                $fecha_programada = agregar_dias($fecha_programada, $duracion);
             }
         }
         if ($returnCampoReal) {
             $d = isset($tarea['campo_programada_real']) ? $tarea['campo_programada_real'] : NULL;
-            return array($fechaProgramada, $d);
+            return array($fecha_programada, $d);
         } else {
-            return $fechaProgramada;
+            return $fecha_programada;
         }
     }
 
     /**
      * Esta función regresa la fecha en que se ejecutó la tarea
-     * @param integer $idAuditoria Indentificador de la auditoría en la cual se ejecutará la tarea
-     * @param integer $idConfiguracion Identificador de la configuracion
+     * @param integer $auditorias_id Indentificador de la auditoría en la cual se ejecutará la tarea
+     * @param integer $configuraciones_id Identificador de la configuracion
      * @param boolean $returnCampoReal Indica si se desea solo la fecha o un array[fecha, nombre del campo]
      * @return mixed Si $returnCampoReal es FALSO entonces solo se regresa la cadena con la fecha obtenida en formato YYYY-MM-DD. Cuando en VERDADERO se regresa un arreglo que contiene la fecha y el nombre del campo real que hace referencia a la fecha
      */
-    function get_fecha_ejecucion_de_tarea($idAuditoria, $idConfiguracion, $returnCampoReal = FALSE) {
-        $fechaEjecucion = NULL;
+    function get_fecha_ejecucion_de_tarea($auditorias_id, $configuraciones_id, $returnCampoReal = FALSE) {
+        $fecha_ejecucion = NULL;
         $expresionRegular = '/(([A-z\d\-}]{1,})\.){2}([A-z\d-]){1,}/';
 
         $dbTimeline = $this->getDatabase(APP_DATABASE_TIMELINE);
         $tarea = $dbTimeline->select("configuraciones_fecha_ejecucion, configuraciones_duracion tareas_duracion")
-                ->where("configuraciones_id", $idConfiguracion)
+                ->where("configuraciones_id", $configuraciones_id)
                 ->limit(1)
                 ->get("configuraciones")
                 ->row_array();
         $tarea['tareas_fecha_ejecucion'] = $this->get_campo($tarea['configuraciones_fecha_ejecucion']);
 
         $result = $this->db->select("auditorias_tipo")
-                ->where("auditorias_id", $idAuditoria)
+                ->where("auditorias_id", $auditorias_id)
                 ->limit(1)
                 ->get("auditorias")
                 ->row_array();
@@ -604,13 +604,13 @@ class Timeline_model extends MY_Model {
                 $campoDB = str_replace("__", ".", $funcion);
                 switch ($campoDB) {
                     case "cysa.auditorias_fechas.fechas_acei":
-                        $fechaEjecucion = NULL;
+                        $fecha_ejecucion = NULL;
                         preg_match($expresionRegular, $campoDB, $matches);
                         list($basedatos, $tabla, $campo) = explode(".", $matches[0]);
                         $tarea['campo_ejecucion_real'] = APP_DATABASE_PREFIX . $campoDB;
                         $result = $this->db->select("dv.documentos_valores_valor")
                                 ->join("documentos d", "dv.documentos_valores_documentos_id = d.documentos_id", "INNER")
-                                ->where("d.documentos_auditorias_id", $idAuditoria)
+                                ->where("d.documentos_auditorias_id", $auditorias_id)
                                 ->where("d.documentos_documentos_tipos_id", 11)
                                 ->where("dv.documentos_valores_documentos_constantes_id", 166)
                                 ->get("documentos d");
@@ -621,15 +621,15 @@ class Timeline_model extends MY_Model {
                             $meses = array("", "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE");
                             $indexMes = array_search($mes, $meses);
                             $tarea['campo_ejecucion_real'] = APP_DATABASE_PREFIX . $campoDB;
-                            $fechaEjecucion = $anio . "-" . substr("0" . $indexMes, -2) . "-" . $dia;
-                            $this->db->set($campo, $fechaEjecucion)->where("auditorias_id", $idAuditoria)->update(APP_DATABASE_PREFIX . $basedatos . "." . $tabla);
+                            $fecha_ejecucion = $anio . "-" . substr("0" . $indexMes, -2) . "-" . $dia;
+                            $this->db->set($campo, $fecha_ejecucion)->where("auditorias_id", $auditorias_id)->update(APP_DATABASE_PREFIX . $basedatos . "." . $tabla);
                         } else {
                             $result = $this->db->select($campo)
-                                    ->where("auditorias_id", $idAuditoria)
+                                    ->where("auditorias_id", $auditorias_id)
                                     ->limit(1)
                                     ->get(APP_DATABASE_PREFIX . $basedatos . "." . $tabla);
                             if ($result && $result->num_rows() == 1) {
-                                $fechaEjecucion = $result->row()->{$campo};
+                                $fecha_ejecucion = $result->row()->{$campo};
                             }
                         }
                         break;
@@ -639,42 +639,42 @@ class Timeline_model extends MY_Model {
                 preg_match($expresionRegular, $tarea['tareas_fecha_ejecucion'], $matches);
                 if (count($matches) > 0) {
                     list($basedatos, $tabla, $campo) = explode(".", $matches[0]);
-                    $auditoria = $this->Auditorias_model->get_uno($idAuditoria);
+                    $auditoria = $this->Auditorias_model->get_uno($auditorias_id);
                     $tarea['campo_ejecucion_real'] = implode(".", array(APP_DATABASE_PREFIX . $basedatos, $tabla, $campo));
                 }
                 $select = "(" . str_replace("cysa", APP_DATABASE_PREFIX . "cysa", $tarea['tareas_fecha_ejecucion']) . ") AS 'fecha_ejecucion'";
                 $result = $this->db->select($select)
-                        ->where("auditorias_fechas_auditorias_id", $idAuditoria)
+                        ->where("auditorias_fechas_auditorias_id", $auditorias_id)
                         ->get(APP_DATABASE_PREFIX . $basedatos . "." . $tabla);
                 if ($result && $result->num_rows() > 0) {
-                    $fechaEjecucion = $result->row()->fecha_ejecucion;
+                    $fecha_ejecucion = $result->row()->fecha_ejecucion;
                 }
             }
         }
 
         if ($returnCampoReal) {
-            return array($fechaEjecucion, $tarea['campo_ejecucion_real']);
+            return array($fecha_ejecucion, $tarea['campo_ejecucion_real']);
         } else {
-            return $fechaEjecucion;
+            return $fecha_ejecucion;
         }
     }
 
     /**
      * Función que regresa la diferencia de la fecha reprogramada dependiendo de una tarea específica
-     * @param integer $idAuditoria Identificador de la auditoría
-     * @param integer $idConfiguracion Identificador de la configuracion
+     * @param integer $auditorias_id Identificador de la auditoría
+     * @param integer $configuraciones_id Identificador de la configuracion
      * @return integer Valor entero que indica la diferencia que se debe sumar (positivo) o restar(negativo) a la fecha programada para ajustar la reprogramación
      */
-    function get_diferencia_de_reprogramacion($idAuditoria, $idConfiguracion) {
+    function get_diferencia_de_reprogramacion($auditorias_id, $configuraciones_id) {
         $diferencia = 0;
-        if (!empty($idConfiguracion) && intval($idConfiguracion) > 0) {
-            $fechaProgramada = $this->get_fecha_programada_de_tarea($idAuditoria, $idConfiguracion);
-            $fechaEjecucion = $this->get_fecha_ejecucion_de_tarea($idAuditoria, $idConfiguracion);
+        if (!empty($configuraciones_id) && intval($configuraciones_id) > 0) {
+            $fecha_programada = $this->get_fecha_programada_de_tarea($auditorias_id, $configuraciones_id);
+            $fecha_ejecucion = $this->get_fecha_ejecucion_de_tarea($auditorias_id, $configuraciones_id);
 
-            $DTFechaProgramada = new DateTime($fechaProgramada);
-            $DTFechaEjecucion = new DateTime($fechaEjecucion);
-            if ($DTFechaEjecucion != $DTFechaProgramada) {
-                $diferencia = getDiasHabiles($fechaProgramada, $fechaEjecucion);
+            $DT_fecha_programada = new DateTime($fecha_programada);
+            $DTFechaEjecucion = new DateTime($fecha_ejecucion);
+            if ($DTFechaEjecucion != $DT_fecha_programada) {
+                $diferencia = getDiasHabiles($fecha_programada, $fecha_ejecucion);
             }
         }
         return $diferencia;
@@ -816,32 +816,32 @@ class Timeline_model extends MY_Model {
 
     /**
      * Función que regresa la clase CSS del icono dependiendo de dos fechas proporcionadas
-     * @param date $fechaProgramada Fecha en formato YYYY-MM-DD de la fecha máxima en la que se debe realizar la tarea
-     * @param date $fechaEjecucion Fecha en formto YYYY-MM-DD en la que se ejecutó la tarea
+     * @param date $fecha_programada Fecha en formato YYYY-MM-DD de la fecha máxima en la que se debe realizar la tarea
+     * @param date $fecha_ejecucion Fecha en formto YYYY-MM-DD en la que se ejecutó la tarea
      * @return string Regresa el nombre de la clase correspondiente
      */
-    function get_clase_de_timeline($fechaProgramada, $fechaEjecucion) {
+    function get_clase_de_timeline($fecha_programada, $fecha_ejecucion) {
         $class = "default";
         $hoy = new DateTime("now");
-        if (empty($fechaProgramada)) {
+        if (empty($fecha_programada)) {
             return $class;
         }
 
-        $DTfechaProgramada = new DateTime($fechaProgramada);
-        $DTfechaEjecucion = new DateTime($fechaEjecucion);
+        $DT_fecha_programada = new DateTime($fecha_programada);
+        $DT_fecha_ejecucion = new DateTime($fecha_ejecucion);
 
 // Elegimos la clase
-        if ($DTfechaProgramada <= $hoy) {
+        if ($DT_fecha_programada <= $hoy) {
             $class = 'danger';
-            if (!empty($fechaEjecucion)) {
-                if ($DTfechaEjecucion <= $DTfechaProgramada) {
+            if (!empty($fecha_ejecucion)) {
+                if ($DT_fecha_ejecucion <= $DT_fecha_programada) {
                     $class = 'success';
-                } elseif ($DTfechaEjecucion > $DTfechaProgramada) {
+                } elseif ($DT_fecha_ejecucion > $DT_fecha_programada) {
                     $class = "danger";
                 }
             }
-        } elseif (!empty($fechaEjecucion)) {
-            if ($DTfechaEjecucion <= $DTfechaProgramada) {
+        } elseif (!empty($fecha_ejecucion)) {
+            if ($DT_fecha_ejecucion <= $DT_fecha_programada) {
                 $class = "success";
             } else {
                 $class = "danger";
@@ -852,50 +852,50 @@ class Timeline_model extends MY_Model {
 
     /**
      * Esta función regresa el icono correcto que se debe mostrar en la linea de tiempo segun la fecha de ejecucion y la fecha programada
-     * @param string $fechaProgramada Valor de la fecha programada. YYYY-MM-DD
-     * @param string $fechaEjecucion Valor de la fecha de ejecución YYYY-MM-DD
-     * @param mixed $idAuditoria Valor de la fecha de auditoria, o también puede ser el ID de la auditoria
+     * @param string $fecha_programada Valor de la fecha programada. YYYY-MM-DD
+     * @param string $fecha_ejecucion Valor de la fecha de ejecución YYYY-MM-DD
+     * @param mixed $auditorias_id Valor de la fecha de auditoria, o también puede ser el ID de la auditoria
      * @return string Regresa el nombre del icono
      */
-    function get_icono_de_timeline($fechaProgramada, $fechaEjecucion, $idAuditoria = NULL) {
+    function get_icono_de_timeline($fecha_programada, $fecha_ejecucion, $auditorias_id = NULL) {
         $icono = "more_horiz";
         $aux = new DateTime("now");
         $hoy = new DateTime($aux->format("Y-m-d"));
-        $fechaInicioAuditoria = $idAuditoria;
-        if (empty($fechaProgramada)) {
+        $fechaInicioAuditoria = $auditorias_id;
+        if (empty($fecha_programada)) {
             return $icono;
         }
 
-        if (!empty($idAuditoria) && strpos($idAuditoria, "-") === FALSE) {
+        if (!empty($auditorias_id) && strpos($auditorias_id, "-") === FALSE) {
             $fechaInicioAuditoria = $this->db->select("auditorias_fechas_inicio_real")
-                            ->where("auditorias_fechas_auditorias_id", $idAuditoria)
+                            ->where("auditorias_fechas_auditorias_id", $auditorias_id)
                             ->limit(1)
                             ->get("auditorias_fechas")
                             ->row()->auditorias_fechas_inicio_real;
         }
 
-        $DTfechaProgramada = new DateTime($fechaProgramada);
-        $DTfechaEjecucion = new DateTime($fechaEjecucion);
+        $DT_fecha_programada = new DateTime($fecha_programada);
+        $DT_fecha_ejecucion = new DateTime($fecha_ejecucion);
         $DTfechaInicioAuditoria = new DateTime($fechaInicioAuditoria);
 
         // Elegimos icono
-        if ($DTfechaInicioAuditoria < $hoy && $DTfechaProgramada < $hoy) {
-            if ($DTfechaInicioAuditoria <= $DTfechaProgramada) {
+        if ($DTfechaInicioAuditoria < $hoy && $DT_fecha_programada < $hoy) {
+            if ($DTfechaInicioAuditoria <= $DT_fecha_programada) {
                 $icono = "check";
             }
-            if (trim($fechaEjecucion) != "" && !empty($fechaEjecucion)) {
-                if ($DTfechaProgramada < $DTfechaEjecucion) {
+            if (trim($fecha_ejecucion) != "" && !empty($fecha_ejecucion)) {
+                if ($DT_fecha_programada < $DT_fecha_ejecucion) {
                     $icono = "close";
                 }
-                if ($DTfechaEjecucion <= $DTfechaProgramada) {
+                if ($DT_fecha_ejecucion <= $DT_fecha_programada) {
                     $icono = "check";
                 }
             } else {
                 $icono = "help_outline"; //help help_outline
             }
         } else {
-            if (!empty($fechaEjecucion)) {
-                if ($DTfechaEjecucion <= $DTfechaProgramada) {
+            if (!empty($fecha_ejecucion)) {
+                if ($DT_fecha_ejecucion <= $DT_fecha_programada) {
                     $icono = "check";
                 } else {
                     $icono = "close";
@@ -907,15 +907,15 @@ class Timeline_model extends MY_Model {
 
     /**
      * Función que regresa información de la linea de tiempo de una auditoría
-     * @param int $idAuditoria Identificador de la auditoría
+     * @param int $auditorias_id Identificador de la auditoría
      * @return mixed. Regresa un arreglo con la información de la línea de tiempo de una auditoría. Regresa FALSE en caso de error.
      */
-    function get_timeline($idAuditoria = NULL) {
-        if (empty($idAuditoria)) {
+    function get_timeline($auditorias_id = NULL) {
+        if (empty($auditorias_id)) {
             return FALSE;
         }
 
-        $r = $this->Auditorias_model->get_auditoria($idAuditoria);
+        $r = $this->Auditorias_model->get_auditoria($auditorias_id);
         if (!empty($r['auditorias_origen_id']) && $r['auditorias_anio'] < 2018) {
             $this->db
                     ->select("auditorias_fechas_inicio_programado_etapa_1 AS 'fechaIniAudit'")
@@ -934,27 +934,27 @@ class Timeline_model extends MY_Model {
                     ->select('DATEDIFF(auditorias_fechas_fin_real, auditorias_fechas_fin_programado) reprogramacion_fin_dias_naturales');
         }
 
-        $audi = $this->Auditorias_model->get_auditoria($idAuditoria);
-        $proceso = $this->get_proceso_de_auditoria($idAuditoria);
-        $etapas = $this->get_etapas($idAuditoria, $proceso['procesos_id'], $audi);
+        $audi = $this->Auditorias_model->get_auditoria($auditorias_id);
+        $proceso = $this->get_proceso_de_auditoria($auditorias_id);
+        $etapas = $this->get_etapas($auditorias_id, $proceso['procesos_id'], $audi);
 
         $audi['reprogramacion_inicio_dias_habiles'] = getDiasHabiles($audi['fechaIniAudit'], $audi['fechaIniReal']);
         $audi['reprogramacion_fin_dias_habiles'] = getDiasHabiles($audi['fechaFinAudit'], $audi['fechaFinReal']);
-        $audi['idAuditoria'] = $idAuditoria;
+        $audi['idAuditoria'] = $auditorias_id;
 
-        $prorrogas = $this->Documentos_model->get_documentos_de_auditoria($idAuditoria, TIPO_DOCUMENTO_RESOLUCION_PRORROGA);
+        $prorrogas = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, TIPO_DOCUMENTO_RESOLUCION_PRORROGA);
         if (count($prorrogas) > 0) {
             $audi['prorrogas'] = $prorrogas;
         }
-        $audi['prorrogas_fecha_maxima_para_generarlas'] = $this->get_fecha_maxima_para_generar_prorroga($idAuditoria);
-        $audi['etapa'] = $this->Auditorias_model->get_etapa_de_auditoria($idAuditoria);
-        $observaciones = $this->Auditorias_model->get_observaciones_de_auditoria($idAuditoria);
+        $audi['prorrogas_fecha_maxima_para_generarlas'] = $this->get_fecha_maxima_para_generar_prorroga($auditorias_id);
+        $audi['etapa'] = $this->Auditorias_model->get_etapa_de_auditoria($auditorias_id);
+        $observaciones = $this->Auditorias_model->get_observaciones_de_auditoria($auditorias_id);
 
-        $aux = $this->get_recomendaciones($idAuditoria);
+        $aux = $this->get_recomendaciones($auditorias_id);
         $estadosRecomendaciones = $aux[0];
         $revisiones = $aux[1];
         $numeroRecomendaciones = $aux[2];
-        $isSinObservaciones = $this->is_sin_observaciones($idAuditoria, $observaciones);
+        $isSinObservaciones = $this->is_sin_observaciones($auditorias_id, $observaciones);
         if ($isSinObservaciones AND count($etapas) > 1) {
             unset($etapas[0]);
         }
@@ -971,13 +971,13 @@ class Timeline_model extends MY_Model {
             }
         }
         // Revisamos si tiene una auditoria de seguimiento
-        $idAuditoriaSeguimiento = $this->get_id_auditoria_de_seguimiento($idAuditoria);
+        $auditorias_idSeguimiento = $this->get_id_auditoria_de_seguimiento($auditorias_id);
         // Creamos la variable que servirá para generar el JSON
         $data = array(
             'procesos_id' => $proceso['procesos_id'],
             'etapas' => $etapas,
             'auditoria' => $audi,
-            'auditoria_seguimiento' => $idAuditoriaSeguimiento,
+            'auditoria_seguimiento' => $auditorias_idSeguimiento,
             'observaciones' => $observaciones,
             'revisiones' => $revisiones,
             'is_sin_observaciones' => $isSinObservaciones,
@@ -1091,10 +1091,10 @@ class Timeline_model extends MY_Model {
     /**
      * Esta función regresa una bitacora de los correos electrónicos enviados a un funcionario
      * @param int $idEmpleado Identificador del empleado
-     * @param int $idAuditoria Identificador de la auditoría
+     * @param int $auditorias_id Identificador de la auditoría
      * @return array Arreglo que contiene la bitacora de correos electrónicos enviados al funcionario.
      */
-    function get_correos_enviados_al_funcionario($idEmpleado = NULL, $idAuditoria = NULL) {
+    function get_correos_enviados_al_funcionario($idEmpleado = NULL, $auditorias_id = NULL) {
         $return = array();
         if (!empty($idEmpleado) && intval($idEmpleado) > 0) {
             $dbCYSA = conectarBD();
@@ -1103,8 +1103,8 @@ class Timeline_model extends MY_Model {
                     . "LEFT JOIN cat_funcionario f ON f.idEmpleado = cfec.idUsuario "
                     . "LEFT JOIN cat_funcionario f2 ON f2.idEmpleado = cfec.idEmpleado "
                     . "WHERE cfec.idEmpleado = " . $idEmpleado;
-            if (!empty($idAuditoria)) {
-                $strSQL .= " AND idAuditoria = " . $idAuditoria;
+            if (!empty($auditorias_id)) {
+                $strSQL .= " AND idAuditoria = " . $auditorias_id;
             }
             $result = $dbCYSA->ejecutaQuery($strSQL);
             if ($result && mysql_num_rows($result) > 0) {
@@ -1132,9 +1132,13 @@ class Timeline_model extends MY_Model {
      * @param string $date Fecha/Hora en formato YYYY-MM-DD HH:MM:SS
      * @return string Devuelve la fecha en formato YYYY-MM-DD
      */
-    function parseDatetime2Date($date) {
-        list($fecha, $tiempo) = explode(" ", $date . " ");
-        return $fecha;
+    function parseDatetime2Date($date = NULL) {
+        $return = $date;
+        if (!empty($date)) {
+            $aux = explode(" ", $date);
+            $return = $aux[0];
+        }
+        return $return;
     }
 
     /**
@@ -1202,15 +1206,15 @@ class Timeline_model extends MY_Model {
 
     /**
      * Devuelve el texto del status de la auditoria
-     * @param integer $idAuditoria Identificador de la auditoria
+     * @param integer $auditorias_id Identificador de la auditoria
      * @return string Cadena de texto que refleja el status de la auditoria. (Corresponde al campo tareas.tareas_fecha_reportes_label de la linea de tiempo.
      */
-    function get_status_auditoria($idAuditoria) {
-        $aux = getEtapaAuditoria($idAuditoria);
+    function get_status_auditoria($auditorias_id) {
+        $aux = getEtapaAuditoria($auditorias_id);
         $etapaActual = intval($aux['etapa']);
-        $auditoria = getAuditoria($idAuditoria);
+        $auditoria = getAuditoria($auditorias_id);
         if (intval($aux['etapa']) == ETAPA_FIN) {
-            $observaciones = get_observaciones($idAuditoria);
+            $observaciones = get_observaciones($auditorias_id);
             if (!empty($observaciones)) {
                 $todasSolventadas = TRUE;
                 foreach ($observaciones as $obs) {
@@ -1221,13 +1225,13 @@ class Timeline_model extends MY_Model {
                     }
                 }
                 if (!$todasSolventadas) {
-                    $idAuditoriaSeguimiento = get_id_auditoria_de_seguimiento($idAuditoria);
-                    $auditoriaSeguimiento = getAuditoria($idAuditoriaSeguimiento);
+                    $auditorias_idSeguimiento = get_id_auditoria_de_seguimiento($auditorias_id);
+                    $auditoriaSeguimiento = getAuditoria($auditorias_idSeguimiento);
                 }
             }
             return array(
-                'status' => 'Concluida.' . (!empty($idAuditoriaSeguimiento) ? ' Seguimiento programado' : ' Pendiente programar Seguimiento'),
-                'fecha_por_mostrar' => !empty($idAuditoriaSeguimiento) ? date("Y-m-d", $auditoriaSeguimiento['fIniReal']) : $auditoria['fechaOEDRes']
+                'status' => 'Concluida.' . (!empty($auditorias_idSeguimiento) ? ' Seguimiento programado' : ' Pendiente programar Seguimiento'),
+                'fecha_por_mostrar' => !empty($auditorias_idSeguimiento) ? date("Y-m-d", $auditoriaSeguimiento['fIniReal']) : $auditoria['fechaOEDRes']
             );
         } elseif (intval($aux['etapa']) > 20002) {
             $etapaActual = 20002;
@@ -1265,23 +1269,23 @@ class Timeline_model extends MY_Model {
     ORDER BY p.procesos_id DESC, e.etapas_orden_ejecucion DESC, c.configuraciones_orden_ejecucion DESC";
         $dbTimeline = $this->getDatabase(APP_DATABASE_TIMELINE);
         $resTareas = $dbTimeline->ejecutaQuery($strSQL);
-        $fechaEjecucion = NULL;
+        $fecha_ejecucion = NULL;
         $tareaAnterior = NULL;
-        $fechaProgramada = NULL;
-        $fechaLectura = NULL; // Auxiliar para no perder la fecha de ARA o ARR
+        $fecha_programada = NULL;
+        $fecha_lectura = NULL; // Auxiliar para no perder la fecha de ARA o ARR
 // Expresión regular para obtener la la estructura el nombre de un campo que siempre viene de la siguiente forma
 // {BASEDATO} . {TABLA} . {CAMPO}
         $expresionRegular = '/(([A-z\d\-}]{1,})\.){2}([A-z\d-]){1,}/';
         if ($resTareas && mysql_num_rows($resTareas)) {
             while (empty($ultimaTareaEjecutada) && is_resource($resTareas) && $tarea = mysql_fetch_assoc($resTareas)) {
                 if (empty($ultimaTareaEjecutada)) {
-                    $fechaEjecucion = NULL;
-                    $fechaProgramada = get_fecha_programada_de_tarea($idAuditoria, $tarea['configuraciones_id']);
+                    $fecha_ejecucion = NULL;
+                    $fecha_programada = get_fecha_programada_de_tarea($auditorias_id, $tarea['configuraciones_id']);
                     // Obtengo el valor del campo de ejecucion relacionada a la tarea
                     if (!empty($tarea['configuraciones_fecha_ejecucion'])) {
-                        $fechaEjecucion = get_fecha_ejecucion_de_tarea($idAuditoria, $tarea['configuraciones_id']);
+                        $fecha_ejecucion = get_fecha_ejecucion_de_tarea($auditorias_id, $tarea['configuraciones_id']);
                         if ($tarea['configuraciones_fecha_ejecucion'] == 18) {
-                            $fechaEjecucion = NULL;
+                            $fecha_ejecucion = NULL;
                         }
                         // Revisamos si ya se capturo el campo requerido para activar la tarea
                         // y en caso de que sea NULL entonces continuamos iterando
@@ -1293,62 +1297,62 @@ class Timeline_model extends MY_Model {
                             preg_match($expresionRegular, $c, $matches);
                             if (count($matches) > 0) {
                                 list($basedatos, $tabla, $campo) = explode(".", $matches[0]);
-                                $strSQL = "SELECT " . $campo . " FROM " . APP_DATABASE_PREFIX . $basedatos . "." . $tabla . " WHERE idAuditoria = " . $idAuditoria . " LIMIT 1";
+                                $strSQL = "SELECT " . $campo . " FROM " . APP_DATABASE_PREFIX . $basedatos . "." . $tabla . " WHERE idAuditoria = " . $auditorias_id . " LIMIT 1";
                                 $dbCYSA = conectarBD();
                                 $aux_result = $dbCYSA->ejecutaQuery($strSQL);
                                 if (is_resource($aux_result) && mysql_num_rows($aux_result) > 0) {
                                     $aux = mysql_fetch_assoc($aux_result);
                                     if (empty($aux[$campo])) {
-                                        $fechaEjecucion = NULL;
+                                        $fecha_ejecucion = NULL;
                                     }
                                 } else {
-                                    $fechaEjecucion = NULL;
+                                    $fecha_ejecucion = NULL;
                                 }
                             }
                         }
                     }
                     // Si es diferente de vacio, entonces significa que la tarea ya se realizó
                     // y entonces es la ultima tarea realizada en donde se haya capturada la fecha
-                    if (!empty($fechaEjecucion)) {
+                    if (!empty($fecha_ejecucion)) {
                         // Para el caso de la LECTURA DEL ARA o ARR falta validar que la fecha de ejecución
                         // ya haya llegado, porque sino, puede que esta en el envio de citatorio, pero aun
                         // falten los dos dias para la lectura, asi que por eso se hace la siguiente validacion
                         //
                     // 12 = Lectura de ARA, 22 = Lecuta de Resultados de ARR, 25 = Lectura de Resultados de Revision
                         if (in_array($tarea['tareas_id'], array(12, 22, 25))) {
-                            $fechaLectura = $fechaEjecucion;
+                            $fecha_lectura = $fecha_ejecucion;
                             $DT_hoy = new DateTime("now");
-                            $DT_fechaEjecucion = new DateTime($fechaEjecucion);
-                            if ($DT_hoy < $DT_fechaEjecucion) {
-                                $fechaEjecucion = NULL;
+                            $DT_fecha_ejecucion = new DateTime($fecha_ejecucion);
+                            if ($DT_hoy < $DT_fecha_ejecucion) {
+                                $fecha_ejecucion = NULL;
                             }
                         }
                         // Esta condición se puso, porque cuando actualmente esta el ENVÍO DE DOCUMENTOS se debe mostrar
                         // la fecha de Inicio Real de la Primera Revision
                         if ($tarea['tareas_id'] == 14 && empty($tarea['idAuditoriaOrigen'])) {
-                            $strSQL = "SELECT fechaIniRealRev1 FROM " . CAT_AUDITORIAS . " WHERE idAuditoria = " . $idAuditoria . " LIMIT 1";
+                            $strSQL = "SELECT fechaIniRealRev1 FROM " . CAT_AUDITORIAS . " WHERE idAuditoria = " . $auditorias_id . " LIMIT 1";
                             $dbCYSA = conectarBD();
                             $aux_result = $dbCYSA->ejecutaQuery($strSQL);
                             if (is_resource($aux_result)) {
                                 $aux = mysql_fetch_assoc($aux_result);
-                                $fechaEjecucion = $aux['fechaIniRealRev1'];
+                                $fecha_ejecucion = $aux['fechaIniRealRev1'];
                             }
                         }
-                        if (!empty($fechaEjecucion)) {
-                            if (!is_null($fechaLectura)) {
-                                $fechaEjecucion = $fechaLectura;
+                        if (!empty($fecha_ejecucion)) {
+                            if (!is_null($fecha_lectura)) {
+                                $fecha_ejecucion = $fecha_lectura;
                             }
                             $ultimaTareaEjecutada = $tarea['etiquetas_status_nombre'];
                         }
                     } else {
-                        if (!empty($fechaProgramada)) {
+                        if (!empty($fecha_programada)) {
                             $hoy = strtotime(date("Y-m-d"));
-                            $aux = strtotime($fechaProgramada);
+                            $aux = strtotime($fecha_programada);
                             if ($hoy > $aux) {
                                 $ultimaTareaEjecutada = $tarea['etiquetas_status_nombre'];
-                                $fechaVencimientoDeTarea = $fechaProgramada = get_fecha_programada_de_tarea($idAuditoria, $tareaAnterior['configuraciones_id']);
+                                $fechaVencimientoDeTarea = $fecha_programada = get_fecha_programada_de_tarea($auditorias_id, $tareaAnterior['configuraciones_id']);
                                 if (strpos($tarea['tareas_nombre'], "ARA") !== FALSE && strpos($tarea['tareas_nombre'], "pruebas") !== FALSE) {
-                                    $fechaVencimientoDeTarea = $fechaProgramada = get_fecha_programada_de_tarea($idAuditoria, $tarea['configuraciones_id']);
+                                    $fechaVencimientoDeTarea = $fecha_programada = get_fecha_programada_de_tarea($auditorias_id, $tarea['configuraciones_id']);
                                 }
                             }
                         }
@@ -1360,22 +1364,22 @@ class Timeline_model extends MY_Model {
                 }
             }
             if (intval($tarea['configuraciones_etiquetas_status_id_next']) > 0) {
-                $fechaEjecucion = get_fecha_ejecucion_de_tarea($idAuditoria, $tareaAnterior['configuraciones_id']);
-                $fechaProgramada = get_fecha_programada_de_tarea($idAuditoria, $tareaAnterior['configuraciones_id']);
+                $fecha_ejecucion = get_fecha_ejecucion_de_tarea($auditorias_id, $tareaAnterior['configuraciones_id']);
+                $fecha_programada = get_fecha_programada_de_tarea($auditorias_id, $tareaAnterior['configuraciones_id']);
                 $ultimaTareaEjecutada = $tareaAnterior['etiquetas_status_nombre'];
             }
             if (!empty($ultimaTareaEjecutada) && strpos($ultimaTareaEjecutada, "__PRORROGA__") !== FALSE) {
-                $prorrogas = $this->Documentos_model->get_documentos_de_auditoria($idAuditoria, TIPO_DOCUMENTO_RESOLUCION_PRORROGA);
+                $prorrogas = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, TIPO_DOCUMENTO_RESOLUCION_PRORROGA);
                 if (count($prorrogas) > 0) {
-                    $auditoria = getCtrlAuditoriaDatos($idAuditoria);
-                    $fechaProgramada = $auditoria['fIniReal'];
+                    $auditoria = getCtrlAuditoriaDatos($auditorias_id);
+                    $fecha_programada = $auditoria['fIniReal'];
                     if (!empty($auditoria['fIniRealRev1'])) {
-                        $fechaProgramada = $auditoria['fIniRealRev1'];
+                        $fecha_programada = $auditoria['fIniRealRev1'];
                     }
                     if (!empty($auditoria['fIniRealRev2'])) {
-                        $fechaProgramada = $auditoria['fIniRealRev2'];
+                        $fecha_programada = $auditoria['fIniRealRev2'];
                     }
-                    $nuevaFecha = mysqlDate2OnlyDate($fechaProgramada);
+                    $nuevaFecha = mysqlDate2OnlyDate($fecha_programada);
                     $ultimaTareaEjecutada = str_replace("__PRORROGA__", " con prorroga", $ultimaTareaEjecutada);
                     $aux = explode(":", $ultimaTareaEjecutada);
                     $ultimaTareaEjecutada = $aux[0] . ": " . $nuevaFecha;
@@ -1395,15 +1399,15 @@ class Timeline_model extends MY_Model {
                 }
             }
         }
-        $fechaPorMostrar = empty($fechaEjecucion) ? $fechaProgramada : $fechaEjecucion;
+        $fechaPorMostrar = empty($fecha_ejecucion) ? $fecha_programada : $fecha_ejecucion;
         if (!isset($fechaVencimientoDeTarea)) {
-            $fechaVencimientoDeTarea = empty($tareaAnterior) ? NULL : get_fecha_programada_de_tarea($idAuditoria, $tareaAnterior['configuraciones_id']);
+            $fechaVencimientoDeTarea = empty($tareaAnterior) ? NULL : get_fecha_programada_de_tarea($auditorias_id, $tareaAnterior['configuraciones_id']);
         }
         $return = array(
             'status' => $ultimaTareaEjecutada,
             'fecha_por_mostrar' => $fechaPorMostrar,
-            'fecha_programada' => $fechaProgramada,
-            'fecha_ejecucion' => $fechaEjecucion,
+            'fecha_programada' => $fecha_programada,
+            'fecha_ejecucion' => $fecha_ejecucion,
             // Esta fecha se refiere a la variable $tareaAnterior, y es la fecha programada de la tarea anterior
             'fecha_vencimiento' => $fechaVencimientoDeTarea
         );
@@ -1541,24 +1545,24 @@ class Timeline_model extends MY_Model {
 
     /**
      * Esta función devuelve los documentos relacionados a un tarea (configuracion) de la linea de tiempo para su VoBo
-     * @param integer $idConfiguracion Identificador de la configuracion
-     * @param integer $idAuditoria [Optional] Identificador de la auditoria
+     * @param integer $configuraciones_id Identificador de la configuracion
+     * @param integer $auditorias_id [Optional] Identificador de la auditoria
      * @return array Devuelve la informacion correspondiente a los documentos relacionados a la configuracion de la linea de tiempo
      */
-    function get_documentos_de_configuracion($idConfiguracion, $idAuditoria = NULL) {
+    function get_documentos_de_configuracion($configuraciones_id, $auditorias_id = NULL) {
         return array();
 
         $return = array();
 
-        if (!empty($idConfiguracion)) {
-            $strSQL = "SELECT cd.* " . (!empty($idAuditoria) ? ', dd.denDocto, d.*, cdv.* ' : '')
+        if (!empty($configuraciones_id)) {
+            $strSQL = "SELECT cd.* " . (!empty($auditorias_id) ? ', dd.denDocto, d.*, cdv.* ' : '')
                     . "FROM " . APP_DATABASE_PREFIX . "timeline.configuraciones_documentos cd ";
-            if (!empty($idAuditoria)) {
-                $strSQL .= "LEFT JOIN " . APP_DATABASE_PREFIX . "cysa.documentos d ON d.idTipoDocto = cd.idTipoDocto AND d.idAuditoria = " . $idAuditoria . " "
+            if (!empty($auditorias_id)) {
+                $strSQL .= "LEFT JOIN " . APP_DATABASE_PREFIX . "cysa.documentos d ON d.idTipoDocto = cd.idTipoDocto AND d.idAuditoria = " . $auditorias_id . " "
                         . "LEFT JOIN " . APP_DATABASE_PREFIX . "cysa.cat_documentos dd ON dd.idTipoDocto = cd.idTipoDocto "
                         . "LEFT JOIN " . APP_DATABASE_PREFIX . "cysa.cat_documentos_versiones cdv ON cdv.idVersion = d.idVersion ";
             }
-            $strSQL .= "WHERE cd.configuraciones_id = " . $idConfiguracion . " "
+            $strSQL .= "WHERE cd.configuraciones_id = " . $configuraciones_id . " "
                     . "ORDER BY cd.idTipoDocto ASC";
             $dbTimeline = $this->getDatabase(APP_DATABASE_TIMELINE);
             $result = $dbTimeline->ejecutaQuery($strSQL);
@@ -1705,17 +1709,17 @@ ORDER BY revisiones_fecha_creacion " . $orderBy;
 
     /**
      * Obtiene al coordinador o coordinadores de una auditoria
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return array Numero de empleado o empleados coordinadores de la auditoría
      */
-    function get_coordinador_de_auditoria($idAuditoria) {
+    function get_coordinador_de_auditoria($auditorias_id) {
         $return = array();
 
         $strSQL = "SELECT a.idEmpleado, a.area, f.nombreF, f.apF, f.amF, p.idPuesto, p.denPuesto
 FROM cat_auditoria a
 LEFT JOIN cat_funcionario f ON f.idEmpleado = a.idEmpleado
 LEFT JOIN " . APP_DATABASE_PREFIX . "sac.ayunta_puesto p ON p.idPuesto = f.idPuesto
-WHERE idAuditoria = " . $idAuditoria;
+WHERE idAuditoria = " . $auditorias_id;
 
         $dbCYSA = conectarBD();
         $result = $dbCYSA->ejecutaQuery($strSQL);
@@ -1822,21 +1826,21 @@ WHERE idAuditoria = " . $idAuditoria;
 
     /**
      * Función para regresar las recomendaciones de un auditoria
-     * @param integer $idAuditoria
+     * @param integer $auditorias_id
      * @return array Regresa un arreglo con:<br>[0] => el status de las recomendaciones<br>[1] => los datos de las revisiones<br>[2] => La cantidad de recomendaciones por status
      */
-    function get_recomendaciones($idAuditoria) {
-        $datosAudit = $this->Auditorias_model->get_auditoria($idAuditoria);
+    function get_recomendaciones($auditorias_id) {
+        $datosAudit = $this->Auditorias_model->get_auditoria($auditorias_id);
         $estadosRecomendaciones = $numeroRecomendaciones = $revisiones = array();
-        $etapaActual = $this->Auditorias_model->get_etapa_de_auditoria($idAuditoria);
+        $etapaActual = $this->Auditorias_model->get_etapa_de_auditoria($auditorias_id);
 
         foreach ($datosAudit['observaciones'] as $obs) {
             $idObservacion = intval($obs['observaciones_id']);
-            $n = $this->get_maxima_revision($idAuditoria);
+            $n = $this->get_maxima_revision($auditorias_id);
             $numeroRevision = ($n < 2) ? $n : 2;
             if (!empty($datosAudit['auditorias_origen_id'])) {
-                $idAuditoria = $this->get_real_auditoria_origen($idAuditoria);
-                $numeroRevision = $this->get_maxima_revision($idAuditoria);
+                $auditorias_id = $this->get_real_auditoria_origen($auditorias_id);
+                $numeroRevision = $this->get_maxima_revision($auditorias_id);
             }
             $numeroObservacion = intval($obs['observaciones_numero']);
             do {
@@ -1873,15 +1877,15 @@ WHERE idAuditoria = " . $idAuditoria;
 
     /**
      * Obtiene el listado de observaciones de una auditoria y agrega ademas la clasificación de la observación
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return array Listado de las observaciones
      */
-    function get_observaciones($idAuditoria) {
-        $idAuditoria = get_real_auditoria_origen($idAuditoria);
-        $datosAudit = getAuditoria($idAuditoria);
+    function get_observaciones($auditorias_id) {
+        $auditorias_id = get_real_auditoria_origen($auditorias_id);
+        $datosAudit = getAuditoria($auditorias_id);
         $observaciones = array();
         if ($datosAudit['bSinObservacionAP'] == 0) { // Si esta marcado diferente a SIN OBSERVACIONES, entonces procedemos
-            $observaciones = getListaObservaciones($idAuditoria);
+            $observaciones = getListaObservaciones($auditorias_id);
             foreach ($observaciones as $index => $obs) {
                 if ($obs['denObs'] !== "SIN OBSERVACIONES") {
                     $status = get_clasificacion_de_observacion($obs['idObs']);
@@ -1950,10 +1954,10 @@ WHERE idAuditoria = " . $idAuditoria;
         return $return;
     }
 
-    function get_documentos_de_auditoria($idAuditoria, $idTipoDocto = NULL) {
+    function get_documentos_de_auditoria($auditorias_id, $idTipoDocto = NULL) {
         $return = array();
-        if (!empty($idAuditoria)) {
-            $strSQL = "SELECT idDocto FROM documentos WHERE idAuditoria = '" . $idAuditoria . "' "
+        if (!empty($auditorias_id)) {
+            $strSQL = "SELECT idDocto FROM documentos WHERE idAuditoria = '" . $auditorias_id . "' "
                     . "AND bCancelado = 0 "
                     . (!empty($idTipoDocto) ? " AND idTipoDocto = '" . abs($idTipoDocto) . "'" : '');
             $dbCYSA = conectarBD();
@@ -1989,12 +1993,12 @@ WHERE idAuditoria = " . $idAuditoria;
 
     /**
      * Esta función regresa el identificador de la auditoría de seguimiento de una auditoría
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return integer El identificador de la auditoría de seguimiento. Regresa NULL en caso contrario.
      */
-    function get_id_auditoria_de_seguimiento($idAuditoria) {
+    function get_id_auditoria_de_seguimiento($auditorias_id) {
         $return = NULL;
-        $result = $this->db->where('auditorias_origen_id', $idAuditoria)
+        $result = $this->db->where('auditorias_origen_id', $auditorias_id)
                 ->limit(1)
                 ->get("auditorias");
         if ($result && $result->num_rows() > 0) {
@@ -2024,13 +2028,13 @@ WHERE idAuditoria = " . $idAuditoria;
 
     /**
      * Función que regresa la fecha máxima para poder generar prorrogas de una auditoría
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return date Fecha límite en formato YYYY-MM-DD para generar una prórroga
      */
-    function get_fecha_maxima_para_generar_prorroga($idAuditoria) {
+    function get_fecha_maxima_para_generar_prorroga($auditorias_id) {
         $return = NULL;
-        if (!empty($idAuditoria)) {
-            $auditoria = $this->Auditorias_model->get_auditoria($idAuditoria);
+        if (!empty($auditorias_id)) {
+            $auditoria = $this->Auditorias_model->get_auditoria($auditorias_id);
             if ($auditoria['auditorias_anio'] < 2018) {
                 $fecha = $auditoria['auditorias_fechas_oficio_envio_documentos_etapa_2'];
                 if (empty($fecha)) {
@@ -2070,10 +2074,10 @@ WHERE idAuditoria = " . $idAuditoria;
         return $return;
     }
 
-    function has_seguimiento($idAuditoria) {
+    function has_seguimiento($auditorias_id) {
         $return = FALSE;
-        if (!empty($idAuditoria)) {
-            $strSQL = "SELECT idAuditoria FROM " . CAT_AUDITORIAS . " WHERE idAuditoriaOrigen=" . $idAuditoria . " AND statusAudit>0 LIMIT 1";
+        if (!empty($auditorias_id)) {
+            $strSQL = "SELECT idAuditoria FROM " . CAT_AUDITORIAS . " WHERE idAuditoriaOrigen=" . $auditorias_id . " AND statusAudit>0 LIMIT 1";
             $dbCYSA = conectarBD();
             $result = $dbCYSA->ejecutaQuery($strSQL);
             if (is_resource($result) && mysql_num_rows($result) > 0) {
@@ -2084,13 +2088,13 @@ WHERE idAuditoria = " . $idAuditoria;
         return $return;
     }
 
-    function has_concluida_sin_seguimiento($idAuditoria) {
+    function has_concluida_sin_seguimiento($auditorias_id) {
         $return = FALSE;
-        if (!empty($idAuditoria)) {
+        if (!empty($auditorias_id)) {
             $pendientes = "";
             $numRev = 6;
             while (empty($pendientes) && $numRev > 0) {
-                $pendientes = getLstObs_Pendientes_NoSolv($idAuditoria, $numRev);
+                $pendientes = getLstObs_Pendientes_NoSolv($auditorias_id, $numRev);
                 $numRev--;
             }
             if (!empty($pendientes)) {
@@ -2102,17 +2106,17 @@ WHERE idAuditoria = " . $idAuditoria;
 
     /**
      * Devuelve una cadena de texto de las recomendaciones relacionadas a la auditoría
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return string Cadena de texto de las recomendaciones
      */
-    function get_texto_recomendaciones($idAuditoria) {
-        if (empty($idAuditoria)) {
+    function get_texto_recomendaciones($auditorias_id) {
+        if (empty($auditorias_id)) {
             return "";
         }
-        $t = getAuditoria($idAuditoria);
+        $t = getAuditoria($auditorias_id);
         $valor = "Sin observaciones";
         if ($t['bSinObservacionAP'] == 0) {
-            $aux = get_recomendaciones($idAuditoria);
+            $aux = get_recomendaciones($auditorias_id);
             $estadosRecomendaciones = $aux[0];
             $revisiones = $aux[1];
             $numeroRecomendaciones = $aux[2];
@@ -2145,7 +2149,7 @@ WHERE idAuditoria = " . $idAuditoria;
                     if ($totalRecomendaciones == 0) {
                         // Si no ha escrito recomendaciones, entonces mostramos las observaciones
                         $aux = array();
-                        $observaciones = get_observaciones($idAuditoria);
+                        $observaciones = get_observaciones($auditorias_id);
                         foreach ($observaciones as $obs) {
                             $index = $obs['denClasificacion'];
                             if (!isset($aux[$index]))
@@ -2179,10 +2183,10 @@ WHERE idAuditoria = " . $idAuditoria;
         return $valor;
     }
 
-    function get_fecha_oed($idAuditoria) {
+    function get_fecha_oed($auditorias_id) {
         $return = NULL;
-        if (!empty($idAuditoria)) {
-            $strSQL = "SELECT fechaOEDRes, fechaOEDRev1, fechaOEDRev2 FROM " . CAT_AUDITORIAS . " WHERE idAuditoria = " . $idAuditoria . " LIMIT 1";
+        if (!empty($auditorias_id)) {
+            $strSQL = "SELECT fechaOEDRes, fechaOEDRev1, fechaOEDRev2 FROM " . CAT_AUDITORIAS . " WHERE idAuditoria = " . $auditorias_id . " LIMIT 1";
             $dbCYSA = conectarBD();
             $result = $dbCYSA->ejecutaQuery($strSQL);
             if (is_resource($result) && mysql_num_rows($result) > 0) {
@@ -2200,26 +2204,26 @@ WHERE idAuditoria = " . $idAuditoria;
 
     /**
      * Indica si la auditoría se es reservada
-     * @param integer $idAuditoria Identificador de la Auditoría
+     * @param integer $auditorias_id Identificador de la Auditoría
      * @return boolean Devuelve TRUE para indicar que la auditoría es RESERVADA, FALSE para PÚBLICA
      */
-    function is_reservada($idAuditoria) {
+    function is_reservada($auditorias_id) {
         $return = TRUE;
-        $idAuditoria = get_real_auditoria_origen($idAuditoria);
-        $datosAudit = getAuditoria($idAuditoria);
+        $auditorias_id = get_real_auditoria_origen($auditorias_id);
+        $datosAudit = getAuditoria($auditorias_id);
         // Si esta marcado sin observaciones, entonces queda pública
         if ($datosAudit['bSinObservacionAP'] == 1) {
             $return = FALSE;
         } else { // Revisamos si esta en PROCESO
             if ($datosAudit['statusAudit'] != 1) { // de lo contrario, hay que revisar sus observaciones
-                $maxRevision = get_maxima_revision($idAuditoria);
+                $maxRevision = get_maxima_revision($auditorias_id);
                 if ($maxRevision > 0) {
                     $strSQL = "SELECT rr.*
                     FROM cat_auditoria a
                     INNER JOIN observaciones o ON o.idAuditoria = a.idAuditoria AND o.bEliminada=0
                     INNER JOIN recomendacion r ON r.idObservacion = o.idObservacion
                     INNER JOIN revision_recomendacion rr ON rr.idRecomendacion = r.idRecomendacion AND rr.numRevision = " . $maxRevision . "
-                    WHERE a.idAuditoria = " . $idAuditoria . " GROUP BY rr.idEstatus";
+                    WHERE a.idAuditoria = " . $auditorias_id . " GROUP BY rr.idEstatus";
                     $dbCYSA = conectarBD();
                     $result = $dbCYSA->ejecutaQuery($strSQL);
                     if (is_resource($result) && mysql_num_rows($result) > 0) {
@@ -2247,17 +2251,17 @@ WHERE idAuditoria = " . $idAuditoria;
 
     /**
      * Esta función regresa la última revisión relacionada con el ciclo de vida de una auditoría (incluye seguimientos)
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return integer Devuelve el valor de la última revisión de un auditoría
      */
-    function get_maxima_revision($idAuditoria) {
+    function get_maxima_revision($auditorias_id) {
         $return = 0;
         $strSQL = "SELECT MAX(numRevision) AS maxima_revision
                 FROM cat_auditoria a
                 INNER JOIN observaciones o ON o.idAuditoria = a.idAuditoria AND o.bEliminada=0
                 INNER JOIN recomendacion r ON r.idObservacion = o.idObservacion
                 LEFT JOIN revision_recomendacion rr ON rr.idRecomendacion = r.idRecomendacion
-                WHERE a.idAuditoria = " . $idAuditoria;
+                WHERE a.idAuditoria = " . $auditorias_id;
         $result = $this->db->select_max('rr.recomendaciones_avances_numero_revision', 'maxima_revision')
                 ->join("observaciones o", "o.observaciones_auditorias_id = a.auditorias_id AND o.observaciones_is_eliminada = 0", "INNER")
                 ->join("recomendaciones r", "r.idObservacion = o.idObservacion", "INNER")
@@ -2272,18 +2276,18 @@ WHERE idAuditoria = " . $idAuditoria;
 
     /**
      * Esta función devuelve el identificador de la auditoría origen. Se entiende como auditoría origen cualquier auditoría de tipo AP, AE o IC.
-     * @param integer $idAuditoria Indentificador de la auditoría
+     * @param integer $auditorias_id Indentificador de la auditoría
      * @return integer Devuelve el Identificador de auditoría AP/AE/IC origen
      */
-    function get_real_auditoria_origen($idAuditoria) {
-        $return = $idAuditoria;
-        $datosAudit = getAuditoria($idAuditoria);
+    function get_real_auditoria_origen($auditorias_id) {
+        $return = $auditorias_id;
+        $datosAudit = getAuditoria($auditorias_id);
         if (!empty($datosAudit['idAuditoriaOrigen'])) {
             $return = $datosAudit['idAuditoriaOrigen'];
             $datosAudit = getAuditoria($datosAudit['idAuditoriaOrigen']);
             if (!empty($datosAudit['idAuditoriaOrigen'])) {
                 $return = $datosAudit['idAuditoriaOrigen'];
-                $datosAudit = getAuditoria($idAuditoria);
+                $datosAudit = getAuditoria($auditorias_id);
             }
         }
         return $return;
@@ -2292,33 +2296,33 @@ WHERE idAuditoria = " . $idAuditoria;
     /**
      * Devuelve las observaciones propias de una auditoría, es decir, que si es un seguimiento, devuelve sólo las observaciones relacionadas
      * con el seguimiento; de lo contrario regresa todas las observaciones, excepto las eliminadas.
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return array Arreglo con las observaciones relacionadas a la auditoría
      */
-    function get_observaciones_propias_de_auditoria($idAuditoria) {
+    function get_observaciones_propias_de_auditoria($auditorias_id) {
         $return = array();
-        $data = getAuditoria($idAuditoria);
-        $n = get_maxima_revision($idAuditoria);
+        $data = getAuditoria($auditorias_id);
+        $n = get_maxima_revision($auditorias_id);
         $numeroRevision = ($n < 2) ? $n : 2; // Por default todas las auditorias empienza en la revision 1, pero usamos 2 por si acaso
         if (!empty($data['idAuditoriaOrigen'])) {
-            $idAuditoria = get_real_auditoria_origen($idAuditoria);
-            $numeroRevision = get_maxima_revision($idAuditoria);
+            $auditorias_id = get_real_auditoria_origen($auditorias_id);
+            $numeroRevision = get_maxima_revision($auditorias_id);
         }
         do {
-            $return = get_revision_N_de_auditoria($idAuditoria, $numeroRevision);
+            $return = get_revision_N_de_auditoria($auditorias_id, $numeroRevision);
             $numeroRevision--;
         } while (empty($return) && $numeroRevision > 0);
         return $return;
     }
 
-    function get_revision_N_de_auditoria($idAuditoria, $numeroRevision) {
+    function get_revision_N_de_auditoria($auditorias_id, $numeroRevision) {
         $return = array();
-        if (!empty($idAuditoria) && !empty($numeroRevision)) {
+        if (!empty($auditorias_id) && !empty($numeroRevision)) {
             $strSQL = "SELECT o.*, r.numRecomendacion, o.idObservacion AS idObs, o.numObservacion AS numObs
 FROM observaciones o
 INNER JOIN recomendacion r ON r.idObservacion = o.idObservacion
 INNER JOIN revision_recomendacion rr ON rr.idRecomendacion = r.idRecomendacion
-WHERE o.bEliminada=0 AND o.idAuditoria = " . $idAuditoria . " AND rr.numRevision = " . $numeroRevision;
+WHERE o.bEliminada=0 AND o.idAuditoria = " . $auditorias_id . " AND rr.numRevision = " . $numeroRevision;
             $dbCYSA = conectarBD();
             $result = $dbCYSA->ejecutaQuery($strSQL);
             if (is_resource($result) && mysql_num_rows($result) > 0) {
@@ -2370,16 +2374,16 @@ WHERE o.bEliminada=0 AND o.idAuditoria = " . $idAuditoria . " AND rr.numRevision
 
     /**
      * Esta función indica si la auditoría se encuentra solventada
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return boolean Regresa TRUE cuando todas las recomendaciones se encuentran solventadas. FALSE en cualquier otro caso
      */
-    function is_auditoria_solventada($idAuditoria) {
+    function is_auditoria_solventada($auditorias_id) {
         $return = FALSE;
-        if (!empty($idAuditoria)) {
-            if (is_sin_observaciones($idAuditoria)) {
+        if (!empty($auditorias_id)) {
+            if (is_sin_observaciones($auditorias_id)) {
                 $return = TRUE;
             } else {
-                $recomendaciones = get_recomendaciones($idAuditoria);
+                $recomendaciones = get_recomendaciones($auditorias_id);
                 // En $recomendaciones[0] se almacenan los status de las recomendaciones
                 if (isset($recomendaciones[0]) && count($recomendaciones[0]) > 0) {
                     $return = TRUE; // Inicializamos como si todas estuviesen solventadas
@@ -2396,15 +2400,15 @@ WHERE o.bEliminada=0 AND o.idAuditoria = " . $idAuditoria . " AND rr.numRevision
 
     /**
      * Función que indica si una auditoría esta marcada como SIN OBSERVACIONES
-     * @param integer $idAuditoria Identificador de la auditoría
+     * @param integer $auditorias_id Identificador de la auditoría
      * @return boolean Devuelve TRUE cuando la auditoría no tuvo observaciones. FALSE en cualquier otro caso.
      */
-    function is_sin_observaciones($idAuditoria, $observaciones = NULL) {
+    function is_sin_observaciones($auditorias_id, $observaciones = NULL) {
         $return = FALSE;
-        $auditoria = $this->Auditorias_model->get_auditoria($idAuditoria);
+        $auditoria = $this->Auditorias_model->get_auditoria($auditorias_id);
         $observaciones = array();
         if ($auditoria['auditorias_is_sin_observaciones'] == 0) { // Si esta marcado diferente a SIN OBSERVACIONES, entonces procedemos
-            $observaciones = $this->Auditorias_model->get_observaciones_de_auditoria($idAuditoria);
+            $observaciones = $this->Auditorias_model->get_observaciones_de_auditoria($auditorias_id);
             foreach ($observaciones as $index => $o) {
                 if ($o['observaciones_titulo'] === "SIN OBSERVACIONES") {
                     $return = TRUE;
