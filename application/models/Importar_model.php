@@ -72,6 +72,7 @@ class Importar_model extends MY_Model {
             array('documentos_tipos_id' => 12, 'documentos_tipos_abreviacion' => 'OC'),
             array('documentos_tipos_id' => 18, 'documentos_tipos_abreviacion' => 'OED'),
             array('documentos_tipos_id' => 21, 'documentos_tipos_abreviacion' => 'AA'),
+            array('documentos_tipos_id' => 23, 'documentos_tipos_abreviacion' => 'AANP'),
             array('documentos_tipos_id' => 29, 'documentos_tipos_abreviacion' => 'AIA'),
             array('documentos_tipos_id' => 31, 'documentos_tipos_abreviacion' => 'RAP'),
         );
@@ -107,6 +108,9 @@ class Importar_model extends MY_Model {
             array_push($batch, $insert);
         }
         $this->dbNuevoCYSA->insert_batch('documentos_constantes', $batch);
+        $strSQL = "INSERT INTO `nuevo_cysa`.`documentos_constantes` (`documentos_constantes_documentos_tipos_id`, `documentos_constantes_nombre`, `documentos_constantes_descripcion`) VALUES ('12', 'CITATORIO_ID_DIR_CONTRA', 'Identificador del titular de la Contraloría')";
+        $this->dbNuevoCYSA->query($strSQL);
+        $strSQL = "INSERT INTO `nuevo_cysa`.`documentos_constantes` (`documentos_constantes_documentos_tipos_id`, `documentos_constantes_nombre`, `documentos_constantes_descripcion`) VALUES ('31', 'RAP_TITULAR_CONTRALORIA_ID_EMPLEADO', 'Identificador del titular de la Contraloría')";
         $return = "Catálogo de detalles de documentos importado.";
         if ($flush) {
             echo $return . "<br>";
@@ -127,7 +131,7 @@ class Importar_model extends MY_Model {
         $batch = array();
         foreach ($data as $d) {
             $insert = array(
-                'documentos_versiones_id' => NULL,
+                'documentos_versiones_id' => $d['idVersion'],
                 'documentos_versiones_documentos_tipos_id' => $d['idTipoDocto'],
                 'documentos_versiones_numero_iso' => $d['versionISO'],
                 'documentos_versiones_prefijo_iso' => $d['prefijoISO'],
