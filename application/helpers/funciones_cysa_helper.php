@@ -314,6 +314,10 @@ function get_identificacion($empleado) {
     $return = SIN_ESPECIFICAR;
     if (isset($empleado['empleados_licencia_manejo']) && !empty($empleado['empleados_licencia_manejo'])) {
         $return = "licencia de conducir con folio " . $empleado['empleados_licencia_manejo'];
+    } elseif (isset($empleado["empleados_pasaporte"]) && !empty($empleado['empleados_pasaporte'])) {
+        $return = "pasaporte con folio " . $empleado['empleados_pasaporte'];
+    } elseif (isset($empleado["empleados_cedula_profesional"]) && !empty($empleado['empleados_cedula_profesional'])) {
+        $return = "cédula profesional con folio " . $empleado["empleados_cedula_profesional"];
     } elseif (isset($empleado['empleados_credencial_elector_delante'])) {
         $return = 'credencial para votar con clave de elector '
                 . (!empty($empleado['empleados_credencial_elector_delante']) ? $empleado['empleados_credencial_elector_delante'] : SIN_ESPECIFICAR)
