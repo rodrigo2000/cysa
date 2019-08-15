@@ -160,15 +160,15 @@ foreach ($RAP as $rap) {
                                             </p>
                                         </div>
                                         <div id="siAsistencia" style="<?= isset($r[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS]) && $r[ACTA_INICIO_ASISTENCIA_DE_FUNCIONARIOS] == 1 ? '' : 'display:none;'; ?>">
-                                            <?php if (empty($auditoria['auditorias_enlace_designado'])): ?>
+                                            <?php if (empty($auditoria['auditorias_enlace_designado'])): $datosDirector = $this->Empleados_model->get_empleado($oficio_para['empleados_id']); ?>
                                                 <!-- Opción 1 -->
                                                 <p class="text-justify bg-punteado">
                                                     <span class="bg-white">
-                                                        El servidor público <?= Capitalizar($datosDirector['descTitFunc'] . " " . $datosDirector['nomFunc'] . ", " . $datosDirector['puestoFunc']); ?>, quien manifiesta ser de nacionalidad mexicana y
-                                                        con domicilio particular en <?= $datosDirector['domAct']; ?>,  se identifica con <?= $datosDirector['docId']; ?> con clave de elector
-                                                        <?= $datosDirector['credEl']; ?> y número de identificador <?= isset($datosDirector['credIden']) ? $datosDirector['credIden'] : SIN_ESPECIFICAR; ?>, la cual contiene su nombre y fotografía que
-                                                        concuerda con sus rasgos fisonómicos y en la que se aprecia su firma, que reconoce como suya por ser la misma
-                                                        que utiliza para validar todos sus actos tanto públicos como privados.
+                                                        El servidor público <?= Capitalizar($datosDirector['empleados_nombre_titulado'] . ", " . $datosDirector['empleados_cargo']); ?>,
+                                                        quien manifiesta ser de nacionalidad mexicana y con domicilio particular en <?= $datosDirector['empleados_domicilio']; ?>,
+                                                        se identifica con <?= get_identificacion($datosDirector); ?>, la cual contiene su nombre y fotografía que concuerda
+                                                        con sus rasgos fisonómicos y en la que se aprecia su firma, que reconoce como suya por ser la misma que utiliza para validar
+                                                        todos sus actos tanto públicos como privados.
                                                     </span>
                                                 </p>
                                             <?php else: ?>

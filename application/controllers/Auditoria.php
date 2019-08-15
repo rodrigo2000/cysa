@@ -171,10 +171,12 @@ class Auditoria extends MY_Controller {
         }
         $para_nombre = $para_cargo = $para_tratamiento = 'SIN ESPECIFICAR';
         $de_nombre = $de_cargo = $de_tratamiento = 'SIN ESPECIFICAR';
+        $para_empleados_id = NULL;
         if (!empty($para_direcciones_id)) {
             $e = $this->SAC_model->get_director_de_ua($para_direcciones_id, $periodos_id);
             if (!empty($e)) {
                 $cc_empleado = $this->SAC_model->get_empleado($e['empleados_id']);
+                $para_empleados_id = $e['empleados_id'];
                 $para_nombre = $cc_empleado['empleados_nombre_titulado_siglas'];
                 $para_cargo = $cc_empleado['empleados_cargo'];
                 $para_tratamiento = '';
@@ -236,7 +238,8 @@ class Auditoria extends MY_Controller {
                 'direcciones_id' => $para_direcciones_id,
                 'nombre' => $para_nombre,
                 'cargo' => $para_cargo,
-                'tratamiento' => $para_tratamiento
+                'tratamiento' => $para_tratamiento,
+                'empleados_id' => $para_empleados_id
             ),
             'oficio_de' => array(
                 'empleados_id' => $de_empleados_id,
