@@ -393,7 +393,7 @@ class Importar_model extends MY_Model {
             array_push($batch, $insert);
         }
         $this->dbNuevoCYSA->insert_batch('observaciones', $batch);
-        $return = "Catálogo de observaciones y recomendaciones importado.";
+        $return = "Catálogo de observaciones importado.";
         if ($flush) {
             echo $return . "<br>";
             ob_flush();
@@ -584,9 +584,18 @@ class Importar_model extends MY_Model {
                 }
             }
         }
-
+        $vobos = $this->dbProtoCYSA->where("bVoBo", 1)->get("vobos")->result_array();
+        $update_batch = array();
+        foreach ($vobos as $vb) {
+            $aux = array(
+                "documentos_id" => $vb['idDocto'],
+                "documentos_is_aprobado" => $vb['bVoBo'],
+                'documentos_fecha_aprobado' => $vb['fechaVobo']);
+            array_push($update_batch, $aux);
+        }
         $this->dbNuevoCYSA->insert_batch('documentos', $batch);
         $this->dbNuevoCYSA->insert_batch('documentos_valores', $batch_valores);
+        $this->dbNuevoCYSA->update_batch('documentos', $update_batch, 'documentos_id');
         $return = "Catálogo de documentos importado.";
         if ($flush) {
             echo $return . "<br>";
