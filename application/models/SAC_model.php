@@ -590,7 +590,7 @@ class SAC_model extends MY_Model {
                     ->where("cc.cc_periodos_id", $periodos_id)
                     ->where("cc.cc_direcciones_id", $direcciones_id)
                     ->where_in("e.empleados_puestos_id", array(PUESTO_DIRECTOR, 294, 293, 145))
-                    ->order_by("fecha_insert", "DESC")
+                    ->order_by("e.fecha_insert", "DESC")
                     ->order_by("empleados_numero_empleado", "DESC");
             if (!$incluir_eliminados) {
                 $this->dbSAC->where("e.empleados_fecha_baja IS NULL");
