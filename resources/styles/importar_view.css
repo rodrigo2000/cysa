@@ -1,0 +1,4 @@
+form#frm-importar input[type=checkbox] {
+    transform: scale(2);
+    margin-right: 10px;
+}

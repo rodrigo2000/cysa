@@ -93,54 +93,8 @@
                 </div>
             </div>
         </form>
-        </div>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        $("#btn-importar").click(function () {
-            let d = $("#frm-importar").serializeArray();
-            var urls = [];
-            $.each(d, function (index, element) {
-                urls.push(element.value);
-            });
-            ajaxRequest(urls);
-//            $.each(d, function (index, element) {
-//                $("#" + element.value)
-//                        .html('<i class="fa fa-spinner fa-pulse fa-fw"></i>')
-//                        .removeClass();
-//                let data = {'catalogo[]': element.value};
-//                $.post(base_url + controller + "/iniciar_importacion", data, function (json) {
-//                    if (json.success) {
-//                        $("#" + json.id)
-////                                .html('<i class="fa fa-check" title="' + json.message + '"></i>')
-//                                .html('<i class="material-icons" aria-hidden="true" title="' + json.message + '">check</i>')
-//                                .addClass("label label-success");
-//                    }
-//                }, "json");
-//            });
-        });
-    });
-
-    function ajaxRequest(urls) {
-        if (urls.length > 0) {
-            var element = urls.shift();
-            var url = base_url + controller + "/iniciar_importacion";
-            $("#" + element)
-                    .html('<i class="fa fa-spinner fa-pulse fa-fw"></i>')
-                    .removeClass();
-            let data = {'catalogo[]': element};
-            $.post(url, data, function (json) {
-                if (json.success) {
-                    $("#" + json.id)
-                            .html('<i class="material-icons" aria-hidden="true">check</i>')
-                            .addClass("label label-success");
-                }
-                if (json.message != "") {
-                    $("#error-message").html(json.message);
-                }
-                ajaxRequest(urls);
-            }, "json");
-        }
-    }
-</script>
+</div>
+<link href="<?= base_url(); ?>resources/styles/importar_view.css" rel="stylesheet" type="text/css"/>
+<script src="<?= base_url(); ?>resources/scripts/importar_view.js" type="text/javascript"></script>
