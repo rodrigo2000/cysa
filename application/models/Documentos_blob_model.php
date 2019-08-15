@@ -47,7 +47,7 @@ class Documentos_blob_model extends MY_Model {
         } else {
             $aux = $this->Importar_model->get_documento_de_auditoria($auditorias_id, $documentos_tipos_id);
             if (!empty($aux) && isset($aux['contenido'])) {
-                $return = '<p class="text-xs-center"><a href="' . base_url() . 'Documento/antiguo_cysa/' . $aux['idDocto'] . '" class="btn btn-default" target="_blank">Visualizar documento</a></p>';
+                $return = '<p class="text-xs-center"><a href="' . base_url() . 'Documento/antiguo_cysa/' . $aux['idDocto'] . '" class="btn btn-default m-t-3 m-b-2" target="_blank">Visualizar versión de documento de antiguo CYSA</a></p>';
             } else {
                 $return = '<p class="lead text-xs-center">'
                         . 'No se encontró el documento autorizado.'
