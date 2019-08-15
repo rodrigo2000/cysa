@@ -55,17 +55,19 @@ class Documentos_model extends MY_Model {
         $return = FALSE;
         if (!empty($documentos_id)) {
             $this->db
-                    ->join("documentos_versiones dv", "dv.documentos_versiones_id = " . $this->table_prefix . ".documentos_documentos_versiones_id", "INNER")
+                    ->join("documentos_versiones dv", "dv.documentos_versiones_id = " . $this->table_prefix . ".documentos_documentos_versiones_id", "LEFT")
                     ->join("logotipos l", "l.logotipos_id = " . $this->table_prefix . ".documentos_logotipos_id", "LEFT");
             $return = $this->get_uno($documentos_id);
             $valores = $this->Documentos_valores_model->get_valores_de_documento($documentos_id);
             $return['valores'] = $valores;
-            $aux = $this->Documentos_constantes_model->get_constantes_de_documento($return['documentos_documentos_tipos_id']);
-            $constantes = array_column($aux, 'documentos_constantes_id', 'documentos_constantes_nombre');
-            $return['constantes'] = $constantes;
-            foreach ($constantes as $c => $v) {
-                if (!defined($c)) {
-                    define($c, intval($v));
+            if (!empty($return) && isset($return['documentos_documentos_tipos_id'])) {
+                $aux = $this->Documentos_constantes_model->get_constantes_de_documento($return['documentos_documentos_tipos_id']);
+                $constantes = array_column($aux, 'documentos_constantes_id', 'documentos_constantes_nombre');
+                $return['constantes'] = $constantes;
+                foreach ($constantes as $c => $v) {
+                    if (!defined($c)) {
+                        define($c, intval($v));
+                    }
                 }
             }
         }
