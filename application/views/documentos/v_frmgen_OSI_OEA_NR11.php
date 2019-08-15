@@ -136,9 +136,10 @@
                                             <?php endif; ?>
                                             <div class="texto-ccp">
                                                 C.c.p. <?php $ccp_texto_plantilla = $this->CYSA_model->get_ccp_template(); ?>
-                                                <?= span_editable($r, CITATORIO_CCP, $ccp_texto_plantilla, NULL, NULL, TRUE); ?><br>
-                                                Minutario<br>
-                                                Expediente<br><br>
+                                                <?= span_editable($r, CITATORIO_CCP, $ccp_texto_plantilla, NULL, NULL, TRUE); ?>
+                                                
+                                                Minutario
+                                                Expediente
                                                 <?= $this->Auditorias_model->get_siglas_de_empleados_para_documento_de_auditoria($auditoria['auditorias_auditor_lider'], $auditoria['auditorias_id']); ?><br><br>
                                                 <?= $documento['documentos_versiones_prefijo_iso'] . $documento['documentos_versiones_codigo_iso'] . " " . $documento['documentos_versiones_numero_iso']; ?>
                                             </div>

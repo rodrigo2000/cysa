@@ -89,7 +89,7 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                                 horas del día
                                                 <?= span_calendario($r, FECHA_INI); ?>,
                                                 reunidos en
-                                                <?= span_editable($r, UBICACION, implode(" ", array($generos[$ubicacion['tipos_ua_genero']], $ubicacion['tipos_ua_nombre'], "de", $ubicacion['direcciones_nombre']))); ?>,
+                                                <?= span_editable($r, UBICACION, implode(" ", array($generos[intval($ubicacion['tipos_ua_genero'])], $ubicacion['tipos_ua_nombre'], "de", $ubicacion['direcciones_nombre']))); ?>,
                                                 ubicada en
                                                 <?= span_editable($r, DIRUBICACION, 'calle __ número ___ por __ y ___'); ?>;
                                                 por
