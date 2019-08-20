@@ -360,7 +360,7 @@ class Auditorias_model extends MY_Model {
             $status = array(AUDITORIAS_STATUS_FINALIZADA, AUDITORIAS_STATUS_FINALIZADA_RESERVADA);
             if (in_array($datos_auditoria['auditorias_status_id'], $status)) {
                 $return = AUDITORIA_ETAPA_FIN;
-            } elseif (empty($datos_auditoria['auditorias_fechas_lectura']) && intval($datos_auditoria['auditorias_is_sin_observaciones']) === 1) {
+            } elseif (empty($datos_auditoria['auditorias_fechas_lectura']) || intval($datos_auditoria['auditorias_is_sin_observaciones']) === 1) {
                 $return = AUDITORIA_ETAPA_AP;
             } elseif (!empty($datos_auditoria['auditorias_fechas_lectura']) && intval($datos_auditoria['auditorias_is_sin_observaciones']) === 0) {
                 // Como ya se ha leído el ARA, entonces se espera un $plazo=1 días para bloquear el acta
