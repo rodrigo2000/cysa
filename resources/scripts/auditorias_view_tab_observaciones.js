@@ -124,7 +124,7 @@ $(document).on('click', '.eliminar-observacion', function (e) {
     return false;
 });
 $(document).on('click', '.add-recomendacion', function (e) {
-    var observaciones_id = $(this).parents("div.panel-detalles.active").children('form').children('input.observaciones_id').val();
+    var observaciones_id = $(this).parents("div.panel-detalles.active").children('input.observaciones_id').val();
     if (!isEmpty(observaciones_id)) {
         var selector = $(this).parents("div.panel-detalles.active").prop('id');
         var template = $("div.card", "#template_nueva_recomendacion").clone(true);
