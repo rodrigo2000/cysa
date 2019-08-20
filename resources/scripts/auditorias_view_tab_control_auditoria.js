@@ -81,6 +81,14 @@ $(document).ready(function () {
                             .html('Actualizar involucrados')
                             .prop('disabled', false);
                 }, 3000);
+                $("select#recomendaciones_empleados_id").each(function (index, element) {
+                    var selected = element.value;
+                    var html = '<option value="0" ' + (selected == "0" ? 'selected="selected"' : '') + '>SELECCIONE</option>';
+                    $.each(json.data, function (index, element) {
+                        html += '<option value="' + element.empleados_id + '" ' + (selected == element.empleados_id ? 'selected="selected"' : '') + '>' + element.empleados_nombre_titulado_siglas + '</option>';
+                    });
+                    $(element).html(html);
+                });
             } else {
                 alert(json.message);
                 $("#btn-actualizar-empleados-involucrados").html('Actualizar involucrados').prop('disabled', false);
