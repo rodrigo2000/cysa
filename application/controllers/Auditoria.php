@@ -327,14 +327,23 @@ class Auditoria extends MY_Controller {
             'success' => FALSE,
             'message' => 'No se actualizó ningún empleado'
         );
-        if (!empty($empleados_id)) {
-            $return = $this->Auditoria_model->set_empleados_involucrados(NULL, $empleados_id);
-            if ($return) {
-                $json['success'] = TRUE;
-                $json['message'] = 'Empleados actualizados';
-                $json['empleados'] = $empleados_id;
+
+        $this->Auditoria_model->set_empleados_involucrados(NULL, $empleados_id);
+        $data = array();
+        if (is_array($empleados_id) && !empty($empleados_id)) {
+            foreach ($empleados_id as $e) {
+                $aux = $this->SAC_model->get_empleado($e);
+                array_push($data, array(
+                    'empleados_nombre_titulado_siglas' => $aux['empleados_nombre_titulado_siglas'],
+                    'empleados_id' => $aux['empleados_id']
+                ));
             }
         }
+        $json['success'] = TRUE;
+        $json['message'] = 'Empleados actualizados';
+        $json['empleados'] = $empleados_id;
+        $json['data'] = $data;
+
         echo json_encode($json);
     }
 

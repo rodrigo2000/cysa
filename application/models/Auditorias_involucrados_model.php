@@ -53,14 +53,14 @@ class Auditorias_involucrados_model extends MY_Model {
 
     function set_empleados_involucrados($auditorias_id = NULL, $empleados_id = NULL) {
         $return = FALSE;
+        $this->db->where($this->id_field, $auditorias_id);
+        $aux = $this->get_todos();
+        $empleados_actuales = array_column($aux, 'auditorias_involucrados_empleados_id');
         if (!empty($auditorias_id) && !empty($empleados_id)) {
             $emp = $empleados_id;
             if (is_numeric($empleados_id)) {
                 $emp = array($empleados_id);
             }
-            $this->db->where($this->id_field, $auditorias_id);
-            $aux = $this->get_todos();
-            $empleados_actuales = array_column($aux, 'auditorias_involucrados_empleados_id');
             foreach ($emp as $e) {
                 $result = $this->db
                         ->where($this->id_field, $auditorias_id)
@@ -80,13 +80,13 @@ class Auditorias_involucrados_model extends MY_Model {
                     }
                 }
             }
-            if (!empty($empleados_actuales)) {
-                foreach ($empleados_actuales as $e) {
-                    $this->db
-                            ->where($this->id_field, $auditorias_id)
-                            ->where('auditorias_involucrados_empleados_id', $e)
-                            ->delete($this->table_name);
-                }
+        }
+        if (!empty($empleados_actuales)) {
+            foreach ($empleados_actuales as $e) {
+                $this->db
+                        ->where($this->id_field, $auditorias_id)
+                        ->where('auditorias_involucrados_empleados_id', $e)
+                        ->delete($this->table_name);
             }
         }
         return $return;
