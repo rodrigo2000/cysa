@@ -729,4 +729,12 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
+    function get_cumpleaños() {
+        return $this->dbSAC->where("dias_festivos_tipo", 1)->get("dias_festivos")->result_array();
+    }
+
+    function get_dias_festivos() {
+        return $this->dbSAC->where("dias_festivos_tipo", 0)->get("dias_festivos")->result_array();
+    }
+
 }

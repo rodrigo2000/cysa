@@ -1054,4 +1054,16 @@ class Auditoria extends MY_Controller {
         }
     }
 
+    function get_fecha_para_calendario() {
+        $return = array(
+            'success' => TRUE,
+            'fechas_auditoria' => array(),
+            'inhabiles' => $this->SAC_model->get_dias_inhabiles(),
+            'festivos' => $this->SAC_model->get_dias_festivos(),
+            'cumpleanos' => $this->SAC_model->get_cumpleaños(),
+            'data' => array()
+        );
+        echo json_encode($return);
+    }
+
 }

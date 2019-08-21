@@ -1,4 +1,5 @@
-var DT_hoy = new Date(2019, 6, 1);
+var f = new Date();
+var DT_hoy = new Date(f.getFullYear(), f.getMonth(), f.getDate());
 var DT_hoyTime = DT_hoy.getTime();
 var hoy = {
     id: 0,
@@ -12,6 +13,7 @@ var hoy = {
 var timeDiasFestivos = [];
 var timeDiasInhabiles = [];
 var timeDiasAuditoria = [];
+var timeDiasCumpleanos = [];
 
 $(document).ready(function () {
     let anioActual = new Date().getFullYear();
@@ -43,7 +45,7 @@ $(document).ready(function () {
                 diasHabiles++;
                 diasNaturales++;
             }
-            $("#calendario-fecha-inicio", "#rango-seleccionado").html(a.format("LLLL"));
+            $("#calendario-fecha-inicio", "#rango-seleccionado").html(moment(e.startDate).format("LLLL"));
             $("#calendario-fecha-fin", "#rango-seleccionado").html(b.format("LLLL"));
             $("#dias-naturales", "#rango-seleccionado").html(diasNaturales);
             $("#dias-habiles", "#rango-seleccionado").html(diasHabiles);
@@ -92,6 +94,9 @@ $(document).ready(function () {
             if ($.inArray(date.getDay(), [6, 0]) !== -1) {
                 $(element).parent().addClass("weekend");
             }
+            if ($.inArray(date.getTime(), timeDiasCumpleanos) !== -1) {
+                $(element).parent().addClass("cumpleanos");
+            }
         }
     });
 
@@ -101,16 +106,14 @@ $(document).ready(function () {
     };
     $.post(url, data, function (json) {
         if (json.success) {
-            var inhabiles = [];
-            var festivos = [];
-            var data = [];
+            var inhabiles = [], data = [];
             $.each(json.inhabiles, function (index, element) {
                 var a = element.dias_inhabiles_fecha.split("-");
                 var DT_fecha = new Date(a[0], parseInt(a[1]) - 1, a[2]);
                 inhabiles.push(DT_fecha);
                 timeDiasInhabiles.push(DT_fecha.getTime());
                 var b = {
-                    id: 0,
+                    id: 'inhabil_' + element.dias_inhabiles_id,
                     titulo: 'Día inhábil',
                     descripcion: element.dias_inhabiles_descripcion,
                     startDate: DT_fecha,
@@ -118,25 +121,29 @@ $(document).ready(function () {
                 }
                 data.push(b);
             });
-            $.each(json.festivos, function (index, element) {
-                var a = element.fecha.split("-");
-                var DT_fecha = new Date(a[0], parseInt(a[1]) - 1, a[2]);
-                festivos.push(DT_fecha);
-                timeDiasFestivos.push(DT_fecha.getTime());
+            $.each(json.cumpleanos, function (index, element) {
+                var a = element.dias_festivos_fechas.split("-");
+                var DT_fecha = new Date(f.getFullYear(), parseInt(a[1]) - 1, a[2]);
+                timeDiasCumpleanos.push(DT_fecha.getTime());
                 let key = element.evento;
                 var evento = {};
                 evento[key] = (parseInt(a[1]) - 1) + "/" + a[2];
-                moment.modifyHolidays.add(evento);
+                anios = moment(a[0])
+                var anios = moment().diff(moment([a[0], parseInt(a[1]) - 1, a[2]]), 'years');
+                var cumplidos = false;
+                if (DT_fecha < DT_hoy) {
+                    cumplidos = true;
+                }
                 var b = {
-                    id: 0,
-                    titulo: element.titulo,
-                    descripcion: element.descripcion,
+                    id: 'cumpleanos_' + element.dias_festivos_id,
+                    titulo: 'Cumpleaños',
+                    descripcion: "\ud83c\udf82 " + element.dias_festivos_descripcion + (cumplidos ? " cumplió " + anios : " cumplirá " + anios) + " años",
                     startDate: DT_fecha,
                     endDate: DT_fecha
                 }
                 data.push(b);
             });
-            $.each(json.fechas, function (index, arreglo) {
+            $.each(json.fechas_auditoria, function (index, arreglo) {
                 $.each(arreglo, function (indice, valor) {
                     if (valor != null && indice !== "auditorias_fechas_etapa" && indice !== "auditorias_fechas_auditorias_id") {
                         var a = new String(valor).split("-");
@@ -154,7 +161,7 @@ $(document).ready(function () {
                 });
             });
             data.push(hoy);
-            //$("#calendar").data("calendar").setDisabledDays(inhabiles);
+            $("#calendar").data("calendar").setDisabledDays(inhabiles);
             $("#calendar").data("calendar").setDataSource(data);
         }
     }, "json");
