@@ -36,9 +36,11 @@
                 <?php else: ?>
                     <div class="font-barlow font-size-1rem" style="max-height: 250px; overflow-y: scroll;"><?= $avance['recomendaciones_avances_descripcion']; ?></div>
                 <?php endif; ?>
-                <?php $empleado_id = intval($avance['recomendaciones_avances_empleados_id']); ?>
-                <?php $clasificacion_id = intval($avance['recomendaciones_avances_recomendaciones_clasificaciones_id']); ?>
-                <?php $status_id = intval($avance['recomendaciones_avances_recomendaciones_status_id']); ?>
+                <?php if (!empty($avance)): ?>
+                    <?php $empleado_id = intval($avance['recomendaciones_avances_empleados_id']); ?>
+                    <?php $clasificacion_id = intval($avance['recomendaciones_avances_recomendaciones_clasificaciones_id']); ?>
+                    <?php $status_id = intval($avance['recomendaciones_avances_recomendaciones_status_id']); ?>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
         <div class="card-footer">
