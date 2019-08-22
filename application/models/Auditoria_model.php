@@ -201,7 +201,10 @@ class Auditoria_model extends MY_Model {
                         break;
                     case PUESTO_AUDITOR:
                     case PUESTO_AUXILIAR_DE_AUDITORIA:
-                        $this->db->where("auditorias_auditor_lider", $empleados_id);
+                        $this->db->group_start()
+                            ->where("auditorias_auditor_lider", $empleados_id)
+                            ->or_where("ae.auditorias_equipo_empleados_id = a.auditorias_auditor_lider")
+                            ->group_end();
                         break;
                     default:
                 }
@@ -210,6 +213,7 @@ class Auditoria_model extends MY_Model {
                 $this->db->where("auditorias_auditor_lider", $empleados_id);
                 break;
         }
+        $this->db->join("auditorias_equipo ae", "ae.auditorias_equipo_auditorias_id = a.auditorias_id", "LEFT");
         $return = $this->getResultados(NULL, NULL);
         return $return;
     }
