@@ -228,9 +228,10 @@ function convertir_tinymce(selector) {
         font_formats: 'Andale Mono=andale mono,times; Alwyn=alwyn, Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Barlow=barlow; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats',
 //        preview_styles: false,
         fontsize_formats: '10px 11px 12px 13px 14px 15px 16px 18px 24px 36px 48px',
-        plugins: 'print preview fullpage searchreplace autolink directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern placeholder code',
+        plugins: 'print preview fullpage searchreplace autolink directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern placeholder code paste',
         //plugins: 'print preview fullpage powerpaste searchreplace autolink directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount tinymcespellchecker a11ychecker imagetools textpattern formatpainter permanentpen pageembed tinycomments mentions linkchecker code',
-        toolbar: 'formatselect | fontselect | fontsizeselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image table | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | code fullscreen',
+        toolbar: 'fontselect | fontsizeselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | superscript subscript table | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | code fullscreen',
+        //toolbar: 'formatselect | fontselect | fontsizeselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image table | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | code fullscreen',
         menubar: false, // TRUE ó 'file edit insert view format table tools help'
 //        menu: {
 //            file: {title: 'File', items: 'newdocument'},
@@ -242,6 +243,7 @@ function convertir_tinymce(selector) {
 //            tools: {title: 'Tools', items: 'spellchecker code'}
 //        },
         image_advtab: true,
+        toolbar_drawer:'sliding', // Para mostrar puntos suspensivos cuando la ventana sea menos que la toolbar
         template_cdate_format: '[CDATE: %m/%d/%Y : %H:%M:%S]',
         template_mdate_format: '[MDATE: %m/%d/%Y : %H:%M:%S]',
         image_caption: true,
@@ -292,7 +294,10 @@ function convertir_tinymce(selector) {
                 reader.readAsDataURL(file);
             };
             input.click();
-        }
+        },
+        paste_as_text: true, // el Ctrl + V se pega sin formato
+        paste_word_valid_elements: "b,strong,i,em,h1,h2",
+        paste_webkit_styles: "color font-size"
     });
 }
 
