@@ -54,7 +54,8 @@ $(document).on('click', '.guardar-observacion', function (e) {
     e.preventDefault();
     tinyMCE.triggerSave();
     var data = $(this).parents("form").serializeObject();
-    data.selector = $("> div.tab-pane.active", "#observaciones_auditoria").prop("id");
+    data.selector = $("#observaciones_auditoria > div.tab-pane.active").prop("id");
+    data['observaciones_id[]'] = $("input[name^=observaciones_id]", "#observaciones_auditoria > div.tab-pane.active").val();
     var url = base_url + "Observaciones/guardar/";
     var $this = this;
     $($this).addClass('disabled').html(ICON_SPINNER + ' Guardando...');

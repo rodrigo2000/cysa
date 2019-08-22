@@ -47,7 +47,7 @@ class Observaciones_model extends MY_Model {
             if (!$incluir_observaciones_eliminadas) {
                 $this->db
                         ->group_start()
-                        ->where("observaciones_is_eliminada !=", 1)
+                        ->where("observaciones_is_eliminada", 0)
                         ->or_where($this->table_prefix . ".fecha_delete", NULL)
                         ->group_end();
             }
