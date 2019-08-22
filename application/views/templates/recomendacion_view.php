@@ -22,7 +22,7 @@
                 <div class="text-2-html" style="max-height: 250px; overflow-y: scroll;"><?= isset($rr, $rr['recomendaciones_descripcion']) ? $rr['recomendaciones_descripcion'] : ''; ?></div>
             <?php endif; ?>
         </div>
-        <?php if (isset($avance)): ?>
+        <?php if (isset($avance) && !empty($rr)): ?>
             <div class="card-block">
                 <h4 class="card-title">
                     Avance
@@ -45,7 +45,7 @@
         <?php endif; ?>
         <div class="card-footer">
             <div class="row align-middle">
-                <div class="col-xs-12 col-sm-4 text-xs-center">
+                <div class="col-xs-12 col-sm-12 col-md-4 text-xs-center">
                     <b>Responsable:</b><br>
                     <?php $empleados_involucrados = $this->Auditoria_model->get_involucrados(); ?>
                     <select id="recomendaciones_empleados_id" name="recomendaciones_empleados_id[]" class="form-control" <?= ($etapa_auditoria >= AUDITORIA_ETAPA_FIN) ? 'disabled="disabled"' : ''; ?>>
@@ -55,7 +55,7 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-xs-12 col-sm-4 text-xs-center">
+                <div class="col-xs-12 col-sm-12 col-md-4 text-xs-center">
                     <b>Clasificación:</b><br>
                     <?php $recomendaciones_clasificaciones = $this->Recomendaciones_clasificaciones_model->get_todos(); ?>
                     <select id="recomendaciones_clasificaciones_id" name="recomendaciones_clasificaciones_id[]" class="form-control" <?= ($etapa_auditoria >= AUDITORIA_ETAPA_FIN) ? 'disabled="disabled"' : ''; ?>>
@@ -65,7 +65,7 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-xs-12 col-sm-4 text-xs-center">
+                <div class="col-xs-12 col-sm-12 col-md-4 text-xs-center">
                     <b>Status:</b><br>
                     <?php $recomendaciones_status = $this->Recomendaciones_status_model->get_todos(); ?>
                     <select id="recomendaciones_status_id" name="recomendaciones_status_id[]" class="form-control" <?= ($etapa_auditoria >= AUDITORIA_ETAPA_FIN) ? 'disabled="disabled"' : ''; ?>>
