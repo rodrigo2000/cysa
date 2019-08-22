@@ -283,13 +283,13 @@ class Timeline_model extends MY_Model {
                             foreach ($documentos_RAP as $RAP) {
                                 if (isset($RAP['documentos_is_aprobado']) && $RAP['documentos_is_aprobado'] == 1) {
                                     $dias_RAP = $is_procedente = FALSE;
-                                    foreach ($RAP['valores'] as $aux) {
-                                        if ($aux['documentos_valores_documentos_constantes_id'] == RESOL_AMPLI_DIAS_SOLICITADOS) {
+                                    foreach ($RAP['valores'] as $documentos_constantes_id => $documentos_valores_valor) {
+                                        if ($documentos_constantes_id == RESOL_AMPLI_DIAS_OTORGADOS) {
                                             $dias = array(NULL, 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince');
-                                            $dias_RAP = array_search(strtolower($aux['valor']), $dias);
-                                        } elseif ($aux['documentos_valores_documentos_constantes_id'] == RESOL_AMPLI_ES_PROCEDENTE) {
+                                            $dias_RAP = array_search(strtolower($documentos_valores_valor), $dias);
+                                        } elseif ($documentos_constantes_id == RESOL_AMPLI_ES_PROCEDENTE) {
                                             $opciones = array('sí', 'si');
-                                            $is_procedente = array_search(strtolower($aux['valor']), $opciones);
+                                            $is_procedente = array_search(strtolower($documentos_valores_valor), $opciones);
                                         }
                                     }
                                     if ($is_procedente !== FALSE && $dias_RAP !== FALSE) {
