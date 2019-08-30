@@ -11,7 +11,6 @@ class Importar_model extends MY_Model {
         $config['hostname'] = APP_DATABASE_HOSTNAME;
         $config['username'] = APP_DATABASE_USERNAME;
         $config['password'] = APP_DATABASE_PASSWORD;
-        $config['database'] = 'proto_cysa';
         $config['dbdriver'] = 'mysqli';
         $config['dbprefix'] = '';
         $config['pconnect'] = FALSE;
