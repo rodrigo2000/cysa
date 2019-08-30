@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase islapruebas.merida.gob.mx/ServiciosInternet/contraloria/sac
+    RewriteBase islapruebas.merida.gob.mx/ServiciosInternet/contraloria/cysa
 
     #Removes access to the system folder by users.
     #Additionally this will allow you to create a System.php controller,
