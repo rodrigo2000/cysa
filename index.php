@@ -55,9 +55,13 @@
  */
 
 switch ($_SERVER['HTTP_HOST']) {
-    case '172.16.99.89': // svrdcont03
+    case 'SVRDCONT03':
+    case 'svrdcont03':
+    case '172.16.99.73': // svrdcont03
+    case 'islapruebas.merida.gob.mx': // DTI Pruebas
         define('ENVIRONMENT', 'testing');
         break;
+    case 'servicios.merida.gob.mx': // DTI Produccion
     case '172.19.99.40': // svrdcont02
         define('ENVIRONMENT', 'production');
         break;
@@ -107,7 +111,7 @@ switch (ENVIRONMENT)
  * This variable must contain the name of your "system" directory.
  * Set the path if it is not in the same directory as this file.
  */
-	$system_path = '../system';
+	$system_path = '../system_v3.1.10';
 
 /*
  *---------------------------------------------------------------
