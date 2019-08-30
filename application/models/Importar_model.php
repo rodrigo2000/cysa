@@ -8,9 +8,9 @@ class Importar_model extends MY_Model {
     function __construct() {
         parent::__construct();
         $this->model_name = __CLASS__;
-        $config['hostname'] = 'localhost';
-        $config['username'] = 'root';
-        $config['password'] = '1234';
+        $config['hostname'] = APP_DATABASE_HOSTNAME;
+        $config['username'] = APP_DATABASE_USERNAME;
+        $config['password'] = APP_DATABASE_PASSWORD;
         $config['database'] = 'proto_cysa';
         $config['dbdriver'] = 'mysqli';
         $config['dbprefix'] = '';
@@ -22,10 +22,10 @@ class Importar_model extends MY_Model {
         $config['dbcollat'] = 'utf8_general_ci';
 
         ///////////////////////////////////
-        $config['database'] = 'proto_sac';
+        $config['database'] = (ENVIRONMENT === 'development' ? 'proto_' : '') . 'sac';
         $this->dbProtoSAC = $this->load->database($config, TRUE);
         /// CYSA
-        $config['database'] = 'proto_cysa';
+        $config['database'] = (ENVIRONMENT === 'development' ? 'proto_' : '') . 'cysa';
         $this->dbProtoCYSA = $this->load->database($config, TRUE);
 
         // nuevo_cysa
