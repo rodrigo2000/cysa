@@ -260,7 +260,10 @@ class MY_Controller extends CI_Controller {
                 $r[$rule['field']] = $this->input->post($rule['field']);
             }
             if ($this->form_validation->run() === FALSE) {
-                $data['r'] = $r;
+                if (empty($data['r'])) {
+                    $data['r'] = array();
+                }
+                $data['r'] = array_merge($data['r'], $r);
             } else {
                 $s = $this->_insert($r);
                 $ss = $this->_post_insert($s, $r);
