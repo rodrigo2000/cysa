@@ -307,12 +307,17 @@ function singulares(mostrar, selector) {
 
 function actualizar_plurales() {
     var mostrar;
+    // Se usa en AIA y otros
     mostrar = $("span.resaltar", "#seccion_involucrados").length > 1 ? true : false;
     plurales(mostrar, "#seccion_involucrados");
     plurales(mostrar, "#seccion_involucrados_2");
-    var mostrar = $("span.resaltar", "#seccion_testigos").length > 1 ? true : false;
+    // Se usa en AIA y otros
+    mostrar = $("span.resaltar", "#seccion_testigos").length > 1 ? true : false;
     plurales(mostrar, "#seccion_testigos");
     plurales(mostrar, "#seccion_testigos_2");
+    // Se usa en AIA y otros
+    mostrar = $("span.resaltar", "#seccion_enlace_designado").length > 1 ? true : false;
+    plurales(mostrar, "#seccion_enlace_designado");
 }
 
 String.prototype.capitalize = function () {

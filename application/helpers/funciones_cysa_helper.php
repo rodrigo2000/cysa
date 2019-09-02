@@ -160,11 +160,12 @@ function agregar_parrafo_show_hide($r, $constante, $texto_parrafo = SIN_ESPECIFI
  * Crea una etiqueta SPAN con la clase CSS "resaltar", la cual hace destacar el texto en modo pantalla
  * @param string $texto Cadena de texto a mostrar dentro de la etiqueta
  * @param string $title Cadena de texto a mostrar en el atributo TITLE de la etiqueta. Este atributo sirve para el tour de Ayuda.
- * @param string $title Cadena de texto del título de la funcionalidad de Tour
+ * @param string $descripcion Cadena de texto con la descripción del atributo
  * @param string $css_class Nombre de las clases adicionales que se incluirán dentro del atriburo CLASS de la etiqueta SPAN
+ * @param string $tooltiptext Cadena de texto del título de la funcionalidad de Tour
  * @return string Código HTML de la etiqueta SPAN
  */
-function span_resaltar($texto, $title = NULL, $descripcion = NULL, $css_class = NULL) {
+function span_resaltar($texto, $title = NULL, $descripcion = NULL, $css_class = NULL, $tooltiptext = NULL) {
     $real_title = $real_descripcion = NULL;
     if (!empty($title) && is_array($title) && isset($title[$constante])) {
         $real_title = $title[$constante];
@@ -176,7 +177,7 @@ function span_resaltar($texto, $title = NULL, $descripcion = NULL, $css_class = 
     } elseif (!empty($descripcion) && is_string($descripcion)) {
         $real_descripcion = $descripcion;
     }
-    $html = '<span class="resaltar '
+    $html = '<span ' . (!empty($tooltiptext) ? 'title="' . $tooltiptext . '"' : '') . ' class="resaltar '
             . $css_class . '" '
             . (!empty($real_title) ? 'data-tour-title="' . htmlentities($real_title) . '" ' : '')
             . (!empty($real_descripcion) ? 'data-tour-description="' . htmlentities($real_descripcion) . '" ' : '')

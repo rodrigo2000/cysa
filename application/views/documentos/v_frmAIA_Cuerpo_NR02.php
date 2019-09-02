@@ -4,14 +4,14 @@ $fecha_cumplimiento = NULL;
 
 $OA = $this->Documentos_model->get_documentos_de_auditoria($auditoria['auditorias_id'], TIPO_DOCUMENTO_ORDEN_AUDITORIA);
 foreach ($OA as $oa) {
-    if (isset($oa['documento_is_aprobado']) && $oa['documentos_is_aprobado'] == 1 && isset($oa['valores'])) {
+    if (isset($oa['documentos_is_aprobado'], $oa['valores']) && intval($oa['documentos_is_aprobado']) === 1) {
         $fecha_notificacion_OE = $oa['valores'][ORD_ENT_FECHA_VISITA];
         $fecha_cumplimiento = $oa['valores'][ORD_ENT_FECHA_SI];
     }
 }
 $RAP = $this->Documentos_model->get_documentos_de_auditoria($auditoria['auditorias_id'], TIPO_DOCUMENTO_RESOLUCION_AMPLIACION_PLAZO);
 foreach ($RAP as $rap) {
-    if (isset($rap['documento_is_aprobado']) && $rap['documento_is_aprobado'] == 1 && isset($rap['valores'])) {
+    if (isset($rap['documento_is_aprobado'], $rap['valores']) && $rap['documento_is_aprobado'] == 1) {
         $fecha_cumplimiento = $rap['valores'][RESOL_AMPLI_FECHA_CUMPLIMIENTO];
     }
 }
@@ -239,8 +239,8 @@ foreach ($RAP as $rap) {
                                                 equipo de auditoría que participará en la auditoría. Adicionalmente, con relación al requerimiento de
                                                 documentación e información preliminar formulada en el Anexo del Oficio de Orden de Auditoría, se establece
                                                 que ésta deberá entregarse el
-                                                <?php $aux = !empty($fecha_cumplimiento) ? mysqlDate2OnlyDate($fecha_cumplimiento) : SIN_ESPECIFICAR; ?>
-                                                <?= span_resaltar($aux); ?>
+                                                <?php $aux = !empty($fecha_cumplimiento) ? mysqlDate2OnlyDate($fecha_cumplimiento) : '<b>PENDIENTE AUTORIZAR ORDEN DE AUDITORÍA</b>'; ?>
+                                                <?= span_resaltar($aux, NULL, NULL, NULL, 'Esta fecha aparece hasta el momento en que se autoriza la Orden de Auditoría'); ?>
                                             </span>
                                         </p>
                                         <p class="text-justify bg-punteado">
@@ -250,23 +250,12 @@ foreach ($RAP as $rap) {
                                                 proporcionarse dentro de los cinco días hábiles contados a partir del día siguiente de notificada la solicitud.
                                             </span>
                                         </p>
-                                        <p id="seccion_testigos_2" class="text-justify bg-punteado">
+                                        <p id="seccion_enlace_designado" class="text-justify bg-punteado">
                                             <span class="bg-white">
                                                 <!-- Opcional -->
-                                                Por último, <singular>el</singular><plural>los</plural> servidor<singular>es</singular> público<plural>s</plural>
-                                                <?=
-                                                crear_texto_asistencias(
-                                                        $documento['asistencias'], // Asistencias
-                                                        FALSE, // distribuido
-                                                        TIPO_ASISTENCIA_TESTIGO, // Tipo de asistencia
-                                                        FALSE, // solo nombre
-                                                        FALSE, // incluir domicilio
-                                                        FALSE, // incluir articulo
-                                                        NULL, // Enlace designado
-                                                        NULL, // Post Texto
-                                                        "," // Separador
-                                                );
-                                                ?>
+                                                Por último, <singular>el</singular><plural>los</plural> servidor<plural>es</plural> público<plural>s</plural>
+                                                <?php $aux = $auditoria['enlace_designado']['empleados_nombre_titulado'] . ", " . $auditoria['enlace_designado']['empleados_cargo'] . ", Enlace Designado,"; ?>
+                                                <?= span_resaltar($aux); ?>
                                                 manifiesta<plural>n</plural> que le fueron explicados los trabajos de la auditoría.
                                             </span>
                                         </p>
