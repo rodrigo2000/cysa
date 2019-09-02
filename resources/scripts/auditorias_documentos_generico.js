@@ -362,7 +362,7 @@ function agregar_involucrado($this, suggestion, tipo_asistencia, documentos_id) 
 
 function agregar_testigo($this, suggestion, tipo_asistencia, documentos_tipos_id) {
     var html = '<span class="resaltar empleado_' + suggestion.empleados_id + '">' +
-            (suggestion.empleados_genero == GENERO_MASCULINO ? ' el ' : ' la ') +
+            (suggestion.empleados_genero == GENERO_FEMENINO ? ' la ' : ' el ') +
             suggestion.empleados_nombre_titulado + ', ' + suggestion.empleados_cargo +
             '<input type="hidden" name="testigos[]" value="' + suggestion.empleados_id + '">' +
             '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' + suggestion.empleados_id + '">&times;</span> ' +

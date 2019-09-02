@@ -400,7 +400,7 @@ function get_cargo_de_empleado(&$row) {
  */
 function get_nombre_titulado(&$empleado) {
     if (!empty($empleado)) {
-        if ($empleado['empleados_genero'] === GENERO_FEMENINO && !empty($empleado['titulos_femenino_siglas'])) {
+        if (intval($empleado['empleados_genero']) === GENERO_FEMENINO && !empty($empleado['titulos_femenino_siglas'])) {
             $empleado['empleados_nombre_titulado_siglas'] = $empleado['titulos_femenino_siglas'] . " " . $empleado['nombre_completo'];
             $empleado['empleados_nombre_titulado'] = $empleado['titulos_femenino_nombre'] . " " . $empleado['nombre_completo'];
         } else {

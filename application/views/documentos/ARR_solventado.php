@@ -75,8 +75,8 @@
                                                 <?= span_editable($r, ACTA_REV_DIRUBICACION, NULL, 'Domicilio de la UA', 'Domicilio de la Unidad Administrativa en la cual se realizará el acto de notificación de los resultados de revisión de la auditoría. Ejemplo "la calle 50 número 471 por 51 y 53 del centro de esta ciudad".') ?>;
                                                 <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO); ?>,
                                                 y por la <?= LABEL_CONTRALORIA; ?>
-                                                <?= span_resaltar(($director['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ') . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']); ?>,
-                                                <?= span_resaltar(($subdirector['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ') . $subdirector['empleados_nombre_titulado'] . ", " . $subdirector['empleados_cargo']); ?>,
+                                                <?= span_resaltar((intval($director['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ') . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']); ?>,
+                                                <?= span_resaltar((intval($subdirector['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ') . $subdirector['empleados_nombre_titulado'] . ", " . $subdirector['empleados_cargo']); ?>,
                                                 <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA) ?>
                                                 <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_TESTIGO) ?>,
                                                 <span class="testigos">

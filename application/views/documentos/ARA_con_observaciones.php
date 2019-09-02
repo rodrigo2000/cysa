@@ -87,8 +87,8 @@ if (empty($asistencias) || empty($asistencias[$direcciones_id]) || empty($asiste
                                                 <?= span_editable($r, ACTA_RESULTADOS_DIRUBICACION, 'Domicilio de la ubicación donde se realiza la lectura', $tooltiptext, $descripciones); ?>;
                                                 <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO); ?>,
                                                 por la <?= LABEL_CONTRALORIA; ?>
-                                                <?= span_resaltar(($director['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ') . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']); ?>,
-                                                <?= span_resaltar(($subdirector['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ') . $subdirector['empleados_nombre_titulado'] . ", " . $subdirector['empleados_cargo']); ?>,
+                                                <?= span_resaltar((intval($director['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ') . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']); ?>,
+                                                <?= span_resaltar((intval($subdirector['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ') . $subdirector['empleados_nombre_titulado'] . ", " . $subdirector['empleados_cargo']); ?>,
                                                 <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_INVOLUCRADO_CONTRALORIA) ?>
                                                 y en calidad de testigos
                                                 <?= span_agregar_asistencias($documento['asistencias'], TIPO_ASISTENCIA_TESTIGO) ?>,

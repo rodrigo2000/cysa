@@ -131,7 +131,7 @@ foreach ($RAP as $rap) {
                                                     Estando presente el
                                                     <?= span_resaltar($auditoria['empleados_nombre_titulado']); ?>, Auditor Líder,
                                                     hace constar que,
-                                                    <?php $aux = ($director['empleados_genero'] == GENERO_FEMENINO ? ' la ' : ' el ') . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']; ?>
+                                                    <?php $aux = (intval($director['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ') . $director['empleados_nombre_titulado'] . ", " . $director['empleados_cargo']; ?>
                                                     <?= span_resaltar($aux); ?>
                                                     Titular de la Unidad Administrativa sujeta a auditaría,
                                                     <?php $aux = !empty($auditoria['auditorias_enlace_designado']) ? $enlace_designado['empleados_nombre_titulado'] . ', Enlace Designado, ' : ''; ?>
@@ -224,7 +224,7 @@ foreach ($RAP as $rap) {
                                         <p class="text-justify bg-punteado">
                                             <span class="bg-white">
                                                 De igual forma,
-                                                <?php $aux = ($auditoria['empleados_genero'] === GENERO_FEMENINO ? ' la ' : ' el ') . $auditoria['empleados_nombre_titulado']; ?>
+                                                <?php $aux = (intval($auditoria['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ') . $auditoria['empleados_nombre_titulado']; ?>
                                                 <?= span_resaltar($aux); ?>,
                                                 se identifica con credencial vigente que lo acredita como servidor público del Municipio de Mérida, expedida
                                                 por la Dirección de Administración y en la que se exhiben sus datos personales, la cual se pone a la vista

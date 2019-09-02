@@ -285,7 +285,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = N
             foreach ($d[$tipo_asistencia] as $e) {
                 $total_asistentes++;
                 $asistentes[] = '<span class="resaltar empleado_' . $e['empleados_id'] . '">'
-                        . ($e['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ')
+                        . (intval($e['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ')
                         . $e['empleados_nombre_titulado'] . ", " . $e['empleados_cargo']
                         . (!empty($auditoria) && isset($auditoria['auditorias_enlace_designado']) && $e['empleados_id'] == $auditoria['auditorias_enlace_designado'] ? ', Enlace Designado' : '')
                         . '<input type="hidden" name="' . $tipo[$tipo_asistencia] . '[]" value="' . $e['empleados_id'] . '">'
@@ -356,7 +356,7 @@ function crear_texto_asistencias($asistencias = array(), $distribuir = TRUE, $ti
                     if ($incluir_domicilio) {
                         $aux = " el ";
                     } else {
-                        $aux .= ($e['empleados_genero'] == GENERO_MASCULINO ? ' el ' : ' la ');
+                        $aux .= (intval($e['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ');
                     }
                 }
                 if ($incluir_domicilio) {
