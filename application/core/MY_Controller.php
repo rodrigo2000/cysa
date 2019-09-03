@@ -56,9 +56,14 @@ class MY_Controller extends CI_Controller {
      * luego re-direcciona a la página correspondiente
      */
     function sin_permisos() {
-        $informacion = array('state' => 'warning', 'message' => 'No tiene permisos suficientes');
-        $this->session->set_flashdata("informacion", $informacion);
-        $this->ajax_redirect();
+        $permisos = $this->session->userdata('permisos');
+        if (!empty($permisos)) {
+            $informacion = array('state' => 'warning', 'message' => 'No tiene permisos suficientes');
+            $this->session->set_flashdata("informacion", $informacion);
+            $this->ajax_redirect();
+        } else {
+            $this->visualizar('sin_permisos_view');
+        }
     }
 
     /**
@@ -99,6 +104,9 @@ class MY_Controller extends CI_Controller {
      */
     function _initialize() {
         $this->isLoggin();
+        if (!$this->{$this->module['controller'] . "_model"}->tengo_acceso_aqui()) {
+            $this->sin_permisos();
+        }
         $this->module['url'] = base_url() . $this->module['controller'];
         $this->module['listado_url'] = $this->module['url'] . '/';
         $this->module['edit_url'] = $this->module['url'] . '/modificar';
@@ -107,6 +115,20 @@ class MY_Controller extends CI_Controller {
         $this->module['read_url'] = $this->module['url'] . '/leer';
         $this->module['destroy_url'] = $this->module['url'] . '/destruir';
         $this->module['cancel_url'] = $this->module['url'];
+        $this->module['catalogos_url'] = base_url() . "Catalogos";
+
+        // Verificamos si tiene acceso al sistema actual, de lo contrario, lo redireccionamos
+        // al primer sistema y controlador de su listado de permisos
+        $permisos = $this->session->userdata('permisos');
+        if (!empty($permisos)) {
+            $keys = array_keys($permisos);
+            $app = $keys[0];
+            $keys = array_keys($permisos[$app]);
+            $controller = $keys[0];
+            if ($app !== APP_NAMESPACE) {
+                redirect(APP_HOSTNAME . $app . "/" . $controller);
+            }
+        }
 //        $this->Breadcrumbs = array(
 //            APP_ABREVIACION => base_url(),
 //            $this->module['controller'] => $this->module['url']
