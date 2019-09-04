@@ -119,16 +119,17 @@ class MY_Controller extends CI_Controller {
 
         // Verificamos si tiene acceso al sistema actual, de lo contrario, lo redireccionamos
         // al primer sistema y controlador de su listado de permisos
-        $permisos = $this->session->userdata('permisos');
-        if (!empty($permisos)) {
-            $keys = array_keys($permisos);
-            $app = $keys[0];
-            $keys = array_keys($permisos[$app]);
-            $controller = $keys[0];
-            if ($app !== APP_NAMESPACE) {
-                redirect(APP_HOSTNAME . $app . "/" . $controller);
-            }
-        }
+//        $permisos = $this->session->userdata('permisos');
+//        if (!empty($permisos)) {
+//            $keys = array_keys($permisos);
+//            $app = $keys[0];
+//            $keys = array_keys($permisos[$app]);
+//            $controller = $keys[0];
+//            if ($app !== APP_NAMESPACE) {
+//                redirect(APP_HOSTNAME . $app . "/" . $controller);
+//            }
+//        }
+
 //        $this->Breadcrumbs = array(
 //            APP_ABREVIACION => base_url(),
 //            $this->module['controller'] => $this->module['url']
