@@ -6,6 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 define('APP_NAME', "Sistema de Control y Seguimiento de Auditorías");
 define('APP_ABREVIACION', 'CYSA');
 define('APP_NAMESPACE', "cysa");
+define('APP_CLASS_BACKGROUND', 'bg-success');
 
 include_once('../constantes.php');
 
@@ -108,8 +109,6 @@ define('TIPO_PERMISO_ADICIONAL', 2);
 @define('CONSTANTE_CANTIDAD_EJEMPLARES_ACTA', 'dos');
 
 define('LABEL_CONTRALORIA', 'Unidad de Contraloría Municipal');
-define('SIN_ESPECIFICAR', '[SIN ESPECIFICAR]');
-define('SIN_ESPECIFICAR_BOLD', '<b>' . SIN_ESPECIFICAR . '</b>');
 
 define('TIPO_AUDITORIA_AP', 1);
 define('TIPO_AUDITORIA_AE', 2);
