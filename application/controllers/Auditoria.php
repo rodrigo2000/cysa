@@ -252,10 +252,11 @@ class Auditoria extends MY_Controller {
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
             'is_finalizada' => $auditoria['auditorias_status_id'] >= AUDITORIAS_STATUS_FINALIZADA ? TRUE : FALSE,
-            'vigente_documentos_versiones_id' => $this->Documentos_versiones_model->get_version_vigente_del_tipo_de_documento($documentos_tipos_id)
+            'vigente_documentos_versiones_id' => $this->Documentos_versiones_model->get_version_vigente_del_tipo_de_documento($documentos_tipos_id),
+            'vista' => $vista
         );
         $data = array_merge($data, $mi_data);
-        $this->visualizar($vista, $data);
+        $this->visualizar('documentos/template_view', $data);
     }
 
     function timeline($auditoria = NULL) {
@@ -457,25 +458,26 @@ class Auditoria extends MY_Controller {
     function imprimir($documentos_id, $return_html = FALSE) {
         if (!empty($documentos_id)) {
             $documento = $this->Documentos_blob_model->get_uno($documentos_id);
+            $server = ENVIRONMENT === 'development' ? 'http://DCON-ATI-RSEVI/contraloria2/' : 'http://SVRDCONT02/contraloria/';
             $html = '<!DOCTYPE html>
                         <html lang="en">
                             <head>
                                 <meta charset="utf-8">
                                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                                 <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
-                                <link rel="icon" href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/images/ico/32x32.png" type="image/png">
-                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/app.min.css" rel="stylesheet">
-                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/personalizados.css" rel="stylesheet" type="text/css"/>
-                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/personalizados_sac.css" rel="stylesheet" type="text/css"/>
+                                <link rel="icon" href="' . $server . 'sac/resources/images/ico/32x32.png" type="image/png">
+                                <link href="' . $server . 'sac/resources/styles/app.min.css" rel="stylesheet">
+                                <link href="' . $server . 'sac/resources/styles/personalizados.css" rel="stylesheet" type="text/css"/>
+                                <link href="' . $server . 'sac/resources/styles/personalizados_sac.css" rel="stylesheet" type="text/css"/>
                                 <!-- Personalizado -->
-                                <script src="http://DCON-ATI-RSEVI/contraloria2/cysa/resources/scripts/auditoria_view.js" type="text/javascript"></script>
-                                <script src="http://DCON-ATI-RSEVI/contraloria2/cysa/resources/scripts/auditorias_documentos_generico.js" type="text/javascript"></script>
+                                <script src="' . $server . 'cysa/resources/scripts/auditoria_view.js" type="text/javascript"></script>
+                                <script src="' . $server . 'cysa/resources/scripts/auditorias_documentos_generico.js" type="text/javascript"></script>
 
-                                <link href="http://DCON-ATI-RSEVI/contraloria2/cysa/resources/styles/oficios.css" rel="stylesheet" type="text/css"/>
-                                <link href="http://DCON-ATI-RSEVI/contraloria2/cysa/resources/styles/media_print.css" rel="stylesheet" type="text/css"/>
-                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/emular_impresora.css" rel="stylesheet" type="text/css"/>
-                                <script src="http://DCON-ATI-RSEVI/contraloria2/sac/resources/scripts/emular_impresora.js" type="text/javascript"></script>
-                                <link href="http://DCON-ATI-RSEVI/contraloria2/sac/resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
+                                <link href="' . $server . 'cysa/resources/styles/oficios.css" rel="stylesheet" type="text/css"/>
+                                <link href="' . $server . 'cysa/resources/styles/media_print.css" rel="stylesheet" type="text/css"/>
+                                <link href="' . $server . 'sac/resources/styles/emular_impresora.css" rel="stylesheet" type="text/css"/>
+                                <script src="' . $server . 'sac/resources/scripts/emular_impresora.js" type="text/javascript"></script>
+                                <link href="' . $server . 'sac/resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
                                 </head>
                                 <body>'
                     . utf8_encode($documento['documentos_blob_contenido'])

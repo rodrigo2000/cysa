@@ -281,7 +281,17 @@ function get_form_data(async = false) {
             $("#documentos_id").val(json.documentos_id);
             $(".actualizar_id", ".oficio-menu-opciones").removeClass('hidden-xs-up');
             $("#accion").val('modificar');
-            //alert("Cambios actualizados");
+            if (typeof noty !== "undefined") {
+                noty({
+                    theme: 'app-noty',
+                    text: 'Los cambios se han guardado exitosamente.',
+                    type: ' bg-green',
+                    timeout: 4500,
+                    layout: 'topRight',
+                    closeWith: ['button', 'click'],
+                    animation: {open: 'animated fadeInDown', close: 'animated fadeOutUp'}
+                });
+            }
         }
         $("button.boton_guardar").prop('disabled', false).removeClass('disabled').html('Guardar');
     }, "json");

@@ -17,6 +17,10 @@ class Asistencias extends MY_Controller {
         $this->_initialize();
     }
 
+    function _initialize() {
+        return TRUE;
+    }
+
     function agregar_asistencia() {
         $return = array(
             'success' => FALSE,

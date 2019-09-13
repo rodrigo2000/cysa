@@ -136,7 +136,7 @@ if (isset($auditoria['prorrogas_fecha_maxima_para_generarlas']) && !empty($audit
                 <?php $plural = (isset($t['diferencia_dias_habiles']) && abs($t['diferencia_dias_habiles']) > 1 ? TRUE : FALSE); ?>
                 <?php $existeCampoEjecucion = isset($t['campo_ejecucion_real']) && !empty($t['campo_ejecucion_real']); ?>
                 <?php // $t['editar_fecha'] = ($auditoria['statusAudit'] == AUDIT_PROCESO && $t['tareas_nombre'] !== "Envío de Oficio de Orden de Auditoría" ? TRUE : $t['editar_fecha']); // Temporalmente ?>
-                <?php $mostrarBtnEditar = ($t['editar_fecha'] && $existeCampoEjecucion && $t['tareas_nombre'] != "Inicio de Revisión de Solventación" && $t['tareas_nombre'] != "Fin de Auditoría") || ($t['tareas_nombre'] == "Envío de Oficio de Orden de Auditoría" && $auditoria['statusAudit'] == AUDIT_PROCESO && $_SESSION['usuario']->validaSubsistema('cysaRegAuditoria')); ?>
+                <?php $mostrarBtnEditar = ($t['editar_fecha'] && $existeCampoEjecucion && $t['tareas_nombre'] != "Inicio de Revisión de Solventación" && $t['tareas_nombre'] != "Fin de Auditoría") || ($t['tareas_nombre'] == "Envío de Oficio de Orden de Auditoría" && $auditoria['statusAudit'] == AUDIT_PROCESO /*&& $_SESSION['usuario']->validaSubsistema('cysaRegAuditoria')*/); ?>
                 <?php if (in_array($t['configuraciones_tareas_id'], array(20, 24, 27, 28))) $t['class'] = 'purple-darker'; ?>
                 <?php if (in_array($t['configuraciones_tareas_id'], array(20, 27))) $t['icon'] = 'flag'; ?>
                 <?php if (in_array($t['configuraciones_tareas_id'], array(24, 28))) $t['icon'] = "star"; ?>
@@ -234,7 +234,7 @@ if (isset($auditoria['prorrogas_fecha_maxima_para_generarlas']) && !empty($audit
                                                         ?>
                                                         <td align="center" class="align-middle" title="<?= isset($vobo['iniciales']) ? $vobo['iniciales'] : ''; ?>">
                                                             <?php if (!empty($vobo) && is_array($vobo)): // Hay informacion del ultimo vobo    ?>
-                                                                <?php if ($_SESSION['usuario']->getIdEmpleado() == $auditoria['idLider']): // Cuando soy el lider de auditoria muestro los controles para entregar el documento ?>
+                                                                <?php if ($this->session->userdata('empleados_id') == $auditoria['idLider']): // Cuando soy el lider de auditoria muestro los controles para entregar el documento ?>
                                                                     <?php if (!is_null($vobo['revisiones_fecha_entrega']) && is_null($vobo['revisiones_fecha_devolucion'])): ?>
                                                                         Entregado
                                                                     <?php elseif (is_null($vobo['revisiones_fecha_entrega']) && !is_null($vobo['revisiones_fecha_devolucion'])): ?>
@@ -250,14 +250,14 @@ if (isset($auditoria['prorrogas_fecha_maxima_para_generarlas']) && !empty($audit
                                                                             <a href="#" class="btn btn-secondary btn-xs entregar" data-idDocto="<?= $d['idDocto'] ?>" data-idEmpleado="<?= $idEmpleadoVoBo; ?>"><?= !is_null($vobo['bVoBo']) ? 'Re-' : ''; ?>Entregar</a>
                                                                         <?php endif; ?>
                                                                     <?php endif; ?>
-                                                                <?php elseif ((intval($_SESSION['usuario']->getIdEmpleado()) == $idEmpleadoVoBo) || (is_array($idEmpleadoVoBo) && in_array($_SESSION['usuario']->getIdEmpleado(), $idEmpleadoVoBo))): ?>
+                                                                <?php elseif ((intval($this->session->userdata('empleados_id')) == $idEmpleadoVoBo) || (is_array($idEmpleadoVoBo) && in_array($this->session->userdata('empleados_id'), $idEmpleadoVoBo))): ?>
                                                                     <input class="js-candlestick" type="checkbox" value="<?= isset($vobo['bVoBo']) ? strval($vobo['bVoBo']) : ''; ?>" name="idDocto_<?= $idDocto; ?>" id="idDocto_<?= $idDocto; ?>_1" data-idRevisiones="<?= $vobo['revisiones_id']; ?>" data-idDocto="<?= $d['idDocto'] ?>" data-idEmpleado="<?= $idEmpleadoVoBo; ?>" <?= $bloqueado ? 'disabled="true"' : ''; ?> data-valorInicial="<?= isset($vobo['bVoBo']) ? strval($vobo['bVoBo']) : 'reset'; ?>">
                                                                 <?php else: ?>
                                                                     <i class="material-icons bg-<?= isset($vobo['bVoBo']) ? ($vobo['bVoBo'] == 1 ? 'success' : 'danger') : 'info'; ?> <?= empty($d['idDocto']) ? 'disabled' : ''; ?>"><?= isset($vobo['bVoBo']) ? ($vobo['bVoBo'] == 1 ? 'check' : 'clear') : 'help_outline'; ?></i>
                                                                 <?php endif; ?>
                                                             <?php else : // sino hay informacion ?>
                                                                 <?php if (isset($d['idDocto'])): // existe el idDocto?, mostramos el boton ENTREGAR ?>
-                                                                    <?php if ((intval($_SESSION['usuario']->getIdEmpleado()) == $idEmpleadoVoBo) || (is_array($idEmpleadoVoBo) && in_array($_SESSION['usuario']->getIdEmpleado(), $idEmpleadoVoBo))): ?>
+                                                                    <?php if ((intval($this->session->userdata('empleados_id')) == $idEmpleadoVoBo) || (is_array($idEmpleadoVoBo) && in_array($this->session->userdata('empleados_id'), $idEmpleadoVoBo))): ?>
                                                                         <input class="js-candlestick" type="checkbox" value="<?= isset($vobo['bVoBo']) ? strval($vobo['bVoBo']) : ''; ?>" name="idDocto_<?= $idDocto; ?>" id="idDocto_<?= $idDocto; ?>_1" data-idRevisiones="<?= $vobo['revisiones_id']; ?>" data-idDocto="<?= $d['idDocto'] ?>" data-idEmpleado="<?= $idEmpleadoVoBo; ?>" <?= $bloqueado ? 'disabled="true"' : ''; ?> data-valorInicial="<?= isset($vobo['bVoBo']) ? strval($vobo['bVoBo']) : 'reset'; ?>">
                                                                     <?php else: ?>
                                                                         <a href="#" class="btn btn-secondary btn-xs entregar" data-idDocto="<?= $d['idDocto'] ?>" data-idEmpleado="<?= $idEmpleadoVoBo; ?>">Entregar</a>

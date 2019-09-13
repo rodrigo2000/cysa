@@ -17,6 +17,10 @@ class Documento extends MY_Controller {
         $this->_initialize();
     }
 
+    function _initialize() {
+        return TRUE;
+    }
+
     function index() {
         $documentos_id = $this->uri->segment(2);
         if (!empty($documentos_id)) {

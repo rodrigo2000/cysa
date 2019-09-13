@@ -65,6 +65,22 @@ class Timeline_model extends MY_Model {
         return $return;
     }
 
+    function conectar_a_basedatos($database) {
+        $config['hostname'] = APP_DATABASE_HOSTNAME;
+        $config['username'] = APP_DATABASE_USERNAME;
+        $config['password'] = APP_DATABASE_PASSWORD;
+        $config['database'] = $database;
+        $config['dbdriver'] = 'mysqli';
+        $config['dbprefix'] = '';
+        $config['pconnect'] = FALSE;
+        $config['db_debug'] = TRUE;
+        $config['cache_on'] = FALSE;
+        $config['cachedir'] = '';
+        $config['char_set'] = 'utf8';
+        $config['dbcollat'] = 'utf8_general_ci';
+        return $this->load->database($config, TRUE);
+    }
+
     /**
      * Esta función se conecta a la tabla de TIMELINE
      * @return recordset Regresa la conexión a la base de datos
@@ -438,11 +454,11 @@ class Timeline_model extends MY_Model {
                         }
 
                         if ($return[$index]['tareas_nombre'] === "Envío de Oficio de Orden de Auditoría") {
-                            $strSQL = "SELECT cysaRegAuditoria FROM " . APP_DATABASE_PREFIX . "sac.dcont_modulo WHERE idEmpleado = " . $_SESSION['usuario']->getIdEmpleado() . " LIMIT 1";
-                            $dbSAC = conectarBD(DB_PREFIX . "sac");
-                            $result11 = $dbSAC->ejecutaQuery($strSQL);
-                            $aux = mysql_fetch_assoc($result11);
-                            $return[$index]['editar_fecha'] = ($aux['cysaRegAuditoria'] > 0 ? TRUE : FALSE);
+                            $strSQL = "SELECT cysaRegAuditoria FROM " . (ENVIRONMENT === 'development' ? 'proto_' : '') . "sac.dcont_modulo WHERE idEmpleado = " . $this->session->userdata('empleados_id') . " LIMIT 1";
+                            $dbSAC = $this->conectar_a_basedatos((ENVIRONMENT === 'development' ? 'proto_' : '') . "sac");
+                            $result11 = $dbSAC->query($strSQL);
+                            $aux = $result11->row_array();
+                            $return[$index]['editar_fecha'] = (isset($aux['cysaRegAuditoria']) && $aux['cysaRegAuditoria'] > 0 ? TRUE : FALSE);
                         }
 
                         // Verificamos si tiene documentos para Vo.Bo.

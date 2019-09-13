@@ -17,6 +17,10 @@ class Oficios extends MY_Controller {
         $this->_initialize();
     }
 
+    function _initialize() {
+        return TRUE;
+    }
+
     /**
      * Esta función NO ACTUALIZA NINGÚN VALOR EN LA BASE DE DATOS, solo sirve para devolverle al componente
      * los valores que debe mostrar
