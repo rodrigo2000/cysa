@@ -25,7 +25,7 @@
 <!-- BOTON de IMPRIMIR DOCUMENTO -->
 <div id="btn-vista-impresion" class="btn-group actualizar_id <?= $hidden; ?>">
     <a href="<?= base_url() . $this->module['controller'] . "/" . ($documento_autorizado ? 'imprimir' : 'descargar') . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" class="actualizar_id btn btn-info m-l-2" target="_blank">Imprimir</a>
-    <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<!--    <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="sr-only">Toggle Dropdown</span>
     </button>
     <div class="dropdown-menu">
@@ -33,7 +33,7 @@
         <a class="dropdown-item actualizar_id" href="<?= base_url() . $this->module['controller'] . "/pdf" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>"  target="_blank">PDF</a>
         <div class="dropdown-divider"></div>
         <a class="dropdown-item actualizar_id" href="<?= base_url() . $this->module['controller'] . "/html" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>" target="_blank">HTML</a>
-    </div>
+    </div>-->
 </div>
 <!-- BOTON de DOCUMENTO DE LAS DIFERENTES UA -->
 <?php if (!$is_finalizada && count($documentos) > 1): ?>
@@ -50,7 +50,9 @@
 <!-- BOTON de REGRESAR -->
 <a id="btn-regresar" class="btn btn-default m-l-2" href="<?= base_url() . $this->uri->segment(1) . "/" . $auditoria['auditorias_id']; ?>#tab-documentos">Regresar</a>
 <!-- BOTON de ELIMINAR DOCUMENTO -->
-<a id="btn-eliminar" class="btn btn-danger m-l-2 actualizar_id <?= $hidden; ?>" href="<?= base_url() . "Documentos/eliminar" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>">Eliminar</a>
+<?php if ($this->{$this->module['controller'] . "_model"}->tengo_permiso(PERMISOS_ELIMINAR)): ?>
+    <a id="btn-eliminar" class="btn btn-danger m-l-2 actualizar_id <?= $hidden; ?>" href="<?= base_url() . "Documentos/eliminar" . (isset($documento['documentos_id']) ? '/' . $documento['documentos_id'] : ''); ?>">Eliminar</a>
+<?php endif; ?>
 <!-- BOTON de ACTUALIZAR VERSIÓN DE DOCUMENTO -->
 <?php if ($documento['documentos_versiones_id'] != $vigente_documentos_versiones_id['documentos_versiones_id']): ?>
     <a href="<?= base_url() . $this->module['controller'] . "/actualizar_version_documento/" . (isset($documento['documentos_id']) ? $documento['documentos_id'] : ''); ?>" class="btn btn-warning m-l-2 actualizar_id"><i class="fa fa-fw fa-warning faa-flash animated"></i> Actualizar versión</a>
