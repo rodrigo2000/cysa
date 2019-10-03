@@ -10,7 +10,7 @@ class Dashboard extends MY_Controller {
         $this->module['name'] = strtolower(__CLASS__);
         $this->module['controller'] = __CLASS__;
         $this->module['title'] = "Dashboard";
-
+        $this->is_catalogo = FALSE;
         $this->_initialize();
     }
 

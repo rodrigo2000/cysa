@@ -7,31 +7,12 @@ define('APP_NAME', "Sistema de Control y Seguimiento de Auditorías");
 define('APP_ABREVIACION', 'CYSA');
 define('APP_NAMESPACE', "cysa");
 define('APP_CLASS_BACKGROUND', 'bg-success');
+define('APP_IS_CATALOGO_VALUE', TRUE);
 
 include_once('../constantes.php');
 
 // Constantes de sitio web
 define('HTMLVARS_TITLE_PAGE', 'Contraloría :: ' . APP_NAME);
-
-// Puestos de trabajo
-define("PUESTO_COORDINADOR_AUDITORIA", 269);
-define("PUESTO_JEFE_DEPARTAMENTO", 59);
-define("PUESTO_SUBDIRECTOR", 106);
-define("PUESTO_DIRECTOR", 45);
-define('PUESTO_NINGUNO', 0);
-define('PUESTO_AUXILIAR_ADMINISTRATIVO', 8);
-define('PUESTO_AUXILIAR_DE_AUDITORIA', 13);
-define('PUESTO_SUPERVISOR', 107);
-define('PUESTO_SECRETARIA', 119);
-define('PUESTO_INGENIERO_EN_SOFTWARE', 253);
-define('PUESTO_AUDITOR', 7);
-define('PUESTO_COORDINADOR', 40);
-define('PUESTO_SUBDIRECTOR_INACTIVO', 1);
-define('PUESTO_PRESIDENTE_MUNICIPAL', 85);
-define('PUESTO_SINDICO', 256);
-
-// Dependencias
-define('DEPENDENCIA_CONTRALORIA_MUNICIPAL', 5);
 
 // Áreas
 define('AREA_DIRECCION', 1);
@@ -53,10 +34,6 @@ define('AUDITORIAS_STATUS_FINALIZADA_RESERVADA', 3);
 define('AUDITORIAS_STATUS_FINALIZADA_MANUAL', 4);
 define('AUDITORIAS_STATUS_FINALIZADA_REPROGRAMADA', 5);
 define('AUDITORIAS_STATUS_FINALIZADA_SUSTITUIDA', 6);
-
-// Géneros
-define('GENERO_MASCULINO', 1);
-define('GENERO_FEMENINO', 0);
 
 // Constantes
 define('CONTRALORIA_TITULAR_EMPLEADOS_NOMBRE', 'María Gómez Nechar');

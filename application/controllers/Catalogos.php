@@ -6,8 +6,9 @@ class Catalogos extends MY_Controller {
         parent::__construct();
         $this->module['name'] = strtolower(__CLASS__);
         $this->module['controller'] = __CLASS__;
-        $this->module['title'] = "Catalogos";
+        $this->module['title'] = "Catálogos";
         $this->module['title_list'] = $this->module['title'];
+        $this->is_catalogo = FALSE;
         $this->_initialize();
     }
 

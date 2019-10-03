@@ -8,7 +8,7 @@ class Reportes extends MY_Controller {
         $this->module['controller'] = 'Reportes';
         $this->module['title'] = 'Reportes';
         $this->module['title_list'] = "Reportes";
-
+        $this->is_catalogo = FALSE;
         $this->_initialize();
     }
 

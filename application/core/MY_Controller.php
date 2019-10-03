@@ -18,7 +18,9 @@ class MY_Controller extends CI_Controller {
         $this->module['id_field'] = "";
         $this->module['tabla'] = "";
         $this->module['prefix'] = "";
+        $this->is_catalogo = APP_IS_CATALOGO_VALUE;
         $this->Breadcrumbs = array();
+        $this->module['breadcrumbs'] = "";
         date_default_timezone_set('America/Merida');
     }
 
@@ -116,33 +118,36 @@ class MY_Controller extends CI_Controller {
         $this->module['destroy_url'] = $this->module['url'] . '/destruir';
         $this->module['cancel_url'] = $this->module['url'];
         $this->module['catalogos_url'] = base_url() . "Catalogos";
+    }
 
-        // Verificamos si tiene acceso al sistema actual, de lo contrario, lo redireccionamos
-        // al primer sistema y controlador de su listado de permisos
-//        $permisos = $this->session->userdata('permisos');
-//        if (!empty($permisos)) {
-//            $keys = array_keys($permisos);
-//            $app = $keys[0];
-//            $keys = array_keys($permisos[$app]);
-//            $controller = $keys[0];
-//            if ($app !== APP_NAMESPACE) {
-//                redirect(APP_HOSTNAME . $app . "/" . $controller);
-//            }
-//        }
-
-//        $this->Breadcrumbs = array(
-//            APP_ABREVIACION => base_url(),
-//            $this->module['controller'] => $this->module['url']
-//        );
-//        if (!empty($this->Breadcrumbs)) {
-//            $this->module['breadcrumb'] = '<ol class="breadcrumb">';
-//            $aux = array();
-//            foreach ($this->Breadcrumbs as $key => $url) {
-//                $this->module['breadcrumb'] .= '<li class="breadcrumb-item"><a href="' . $url . '">' . $key . '</a></li>';
-//                array_push($aux, '<a href="' . $url . '">' . $key . '</a>');
-//            }
-////            $this->module['title'] = implode(" / ", $aux);
-//        }
+    /**
+     * Esta función genera el breadcrumbs de la página
+     * @return boolean Devuelve TRUE cuando ha finalizado
+     */
+    function crear_breadcrumbs() {
+        $breadcrumbs = array(APP_ABREVIACION => base_url());
+        if (isset($this->is_catalogo) && $this->is_catalogo === TRUE) {
+            $breadcrumbs['Catálogos'] = base_url() . "Catalogos";
+        }
+        if (!empty($this->module['title'])) {
+            $breadcrumbs[$this->module['title']] = $this->uri->total_segments() > 1 ? $this->module['url'] : NULL;
+        }
+        if (isset($this->Breadcrumbs) && !empty($this->Breadcrumbs) && is_array($this->Breadcrumbs)) {
+            $breadcrumbs = array_merge($breadcrumbs, $this->Breadcrumbs);
+        }
+        if (!empty($breadcrumbs)) {
+            $aux = array();
+            $i = 0;
+            foreach ($breadcrumbs as $key => $url) {
+                $i++;
+                if (!empty($url)) {
+                    $key = '<a href="' . $url . '">' . $key . '</a>';
+                }
+                array_push($aux, '<li class="breadcrumb-item' . (count($breadcrumbs) == $i ? ' active' : '') . '">' . $key . '</li>');
+            }
+            $this->module['breadcrumbs'] = '<ol class="breadcrumb">' . implode("", $aux) . '</ol>';
+        }
+        return TRUE;
     }
 
     function index() {
@@ -181,6 +186,7 @@ class MY_Controller extends CI_Controller {
             );
             $this->template = $this->parser->parse("../../../SAC/application/views/errors/html/error_404", $data, TRUE);
         }
+        $this->crear_breadcrumbs();
         $this->load->view("../../../SAC/application/views/template_view");
     }
 
@@ -277,6 +283,7 @@ class MY_Controller extends CI_Controller {
             redirect($this->module['controller']);
         }
         $data['id'] = 0;
+        $this->Breadcrumbs['Nuevo'] = NULL;
         if ($this->input->server('REQUEST_METHOD') === "POST") {
             $this->form_validation->set_rules($this->rulesForm);
             foreach ($this->rulesForm as $rule) {
@@ -292,7 +299,7 @@ class MY_Controller extends CI_Controller {
                 $ss = $this->_post_insert($s, $r);
                 if ($s['state'] === 'success' && $ss === TRUE) {
                     $this->session->set_flashdata("informacion", $s);
-                    redirect(base_url() . $this->module['name'] . "/");
+                    redirect(base_url() . $this->module['controller']);
                 } else {
                     $data['r'] = $r;
                     $s['state'] = $s['state'] === "duplicate" ? "danger" : $s['state'];
@@ -340,6 +347,7 @@ class MY_Controller extends CI_Controller {
             $this->session->set_flashdata($s);
             redirect($this->module['controller']);
         }
+        $this->Breadcrumbs['Modificar'] = NULL;
         if ($this->input->server('REQUEST_METHOD') === "POST") {
             $id = $this->input->post($this->module['id_field']);
             $this->form_validation->set_rules($this->rulesForm);
@@ -354,7 +362,7 @@ class MY_Controller extends CI_Controller {
                 $ss = $this->_post_update($s, $id, $r);
                 $this->session->set_flashdata("informacion", $s);
                 if ($s['state'] === 'success' && $ss === TRUE) {
-                    redirect(base_url() . $this->module['name'] . "/");
+                    redirect(base_url() . $this->module['controller']);
                 } else {
                     $data['r'] = $r;
                     $s['state'] = $s['state'] === "duplicate" ? "danger" : $s['state'];
@@ -399,14 +407,23 @@ class MY_Controller extends CI_Controller {
     }
 
     function eliminar($id = NULL, $data = NULL) {
-        if (!$this->{$this->module['controller'] . "_model"}->puedo_eliminar()) {
+        $fecha_insert = NULL;
+        if ($this->input->server('REQUEST_METHOD') === "POST") {
+            $id = $this->input->post("id");
+            $r = $this->{$this->module['controller'] . "_model"}->get_uno($id);
+            if (!empty($r) && isset($r['fecha_insert'])) {
+                $fecha_insert = $r['fecha_insert'];
+            }
+        }
+        if (!$this->{$this->module['controller'] . "_model"}->puedo_eliminar($fecha_insert)) {
             $s['informacion'] = array(
                 'state' => 'danger',
-                'message' => 'No tiene permisos para eliminar información'
+                'message' => 'No tiene permisos para eliminar información este elemento'
             );
             $this->session->set_flashdata($s);
             redirect($this->module['controller']);
         }
+        $this->Breadcrumbs['Eliminar'] = NULL;
         if ($this->input->server('REQUEST_METHOD') === "POST") {
             $id = $this->input->post("id");
             $dataDelete = $this->_pre_delete($id);
@@ -414,7 +431,7 @@ class MY_Controller extends CI_Controller {
             $ss = $this->_post_delete($s, $id, $data, $dataDelete);
             $this->session->set_flashdata("informacion", $s);
             if ($s['state'] === 'success') {
-                redirect(base_url() . $this->module['controller'] . "/");
+                redirect(base_url() . $this->module['controller']);
             }
         }
         $res = $this->db->where($this->module['prefix'] . "." . $this->module['id_field'], $id)->get($this->module['tabla'] . " " . $this->module['prefix']);
@@ -431,7 +448,7 @@ class MY_Controller extends CI_Controller {
             $data['urlActionDelete'] = $this->module['delete_url'];
         }
         if (!isset($data['urlActionCancel']) || empty($data['urlActionCancel'])) {
-            $data['urlActionCancel'] = $this->module['listado_url'];
+            $data['urlActionCancel'] = $this->module['cancel_url'];
         }
         $data['id'] = $id;
         $data['token'] = array(
@@ -446,7 +463,7 @@ class MY_Controller extends CI_Controller {
             $ids = explode(",", $this->input->post("ids"));
             $s = $this->{$this->module['controller'] . "_model"}->deleteBatch($ids);
             $this->session->set_flashdata("informacion", $s);
-            redirect(base_url() . $this->module['name'] . "/");
+            redirect(base_url() . $this->module['controller']);
         }
     }
 
@@ -478,7 +495,7 @@ class MY_Controller extends CI_Controller {
     }
 
     function _pre_delete($id) {
-        return array();
+        return $this->{$this->module['controller'] . '_model'}->get_uno($id);
     }
 
     function destruir($id = NULL, $data = NULL) {
@@ -490,6 +507,7 @@ class MY_Controller extends CI_Controller {
             $this->session->set_flashdata($s);
             redirect($this->module['controller']);
         }
+        $this->Breadcrumbs['Destruir'] = NULL;
         if ($this->input->server('REQUEST_METHOD') === "POST") {
             $id = $this->input->post("id");
             $dataDelete = $this->_pre_destroy($id);
@@ -497,7 +515,7 @@ class MY_Controller extends CI_Controller {
             $ss = $this->_post_destroy($s, $id, $data, $dataDelete);
             $this->session->set_flashdata("informacion", $s);
             if ($s['state'] === 'success') {
-                redirect(base_url() . $this->module['controller'] . "/");
+                redirect(base_url() . $this->module['controller']);
             }
         }
         $res = $this->db->where($this->module['prefix'] . "." . $this->module['id_field'], $id)->get($this->module['tabla'] . " " . $this->module['prefix']);
@@ -514,7 +532,7 @@ class MY_Controller extends CI_Controller {
             $data['urlActionDelete'] = $this->module['destroy_url'];
         }
         if (!isset($data['urlActionCancel']) || empty($data['urlActionCancel'])) {
-            $data['urlActionCancel'] = $this->module['listado_url'];
+            $data['urlActionCancel'] = $this->module['cancel_url'];
         }
         $data['id'] = $id;
         $data['token'] = array(
@@ -529,7 +547,7 @@ class MY_Controller extends CI_Controller {
     }
 
     function _pre_destroy($id) {
-        return array();
+        return $this->{$this->module['controller'] . '_model'}->get_uno($id);
     }
 
     function _post_destroy(&$status, $id, $data = NULL, $dataDelete = NULL) {

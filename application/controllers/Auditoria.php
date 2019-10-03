@@ -14,6 +14,7 @@ class Auditoria extends MY_Controller {
         $this->module["id_field"] = "auditorias_id";
         $this->module['tabla'] = "auditorias";
         $this->module['prefix'] = "a";
+        $this->is_catalogo = FALSE;
         $this->_initialize();
     }
 
