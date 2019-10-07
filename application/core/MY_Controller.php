@@ -19,6 +19,12 @@ class MY_Controller extends CI_Controller {
         $this->module['tabla'] = "";
         $this->module['prefix'] = "";
         $this->is_catalogo = APP_IS_CATALOGO_VALUE;
+        $this->valida_login = TRUE;
+        $this->valida_acceso_al_modulo = TRUE;
+        $this->valida_puedo_insertar = TRUE;
+        $this->valida_puedo_modificar = TRUE;
+        $this->valida_puedo_eliminar = TRUE;
+        $this->valida_puedo_destruir = TRUE;
         $this->Breadcrumbs = array();
         $this->module['breadcrumbs'] = "";
         date_default_timezone_set('America/Merida');
@@ -101,12 +107,13 @@ class MY_Controller extends CI_Controller {
     }
 
     /**
-     * Esta función inicializa variables del controlador que sirven para
-     * generar las URL del controlador
+     * Esta función inicializa variables del controlador que sirven para generar las URL del controlador
      */
     function _initialize() {
-        $this->isLoggin();
-        if (!$this->{$this->module['controller'] . "_model"}->tengo_acceso_aqui()) {
+        if ($this->valida_login) {
+            $this->isLoggin();
+        }
+        if ($this->valida_acceso_al_modulo && !$this->{$this->module['controller'] . "_model"}->tengo_acceso_aqui()) {
             $this->sin_permisos();
         }
         $this->module['url'] = base_url() . $this->module['controller'];
@@ -271,10 +278,10 @@ class MY_Controller extends CI_Controller {
      * Cuando se accede a esta función mediante POST valida la información
      * proporcionada segun las reglas establecidas y en caso cumplir la validación
      * se insertan los datos en la base de datos
-     * @param type $data Matriz de variables a validar para su posterior inserción
+     * @param array $data Matriz de variables a validar para su posterior inserción
      */
     function nuevo($data = array()) {
-        if (!$this->{$this->module['controller'] . "_model"}->puedo_insertar()) {
+        if ($this->valida_puedo_insertar && !$this->{$this->module['controller'] . "_model"}->puedo_insertar()) {
             $s['informacion'] = array(
                 'state' => 'danger',
                 'message' => 'No tiene permisos para insertar información'
@@ -338,8 +345,16 @@ class MY_Controller extends CI_Controller {
         return TRUE;
     }
 
+    /**
+     * Función que carga la vista correspondiente a modificar un elemento.
+     * Cuando se accede a esta función mediante POST valida la información
+     * proporcionada segun las reglas establecidas y en caso cumplir la validación
+     * se actualizan los datos en la base de datos
+     * @param integer $id Identificador de la dupla de la base de datos
+     * @param array $data Matriz de variables a validar para su posterior modificación
+     */
     function modificar($id = null, $data = array()) {
-        if (!$this->{$this->module['controller'] . "_model"}->puedo_modificar()) {
+        if ($this->valida_puedo_modificar && !$this->{$this->module['controller'] . "_model"}->puedo_modificar()) {
             $s['informacion'] = array(
                 'state' => 'danger',
                 'message' => 'No tiene permisos para modificar información'
@@ -406,6 +421,13 @@ class MY_Controller extends CI_Controller {
         return TRUE;
     }
 
+    /**
+     * Función que carga la vista correspondiente a eliminar un elemento.
+     * Cuando se accede a esta función mediante POST se marca en base de datos que el campo ha sido eliminado,
+     * es decir, el campo "fecha_delete" pasa a tener la hora y fecha en que se eliminó la dupla
+     * @param integer $id Identificador de la dupla de la base de datos
+     * @param array $data Matriz de variables a validar para su posterior modificación
+     */
     function eliminar($id = NULL, $data = NULL) {
         $fecha_insert = NULL;
         if ($this->input->server('REQUEST_METHOD') === "POST") {
@@ -415,7 +437,7 @@ class MY_Controller extends CI_Controller {
                 $fecha_insert = $r['fecha_insert'];
             }
         }
-        if (!$this->{$this->module['controller'] . "_model"}->puedo_eliminar($fecha_insert)) {
+        if ($this->valida_puedo_eliminar && !$this->{$this->module['controller'] . "_model"}->puedo_eliminar($fecha_insert)) {
             $s['informacion'] = array(
                 'state' => 'danger',
                 'message' => 'No tiene permisos para eliminar información este elemento'
@@ -467,6 +489,10 @@ class MY_Controller extends CI_Controller {
         }
     }
 
+    function _pre_delete($id) {
+        return $this->{$this->module['controller'] . '_model'}->get_uno($id);
+    }
+
     function _delete($id) {
         return $this->{$this->module['controller'] . '_model'}->delete($id);
     }
@@ -494,12 +520,14 @@ class MY_Controller extends CI_Controller {
         return $return;
     }
 
-    function _pre_delete($id) {
-        return $this->{$this->module['controller'] . '_model'}->get_uno($id);
-    }
-
+    /**
+     * Función que carga la vista correspondiente a destruir un elemento.
+     * Cuando se accede a esta función mediante POST destruye la dupla en la base de datos
+     * @param integer $id Identificador de la dupla de la base de datos
+     * @param array $data Matriz de variables a validar para su posterior modificación
+     */
     function destruir($id = NULL, $data = NULL) {
-        if (!$this->{$this->module['controller'] . "_model"}->puedo_destruir()) {
+        if ($this->valida_puedo_destruir && !$this->{$this->module['controller'] . "_model"}->puedo_destruir()) {
             $s['informacion'] = array(
                 'state' => 'danger',
                 'message' => 'No tiene permisos para destruir información'

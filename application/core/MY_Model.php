@@ -11,6 +11,18 @@ class MY_Model extends CI_Model {
         $this->table_name = "";
         $this->id_field = "";
         $this->model_name = "";
+        $this->valida_login = TRUE;
+        $this->valida_acceso_al_modulo = TRUE;
+        $this->valida_puedo_insertar = TRUE;
+        $this->valida_puedo_modificar = TRUE;
+        $this->valida_puedo_eliminar = TRUE;
+        $this->valida_puedo_destruir = TRUE;
+
+        $this->siempre_insertar = FALSE;
+        $this->siempre_modificar = FALSE;
+        $this->siempre_eliminar = FALSE;
+        $this->siempre_destruir = FALSE;
+
         date_default_timezone_set('America/Merida');
     }
 
@@ -47,19 +59,35 @@ class MY_Model extends CI_Model {
     }
 
     function puedo_insertar() {
-        return $this->tengo_permiso(PERMISOS_NUEVO);
+        $return = $this->siempre_insertar;
+        if ($this->valida_puedo_insertar) {
+            $return = $this->tengo_permiso(PERMISOS_NUEVO);
+        }
+        return $return;
     }
 
     function puedo_modificar() {
-        return $this->tengo_permiso(PERMISOS_MODIFICAR);
+        $return = $this->siempre_modificar;
+        if ($this->valida_puedo_modificar) {
+            $return = $this->tengo_permiso(PERMISOS_MODIFICAR);
+        }
+        return $return;
     }
 
     function puedo_eliminar() {
-        return $this->tengo_permiso(PERMISOS_ELIMINAR);
+        $return = $this->siempre_eliminar;
+        if ($this->valida_puedo_eliminar) {
+            $this->tengo_permiso(PERMISOS_ELIMINAR);
+        }
+        return $return;
     }
 
     function puedo_destruir() {
-        return $this->tengo_permiso(PERMISOS_DESTRUIR);
+        $return = $this->siempre_destruir;
+        if ($this->valida_puedo_destruir) {
+            $this->tengo_permiso(PERMISOS_DESTRUIR);
+        }
+        return $return;
     }
 
     /**
@@ -69,9 +97,12 @@ class MY_Model extends CI_Model {
      * @param string $controlador Nombre del controlador al que se desea realizar una acción. De forma predeterminada es el controlador que invoca la acción
      * @return boolean Devuelve TRUE cuando el usuario logueado tiene permiso para realizar la acción en el controlador
      */
-    function tengo_permiso($permisos_id, $app = APP_NAMESPACE, $controlador = NULL) {
+    function tengo_permiso($permisos_id, $app = NULL, $controlador = NULL) {
         $return = FALSE;
         $permisos = $this->session->userdata('permisos');
+        if (empty($app)) {
+            $app = APP_NAMESPACE;
+        }
         if (empty($controlador)) {
             $controlador = &get_instance()->module['controller'];
         }
@@ -94,7 +125,8 @@ class MY_Model extends CI_Model {
         }
         $query = $this->db->get($this->table_name . " " . $this->table_prefix);
         if (!$query) {
-            echo "error en query: " . $this->db->last_query();
+            $db_error = $this->db->error();
+            echo "<p><b>Error " . $db_error['code'] . ": " . $db_error['message'] . "</b><br>\nQuery: " . $this->db->last_query() . "</p>";
         } elseif ($query->num_rows() > 0) {
             $return = $query->result_array();
         }
@@ -112,7 +144,6 @@ class MY_Model extends CI_Model {
             $query = $this->db->where($this->id_field, $id)
                     ->limit(1)
                     ->get($this->table_name . " " . $this->table_prefix);
-            //echo $this->db->last_query();
             if ($query && $query->num_rows() == 1) {
                 $return = $query->row_array();
             }
@@ -187,6 +218,7 @@ class MY_Model extends CI_Model {
                         'activo' => $usuario['usuarios_is_activo'],
                         'correo' => $usuario['empleados_correo_electronico'],
                         'perfiles_id' => $usuario['usuarios_perfiles_id'],
+                        'avatar' => $usuario['usuarios_avatar'],
                         'permisos' => $this->Permisos_usuario_model->get_jerarquia_de_permisos($usuario['usuarios_id'], APP_PERMISOS_TIPO_JERARQUIA_VARIABLES)
                     );
                     $return = array(
@@ -208,7 +240,7 @@ class MY_Model extends CI_Model {
     }
 
     function delete($id) {
-        if ($this->{$this->module['controller'] . "_model"}->puedo_eliminar()) {
+        if ($this->valida_puedo_eliminar || $this->{$this->module['controller'] . "_model"}->puedo_eliminar()) {
             $fechaDelete = date("Y-m-d H:i:s");
             $this->db->set('fecha_delete', $fechaDelete)
                     ->where($this->id_field, $id);
@@ -306,7 +338,7 @@ class MY_Model extends CI_Model {
             );
             if (count($data) > 0) {
                 $this->db
-                        ->set("fecha_update", date("y-m-d H:i:s"))
+                        ->set("fecha_update", date("Y-m-d H:i:s"))
                         ->where($this->id_field, $id);
                 $result = $this->db->update($this->table_name, $data);
             } else {
@@ -317,8 +349,8 @@ class MY_Model extends CI_Model {
                     'state' => 'success',
                     'message' => 'Se ha editado el registro.',
                     'data' => array(
-                        'affected_rows' => $result === true ? 0 : $this->db->affected_rows(),
-                        'query' => $result === true ? '' : $this->db->last_query()
+                        'affected_rows' => $result === TRUE ? 0 : $this->db->affected_rows(),
+                        'query' => $result === TRUE ? '' : $this->db->last_query()
                     )
                 );
             } else {
