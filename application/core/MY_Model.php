@@ -18,6 +18,7 @@ class MY_Model extends CI_Model {
         $this->valida_puedo_eliminar = TRUE;
         $this->valida_puedo_destruir = TRUE;
 
+        $this->siempre_visualizar = FALSE;
         $this->siempre_insertar = FALSE;
         $this->siempre_modificar = FALSE;
         $this->siempre_eliminar = FALSE;
@@ -55,7 +56,11 @@ class MY_Model extends CI_Model {
     }
 
     function puedo_visualizar() {
-        return $this->tengo_permiso(PERMISOS_VISUALIZAR);
+        $return = $this->siempre_visualizar;
+        if ($this->valida_acceso_al_modulo) {
+            $return = $this->tengo_permiso(PERMISOS_VISUALIZAR);
+        }
+        return $return;
     }
 
     function puedo_insertar() {
@@ -77,7 +82,7 @@ class MY_Model extends CI_Model {
     function puedo_eliminar() {
         $return = $this->siempre_eliminar;
         if ($this->valida_puedo_eliminar) {
-            $this->tengo_permiso(PERMISOS_ELIMINAR);
+            $return = $this->tengo_permiso(PERMISOS_ELIMINAR);
         }
         return $return;
     }
@@ -85,7 +90,7 @@ class MY_Model extends CI_Model {
     function puedo_destruir() {
         $return = $this->siempre_destruir;
         if ($this->valida_puedo_destruir) {
-            $this->tengo_permiso(PERMISOS_DESTRUIR);
+            $return = $this->tengo_permiso(PERMISOS_DESTRUIR);
         }
         return $return;
     }

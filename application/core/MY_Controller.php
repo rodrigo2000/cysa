@@ -113,18 +113,19 @@ class MY_Controller extends CI_Controller {
         if ($this->valida_login) {
             $this->isLoggin();
         }
-        if ($this->valida_acceso_al_modulo && !$this->{$this->module['controller'] . "_model"}->tengo_acceso_aqui()) {
+        if ($this->valida_acceso_al_modulo && $this->{$this->module['controller'] . "_model"}->tengo_acceso_aqui()) {
+            $this->module['url'] = base_url() . $this->module['controller'];
+            $this->module['listado_url'] = $this->module['url'] . '/';
+            $this->module['edit_url'] = $this->module['url'] . '/modificar';
+            $this->module['delete_url'] = $this->module['url'] . '/eliminar';
+            $this->module['new_url'] = $this->module['url'] . '/nuevo';
+            $this->module['read_url'] = $this->module['url'] . '/leer';
+            $this->module['destroy_url'] = $this->module['url'] . '/destruir';
+            $this->module['cancel_url'] = $this->module['url'];
+            $this->module['catalogos_url'] = base_url() . "Catalogos";
+        } else {
             $this->sin_permisos();
         }
-        $this->module['url'] = base_url() . $this->module['controller'];
-        $this->module['listado_url'] = $this->module['url'] . '/';
-        $this->module['edit_url'] = $this->module['url'] . '/modificar';
-        $this->module['delete_url'] = $this->module['url'] . '/eliminar';
-        $this->module['new_url'] = $this->module['url'] . '/nuevo';
-        $this->module['read_url'] = $this->module['url'] . '/leer';
-        $this->module['destroy_url'] = $this->module['url'] . '/destruir';
-        $this->module['cancel_url'] = $this->module['url'];
-        $this->module['catalogos_url'] = base_url() . "Catalogos";
     }
 
     /**
@@ -191,10 +192,12 @@ class MY_Controller extends CI_Controller {
                 'ruta' => $ruta . $rutaDefault,
                 'session' => $this->session->userdata()
             );
-            $this->template = $this->parser->parse("../../../SAC/application/views/errors/html/error_404", $data, TRUE);
+            $vista = (APP_NAMESPACE === 'sac' ? '' : '../../../SAC/application/views/') . 'errors/html/error_404';
+            $this->template = $this->parser->parse($vista, $data, TRUE);
         }
         $this->crear_breadcrumbs();
-        $this->load->view("../../../SAC/application/views/template_view");
+        $vista = (APP_NAMESPACE === 'sac' ? '' : '../../../SAC/application/views/') . 'template_view';
+        $this->load->view($vista);
     }
 
     /**
