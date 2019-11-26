@@ -481,7 +481,7 @@ class Auditoria extends MY_Controller {
                                 <link href="' . $server . 'sac/resources/styles/fuentes.css" rel="stylesheet" type="text/css"/>
                                 </head>
                                 <body>'
-                    . utf8_encode($documento['documentos_blob_contenido'])
+                    . (!empty($documento['documentos_blob_contenido']) ? utf8_encode($documento['documentos_blob_contenido']) : 'NO SE ENCONTRÓ EL DOCUMENTO')
                     . '</body>
                     </html>';
             if ($return_html) {
@@ -659,8 +659,9 @@ class Auditoria extends MY_Controller {
         if (isset($data['r']['oficios_omisos_is_autorizado']) && intval($data['r']['oficios_omisos_is_autorizado']) === 1) {
             $data["is_autorizado"] = TRUE;
         }
+        $data['vista'] = $vista;
         $data = array_merge($data, $mi_data);
-        $this->visualizar($vista, $data);
+        $this->visualizar('documentos/template_view', $data);
     }
 
     function portada() {
@@ -734,7 +735,7 @@ class Auditoria extends MY_Controller {
     function imprimir_portada($expedientes_id = NULL) {
         // La siguiente condición sirve para poder descagar el expediente desde SIMA, ya que impide cargar las funciones de validacion de sesion
         if (!($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['forzar_descargar']) && intval($_GET['forzar_descargar']) == 1)) {
-
+            
         }
 
         $error = "";
@@ -952,7 +953,7 @@ class Auditoria extends MY_Controller {
 
     function word($documentos_id) {
         if (!empty($documentos_id)) {
-
+            
         }
     }
 
