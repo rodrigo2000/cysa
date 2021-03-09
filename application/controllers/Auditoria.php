@@ -203,7 +203,11 @@ class Auditoria extends MY_Controller {
         foreach ($asistencias as $direcciones_id => $d) {
             if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])) {
                 $aux = $this->SAC_model->get_direccion($direcciones_id);
-                array_push($direcciones, $aux['nombre_completo_direccion']);
+                if (!empty($aux) && isset($aux['nombre_completo_direccion'])) {
+                    array_push($direcciones, $aux['nombre_completo_direccion']);
+                } elseif (!empty($aux)) {
+                    array_push($direcciones, $aux['direcciones_nombre']);
+                }
             }
         }
         if (count($direcciones) > 1) {

@@ -25,7 +25,7 @@ class Auditorias_status_model extends MY_Model {
                 break;
             case 1:
                 $valor = 2;
-                if ($data['auditorias_fechas_inicio_programado'] != $data['auditorias_fechas_inicio_real']) {
+                if (!empty($data['auditorias_fechas_inicio_real']) && $data['auditorias_fechas_inicio_programado'] != $data['auditorias_fechas_inicio_real']) {
                     $valor = 4;
                 }
                 break;

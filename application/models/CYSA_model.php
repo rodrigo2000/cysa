@@ -85,7 +85,7 @@ class CYSA_model extends MY_Model {
 
     function get_mision($misiones_id = NULL) {
         $return = "";
-        if(empty($misiones_id)){
+        if (empty($misiones_id)) {
 
         }
         $return = "Gobernar el Municipio de Mérida, con un enfoque de vanguardia que procure el desarrollo humano sustentable, con

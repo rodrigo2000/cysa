@@ -28,6 +28,11 @@ class MY_Controller extends CI_Controller {
         $this->Breadcrumbs = array();
         $this->module['breadcrumbs'] = "";
         date_default_timezone_set('America/Merida');
+
+        $this->redirect_nuevo_url = base_url() . $this->module['controller'];
+        $this->redirect_modificar_url = base_url() . $this->module['controller'];
+        $this->redirect_eliminar_url = base_url() . $this->module['controller'];
+        $this->redirect_destruir_url = base_url() . $this->module['controller'];
     }
 
     /**
@@ -197,7 +202,7 @@ class MY_Controller extends CI_Controller {
         }
         $this->crear_breadcrumbs();
         $vista = (APP_NAMESPACE === 'sac' ? '' : '../../../SAC/application/views/') . 'template_view';
-        $this->load->view($vista);
+        $this->load->view($vista, $data);
     }
 
     /**
@@ -456,7 +461,7 @@ class MY_Controller extends CI_Controller {
             $ss = $this->_post_delete($s, $id, $data, $dataDelete);
             $this->session->set_flashdata("informacion", $s);
             if ($s['state'] === 'success') {
-                redirect(base_url() . $this->module['controller']);
+                redirect($this->redirect_eliminar_url);
             }
         }
         $res = $this->db->where($this->module['prefix'] . "." . $this->module['id_field'], $id)->get($this->module['tabla'] . " " . $this->module['prefix']);
@@ -546,7 +551,7 @@ class MY_Controller extends CI_Controller {
             $ss = $this->_post_destroy($s, $id, $data, $dataDelete);
             $this->session->set_flashdata("informacion", $s);
             if ($s['state'] === 'success') {
-                redirect(base_url() . $this->module['controller']);
+                redirect($this->redirect_destruir_url);
             }
         }
         $res = $this->db->where($this->module['prefix'] . "." . $this->module['id_field'], $id)->get($this->module['tabla'] . " " . $this->module['prefix']);
