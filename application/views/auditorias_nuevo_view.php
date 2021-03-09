@@ -22,7 +22,7 @@ echo validation_errors();
                 <fieldset class="form-group">
                     <label for="area" class="col-sm-2 form-control-label">Número de auditoría</label>
                     <div class="col-sm-10">
-                        <?php if ($accion==="nuevo" || (isset($r, $r['auditorias_fechas_sello_orden_entrada']) && empty($r['auditorias_fechas_sello_orden_entrada']))): ?>
+                        <?php if ($accion === "nuevo" || empty($r['auditorias_fechas_sello_orden_entrada'])): ?>
                             <div class="input-group">
                                 <select id="auditorias_area" name="auditorias_area" class="form-control">
                                     <option value="0">Área</option>
