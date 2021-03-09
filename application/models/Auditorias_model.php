@@ -57,7 +57,7 @@ class Auditorias_model extends MY_Model {
         }
         $return = parent::insert($data2);
         if ($return['state'] === 'success') {
-            //$fechas['auditorias_fechas_etapa'] = 1;
+            $fechas['auditorias_status_id'] = 1;
             $fechas['auditorias_fechas_auditorias_id'] = $return['data']['insert_id'];
             $this->Auditorias_fechas_model->insert($fechas);
         }
