@@ -212,6 +212,10 @@ class Auditorias_model extends MY_Model {
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".empleados e", "e.empleados_id = ae.auditorias_equipo_empleados_id", "INNER")->select("e.*")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".puestos p", "p.puestos_id = e.empleados_puestos_id", "INNER")->select("p.puestos_nombre")
                     ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".titulos t", "t.titulos_id = e.empleados_titulos_id", "LEFT")->select("t.*")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".centros_costos cc", "cc.cc_id = " . "e.empleados_cc_id", "LEFT")->select("cc.*")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_nombre_generico, direcciones_ubicacion, direcciones_is_descentralizada")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("s.subdirecciones_nombre")
+                    ->join(APP_DATABASE_PREFIX . APP_DATABASE_SAC . ".departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("dd.departamentos_nombre")
                     ->where('auditorias_equipo_auditorias_id', $auditorias_id)
                     ->order_by("orden", "DESC")
                     ->get('auditorias_equipo ae');
@@ -426,15 +430,15 @@ class Auditorias_model extends MY_Model {
     }
 
     function get_notas_de_auditoria($auditorias_id) {
-
+        
     }
 
     function get_reprogramaciones_de_auditoria($auditorias_id) {
-
+        
     }
 
     function get_ampliaciones_de_auditoria($auditorias_id) {
-
+        
     }
 
     function get_auditorias_de_empleado($idEmpleado) {

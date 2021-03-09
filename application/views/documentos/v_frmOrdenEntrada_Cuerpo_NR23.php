@@ -12,7 +12,7 @@
                     <?php else: ?>
                         <select name="headers_id" id="headers_id" class="ddslick">
                             <?php foreach ($logotipos as $l): ?>
-                                <option value="<?= $l['logotipos_id']; ?>" data-imagesrc="<?= base_url() . "resources/imagen_institucional/" . $l['logotipos_header_archivo']; ?>" <?= (empty($documento) && $l['logotipos_is_activo'] == 1) || (isset($documento['documentos_logotipos_id']) && $l['logotipos_id'] == $documento['documentos_logotipos_id']) ? 'selected="selected"' : ''; ?>></option>
+                                <option value="<?= $l['logotipos_id']; ?>" data-imagesrc="<?= base_url() . "resources/imagen_institucional/" . $l['logotipos_header_archivo']; ?>" <?= (empty($documento['documentos_logotipos_id']) && $l['logotipos_is_activo'] == 1) || (isset($documento['documentos_logotipos_id']) && $l['logotipos_id'] == $documento['documentos_logotipos_id']) ? 'selected="selected"' : ''; ?>></option>
                             <?php endforeach; ?>
                         </select>
                     <?php endif; ?>
@@ -23,8 +23,9 @@
             <tr>
                 <td>
                     <p class="text-right text-sm-right">
+                        <?php $fechaProgramada = $auditoria['auditorias_fechas_inicio_programado']; ?>
                         <?php $hoy = date('Y-m-d'); ?>
-                        <?php $fechaDelOficio = isset($r, $r[ORD_ENT_FECHA]) ? $r[ORD_ENT_FECHA] : $hoy; ?>
+                        <?php $fechaDelOficio = isset($r, $r[ORD_ENT_FECHA]) ? $r[ORD_ENT_FECHA] : $fechaProgramada; ?>
                         Mérida, Yucatán, a <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA; ?>" data-pk="<?= ORD_ENT_FECHA; ?>" data-type="date" data-placement="left" data-format="yyyy-mm-dd" data-title="Fecha del oficio" title="Fecha de emisión del oficio" data-value="<?= $fechaDelOficio; ?>"><?= mysqlDate2Date($fechaDelOficio); ?></a><br>
                         Asunto: Orden de Auditoría <?= ($auditoria['auditorias_segundo_periodo'] == 1 ? '2' : '') . $auditoria['auditorias_areas_siglas']; ?>/<span contenteditable="true" id="<?= ORD_ENT_NUMERO_OFICIO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[ORD_ENT_NUMERO_OFICIO] : ''; ?></span>/<?= $auditoria['auditorias_anio']; ?><br>
                         Clasificación: RS
@@ -59,7 +60,8 @@
                         echo span_resaltar($aux, "Nombre del Departamento, Subdirección o Dirección a la cual se realizará la auditoría");
                         ?>, misma que se llevará a
                         cabo en
-                        <?= span_editable($r, ORD_ENT_DOMICILIO_UA, 'ESPECIFICAR DOMICILIO', 'Domicilio donde habrá de efectuarse la auditoría'); ?>.
+                        <?php $direcciones_ubicacion = !empty($auditoria['direcciones_ubicacion']) ? $auditoria['direcciones_ubicacion'] : '[ESPECIFICAR DOMICILIO]'; ?>
+                        <?= span_editable($r, ORD_ENT_DOMICILIO_UA, $direcciones_ubicacion, 'Domicilio donde habrá de efectuarse la auditoría'); ?>.
                     </p>
                     <p class="text-justify texto-sangria">
                         Para la práctica de la presente auditoría, se ha comisionado a los siguientes servidores públicos:
@@ -81,13 +83,13 @@
                             <?php foreach ($equipo as $e): ?>
                                 <tr>
                                     <td class="align-middle"><p><?= $e['empleados_nombre_titulado_siglas']; ?></p></td>
-                                    <td class="align-middle"><p><?= capitalizar($e['puestos_nombre']); ?></p></td>
+                                    <td class="align-middle"><p><?= capitalizar($e['empleados_cargo']); ?></p></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                     <p class="text-justify texto-sangria">
-                        <?php $fechaMaximaSolicitudInformacion = isset($r) && isset($r[ORD_ENT_FECHA_SI]) ? $r[ORD_ENT_FECHA_SI] : agregar_dias($fechaDelOficio, 3); // Aumentamos 3 días  ?>
+                        <?php $fechaMaximaSolicitudInformacion = isset($r, $r[ORD_ENT_FECHA_SI]) ? $r[ORD_ENT_FECHA_SI] : agregar_dias($fechaDelOficio, 3); // Aumentamos 3 días  ?>
                         Para el desarrollo de la auditoría, solicito su colaboración para que a más tardar el día
                         <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA_SI; ?>" data-type="date" data-placement="top" data-format="yyyy-mm-dd" data-viewformat="dd/mm/yyyy" data-pk="<?= ORD_ENT_FECHA_SI; ?>" data-title="Seleccione fecha:" data-value="<?= $fechaMaximaSolicitudInformacion; ?>"><?= mysqlDate2Date($fechaMaximaSolicitudInformacion); ?></a>
                         proporcione al equipo de auditoría, quien podrá actuar en forma individual y/o conjunta durante el desarrollo
@@ -196,7 +198,7 @@
                     <?php else: ?>
                         <select name="footers_id" id="footers_id" class="ddslick">
                             <?php foreach ($logotipos as $l): ?>
-                                <option value="<?= $l['logotipos_id']; ?>" data-imagesrc="<?= base_url() . "resources/imagen_institucional/" . $l['logotipos_footer_archivo']; ?>" <?= (empty($documento) && $l['logotipos_is_activo'] == 1) || (isset($documento['documentos_logotipos_id']) && $l['logotipos_id'] == $documento['documentos_logotipos_id']) ? 'selected="selected"' : ''; ?>></option>
+                                <option value="<?= $l['logotipos_id']; ?>" data-imagesrc="<?= base_url() . "resources/imagen_institucional/" . $l['logotipos_footer_archivo']; ?>" <?= (empty($documento['documentos_logotipos_id']) && $l['logotipos_is_activo'] == 1) || (isset($documento['documentos_logotipos_id']) && $l['logotipos_id'] == $documento['documentos_logotipos_id']) ? 'selected="selected"' : ''; ?>></option>
                             <?php endforeach; ?>
                         </select>
                     <?php endif; ?>
