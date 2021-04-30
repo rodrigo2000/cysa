@@ -26,6 +26,7 @@
                         <?php $fechaProgramada = $auditoria['auditorias_fechas_inicio_programado']; ?>
                         <?php $hoy = date('Y-m-d'); ?>
                         <?php $fechaDelOficio = isset($r, $r[ORD_ENT_FECHA]) ? $r[ORD_ENT_FECHA] : $fechaProgramada; ?>
+                        <?php $r[ORD_ENT_NUMERO_OFICIO] = ($auditoria['auditorias_numero'] > 0) ? $r[ORD_ENT_NUMERO_OFICIO] = sprintf("%'.03d",$auditoria['auditorias_numero']) : NULL; ?>
                         Mérida, Yucatán, a <a href="#" class="xeditable" id="<?= ORD_ENT_FECHA; ?>" data-pk="<?= ORD_ENT_FECHA; ?>" data-type="date" data-placement="left" data-format="yyyy-mm-dd" data-title="Fecha del oficio" title="Fecha de emisión del oficio" data-value="<?= $fechaDelOficio; ?>"><?= mysqlDate2Date($fechaDelOficio); ?></a><br>
                         Asunto: Orden de Auditoría <?= ($auditoria['auditorias_segundo_periodo'] == 1 ? '2' : '') . $auditoria['auditorias_areas_siglas']; ?>/<span contenteditable="true" id="<?= ORD_ENT_NUMERO_OFICIO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[ORD_ENT_NUMERO_OFICIO] : ''; ?></span>/<?= $auditoria['auditorias_anio']; ?><br>
                         Clasificación: RS
@@ -131,7 +132,7 @@
                     <p class="text-justify texto-sangria">
                         Sin otro particular, hago propicia la ocasión para enviarle un cordial saludo.
                     </p>
-                    <div class="salto-solo-si-es-necesario">
+                    <div class="salto-solo-si-es-necesario1">
                         <p class="texto-resaltar" style="margin-bottom: 2cm;">ATENTAMENTE</p>
                         <div id="firma-titular-contraloria" class="texto-resaltar">
                             <?= mb_strtoupper($oficio_de['nombre']); ?><br>
