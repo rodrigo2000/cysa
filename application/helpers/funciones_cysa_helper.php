@@ -350,36 +350,38 @@ function crear_texto_asistencias($asistencias = array(), $distribuir = TRUE, $ti
             if ($distribuir) {
                 $aux .= '<span class="direcciones_' . $direcciones_id . '">';
             }
-            foreach ($d[$tipo_asistencia] as $index => $e) {
-                $aux = "";
-                if ($incluir_articulos) {
-                    if ($incluir_domicilio) {
-                        $aux = " el ";
-                    } else {
-                        $aux .= (intval($e['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ');
+            if (isset($d[$tipo_asistencia])) {
+                foreach ($d[$tipo_asistencia] as $index => $e) {
+                    $aux = "";
+                    if ($incluir_articulos) {
+                        if ($incluir_domicilio) {
+                            $aux = " el ";
+                        } else {
+                            $aux .= (intval($e['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ');
+                        }
                     }
+                    if ($incluir_domicilio) {
+                        $aux .= ' servidor público ';
+                    }
+                    $aux .= $e['empleados_nombre_titulado'] . ($solo_nombre ? NULL : ', ' . $e['empleados_cargo']) . (!empty($enlace_designado) && $enlace_designado == $e['empleados_id'] ? ', Enlace Designado' : NULL);
+                    if ($incluir_domicilio) {
+                        $aux .= ", quien manifiesta ser de nacionalidad mexicana y con domicilio particular en "
+                                . $e['empleados_domicilio']
+                                . " de la localidad de "
+                                . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : SIN_ESPECIFICAR)
+                                . " se identifica con "
+                                . get_identificacion($e)
+                                . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia '
+                                . 'su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos '
+                                . 'como privados'
+                                . '<input type="hidden" name="testigos[]" value="' . $e['empleados_id'] . '">'
+                                . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
+                        ;
+                    }
+                    $css_class = "empleado_" . $e['empleados_id'];
+                    $str = span_resaltar($aux, $css_class);
+                    array_push($a, $str);
                 }
-                if ($incluir_domicilio) {
-                    $aux .= ' servidor público ';
-                }
-                $aux .= $e['empleados_nombre_titulado'] . ($solo_nombre ? NULL : ', ' . $e['empleados_cargo']) . (!empty($enlace_designado) && $enlace_designado == $e['empleados_id'] ? ', Enlace Designado' : NULL);
-                if ($incluir_domicilio) {
-                    $aux .= ", quien manifiesta ser de nacionalidad mexicana y con domicilio particular en "
-                            . $e['empleados_domicilio']
-                            . " de la localidad de "
-                            . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : SIN_ESPECIFICAR)
-                            . " se identifica con "
-                            . get_identificacion($e)
-                            . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia '
-                            . 'su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos '
-                            . 'como privados'
-                            . '<input type="hidden" name="testigos[]" value="' . $e['empleados_id'] . '">'
-                            . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
-                    ;
-                }
-                $css_class = "empleado_" . $e['empleados_id'];
-                $str = span_resaltar($aux, $css_class);
-                array_push($a, $str);
             }
             if ($distribuir) {
                 $aux .= '</span>';
