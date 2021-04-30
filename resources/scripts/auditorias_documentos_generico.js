@@ -113,7 +113,7 @@ $(document).ready(function () {
             display: 'value',
             source: empleados,
 //        async: true,
-//        limit: 100
+            limit: 100
         }).bind('typeahead:select', function (ev, suggestion) {
             let url = base_url + "Asistencias/agregar_asistencia";
             let documentos_id = $("#documentos_id").val();
@@ -172,6 +172,7 @@ $(document).ready(function () {
                 .css('display', '-webkit-inline-box')
                 .removeClass('hidden-xs-up');
         $("input.tt-input", "#autocomplete_" + tipo).attr("data-asistencias-tipo", asistencias_tipo);
+        return false;
     }).on('click', '.autocomplete_empleados_delete', function () {
         let url = base_url + "Asistencias/eliminar_asistencia";
         let empleados_id = $(this).attr("data-empleados-id");

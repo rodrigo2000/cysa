@@ -15,8 +15,8 @@ $(document).ready(function () {
 
 function agregar_testigo($this, suggestion, tipo_asistencia, documentos_tipos_id) {
     var identificacion = sinEspecificar;
-    if (!isEmpty(suggestion.empleados_credencial_elector_delante)) {
-        identificacion = ' credencial para votar con clave de elector ' + suggestion.empleados_credencial_elector_delante + ' y número identificador ' + (!isEmpty(suggestion.empleados_credencial_elector_detras) ? suggestion.empleados_credencial_elector_detras : sinEspecificar);
+    if (suggestion.empleados_credencial_elector_delante !== '') {
+        identificacion = ' credencial para votar con clave de elector ' + suggestion.empleados_credencial_elector_delante + ' y número identificador ' + (suggestion.empleados_credencial_elector_detras !== '' ? suggestion.empleados_credencial_elector_detras : sinEspecificar);
     } else if (!isEmpty(suggestion.empleados_licencia_manejo)) {
         identificacion = " licencia de conducir con folio " + suggestion.empleados_licencia_manejo;
     }
@@ -25,7 +25,7 @@ function agregar_testigo($this, suggestion, tipo_asistencia, documentos_tipos_id
             ', quien manifiesta ser de nacionalidad mexicana y con domicilio particular en ' +
             suggestion.empleados_domicilio +
             ' de la localidad de ' +
-            (!isEmpty(suggestion.empleados_localidad) ? suggestion.empleados_localidad.capitalize() : sinEspecificar) +
+            (suggestion.empleados_localidad !== '' ? suggestion.empleados_localidad.capitalize() : sinEspecificar) +
             ' se identifica con ' + identificacion +
             ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos como privados' +
             '<input type="hidden" name="testigos[]" value="' + suggestion.empleados_id + '">' +

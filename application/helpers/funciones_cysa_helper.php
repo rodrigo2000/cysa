@@ -312,7 +312,7 @@ function span_agregar_asistencias($asistencias, $tipo_asistencia, $auditoria = N
  */
 
 function get_identificacion($empleado) {
-    $return = SIN_ESPECIFICAR;
+    $return = SIN_ESPECIFICAR_BOLD;
     if (isset($empleado['empleados_licencia_manejo']) && !empty($empleado['empleados_licencia_manejo'])) {
         $return = "licencia de conducir con folio " . $empleado['empleados_licencia_manejo'];
     } elseif (isset($empleado["empleados_pasaporte"]) && !empty($empleado['empleados_pasaporte'])) {
@@ -321,9 +321,9 @@ function get_identificacion($empleado) {
         $return = "cédula profesional con folio " . $empleado["empleados_cedula_profesional"];
     } elseif (isset($empleado['empleados_credencial_elector_delante'])) {
         $return = 'credencial para votar con clave de elector '
-                . (!empty($empleado['empleados_credencial_elector_delante']) ? $empleado['empleados_credencial_elector_delante'] : SIN_ESPECIFICAR)
+                . (!empty($empleado['empleados_credencial_elector_delante']) ? $empleado['empleados_credencial_elector_delante'] : SIN_ESPECIFICAR_BOLD)
                 . ' y número identificador '
-                . (!empty($empleado['empleados_credencial_elector_detras']) ? $empleado['empleados_credencial_elector_detras'] : SIN_ESPECIFICAR);
+                . (!empty($empleado['empleados_credencial_elector_detras']) ? $empleado['empleados_credencial_elector_detras'] : SIN_ESPECIFICAR_BOLD);
     }
     return $return;
 }
@@ -368,7 +368,7 @@ function crear_texto_asistencias($asistencias = array(), $distribuir = TRUE, $ti
                         $aux .= ", quien manifiesta ser de nacionalidad mexicana y con domicilio particular en "
                                 . $e['empleados_domicilio']
                                 . " de la localidad de "
-                                . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : SIN_ESPECIFICAR)
+                                . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : SIN_ESPECIFICAR_BOLD)
                                 . " se identifica con "
                                 . get_identificacion($e)
                                 . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia '

@@ -199,6 +199,12 @@ input.autoresize {
     padding-top: 0px;
 }
 
+/* Permite hacer que el menú del autocomplete tenga un tamaño máximo y la barra de desplazamiento*/
+.twitter-typeahead .tt-menu {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
 /*********** Orden de Auditoría **************/
 
 #equipo_auditoria p {
