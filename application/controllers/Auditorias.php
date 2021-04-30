@@ -236,7 +236,7 @@ class Auditorias extends MY_Controller {
         $className = array(NULL, 'text-danger', 'text-info', 'text-success', 'text-warning', 'text-purple', 'text-purple');
         foreach ($data as $index => $r) {
             $datos[$index]['numero'] = '<span class="text-danger">SIN ASIGNAR</span>';
-            if (!empty($r['numero_auditoria']) && intval($r['numero_auditoria']) > 0) {
+            if (!empty($r['auditorias_numero']) && intval($r['auditorias_numero']) > 0) {
                 $datos[$index]['numero'] = $r['numero_auditoria'];
             }
             if (!empty($r['auditorias_fechas_inicio_real'])) {

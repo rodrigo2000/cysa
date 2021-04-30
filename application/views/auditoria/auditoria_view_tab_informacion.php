@@ -105,7 +105,7 @@
                         </tr>
                         <tr>
                             <th>Reales</th>
-                            <td class="text-xs-center"><?= !empty(mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_orden_entrada'])) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_orden_entrada']) : SIN_ESPECIFICAR; ?></td>
+                            <td class="text-xs-center"><?= !empty($auditoria['auditorias_fechas_sello_orden_entrada']) ? mysqlDate2OnlyDate($auditoria['auditorias_fechas_sello_orden_entrada']) : SIN_ESPECIFICAR; ?></td>
                             <?php $fin_real = !empty($auditoria['auditorias_origen_id']) ? $auditoria['auditorias_fechas_vobo_director_etapa_1'] : $auditoria['auditorias_fechas_vobo_director']; ?>
                             <td class="text-xs-center"><?= !empty($fin_real) ? mysqlDate2OnlyDate($fin_real) : SIN_ESPECIFICAR; ?></td>
                         </tr>

@@ -47,6 +47,9 @@ class Auditorias_model extends MY_Model {
         if (isset($data['auditorias_segundo_periodo'])) {
             $data2['auditorias_segundo_periodo'] = intval($data['auditorias_segundo_periodo']);
         }
+        if (!empty($data2['auditorias_fechas_inicio_real'])) {
+            $fechas['auditorias_fechas_sello_orden_entrada'] = $data2['auditorias_fechas_inicio_real'];
+        }
         $periodos_id = $data['auditorias_periodos_id'];
         $direcciones_id = $data['auditorias_direcciones_id'];
         $subdirecciones_id = $data['auditorias_subdirecciones_id'];
@@ -80,6 +83,9 @@ class Auditorias_model extends MY_Model {
         $data2['auditorias_segundo_periodo'] = 0;
         if (isset($data['auditorias_segundo_periodo'])) {
             $data2['auditorias_segundo_periodo'] = intval($data['auditorias_segundo_periodo']);
+        }
+        if (!empty($data['auditorias_fechas_inicio_real'])) {
+            $fechas['auditorias_fechas_sello_orden_entrada'] = $data['auditorias_fechas_inicio_real'];
         }
         $data2['auditorias_cc_id'] = NULL;
         $periodos_id = $data['auditorias_periodos_id'];
