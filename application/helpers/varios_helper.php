@@ -279,7 +279,7 @@ function getFechaOffset_v2($fecha, $dias) {
         $diasabado = $totaldias % 5;
         //echo "9.- diasabado $diasabado<br>";
         if ($diasabado == 6)
-            $findesemana ++;
+            $findesemana++;
         elseif ($diasabado == 0)
             $findesemana = $findesemana - 2;
         //echo "10.- findesemana $findesemana<br>";
@@ -344,15 +344,19 @@ function excelDate2phpDate($excelDate = NULL, $soloFecha = FALSE) {
  * @param integer $phpDate Cadena de texto en formato YYYY-MM-DD HH:MM:SS
  * @return integer Número que representa la fecha para el Excel.
  */
-function phpDate2excelDate($phpDate = NULL) {
+function phpDate2excelDate($phpDate = NULL, $soloFecha = TRUE) {
     $return = $phpDate;
     if (!empty($phpDate)) {
         $phpDate = strtotime($phpDate);
         $excelDate = 25569 + ($phpDate / 86400);
+        if ($soloFecha) {
+            $excelDate = intval($excelDate);
+        }
         $return = $excelDate;
     }
     return $return;
 }
+
 function get_cargo_de_empleado(&$row) {
     $cargo = "";
     if (!empty($row) && isset($row['cc_departamentos_id'])) {
