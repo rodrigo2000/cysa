@@ -323,6 +323,36 @@ function getDiasHabiles($fecha1, $fecha2) {
     return intval($signo . $diasHabiles);
 }
 
+/**
+ * Convierte un entero de Excel en fecha de PHP
+ * @param integer $excelDate Número entero de la fecha en Excel
+ * @param boolan $soloFecha Indica que el resultado regrese en formato de fecha
+ * @return string Cadena de texto que representa una fecha/hora en formato PHP
+ */
+function excelDate2phpDate($excelDate = NULL, $soloFecha = FALSE) {
+    $return = $excelDate;
+    if (!empty($excelDate)) {
+        $unixDate = ($excelDate - 25569) * 86400;
+        $format = $soloFecha ? "Y-m-d" : "Y-m-d H:i:s";
+        $return = gmdate($format, $unixDate);
+    }
+    return $return;
+}
+
+/**
+ * Convierte una fecha de PHP a valor entero para el reporte de Excel
+ * @param integer $phpDate Cadena de texto en formato YYYY-MM-DD HH:MM:SS
+ * @return integer Número que representa la fecha para el Excel.
+ */
+function phpDate2excelDate($phpDate = NULL) {
+    $return = $phpDate;
+    if (!empty($phpDate)) {
+        $phpDate = strtotime($phpDate);
+        $excelDate = 25569 + ($phpDate / 86400);
+        $return = $excelDate;
+    }
+    return $return;
+}
 function get_cargo_de_empleado(&$row) {
     $cargo = "";
     if (!empty($row) && isset($row['cc_departamentos_id'])) {
