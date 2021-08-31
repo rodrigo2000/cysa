@@ -27,12 +27,10 @@ foreach ($RAP as $rap) {
                         <div class="col-xs-3">
                             <img src="<?= APP_SAC_URL; ?>resources/images/logo-icon.png" alt=""/>
                         </div>
-                        <div class="col-xs-6 text-xs-center">
+                        <div class="col-xs-6 text-xs-center m-b-2">
                             <div style="font-size: 15pt; font-weight: bold;">AYUNTAMIENTO DE MÉRIDA</div>
                             <div><?= LABEL_CONTRALORIA; ?></div>
-                            <br>
                             <div>ACTA DE INICIO DE AUDITORÍA</div>
-                            <br>
                             <div><?= $auditoria['numero_auditoria'] ?></div>
                         </div>
                         <div class="col-xs-3"></div>
