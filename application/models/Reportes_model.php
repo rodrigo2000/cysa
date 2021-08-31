@@ -324,6 +324,9 @@ class Reportes_model extends MY_Model {
         } else {
             $path = "archivos/";
             $archivo = $nombre_archivo;
+            if(!is_dir($path)){
+                mkdir($path);
+            }
             $objWriter->save($path . $archivo);
             return array('success' => TRUE, 'archivo' => $archivo);
         }
