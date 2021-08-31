@@ -40,7 +40,7 @@
         <div class="card text-center">
             <div class="card-block">
                 <h4 class="card-title">Fechas de Autorización</h4>
-                <p class="card-text">Muestra las fechas de autorización del Jefe, Subdirector y Director de todas las etaas de la auditoría</p>
+                <p class="card-text">Muestra las fechas de autorización del Jefe, Subdirector y Director de todas las etapas de la auditoría</p>
                 <a href="#" class="btn btn-primary btn-descargar" reporte="fechas-autorizacion">Descargar</a>
             </div>
         </div>
