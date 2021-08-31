@@ -26,7 +26,7 @@ div#oficio-hoja,
 div#oficio-hoja p,
 div#oficio-hoja table tr th,
 div#oficio-hoja table tr td,
-div#oficio-hoja span,
+div#oficio-hoja span:not(.editable),
 div#oficio-hoja input {
     font-size: 12pt;
 }
@@ -201,8 +201,8 @@ input.autoresize {
 
 /* Permite hacer que el menú del autocomplete tenga un tamaño máximo y la barra de desplazamiento*/
 .twitter-typeahead .tt-menu {
-  max-height: 200px;
-  overflow-y: auto;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 /*********** Orden de Auditoría **************/

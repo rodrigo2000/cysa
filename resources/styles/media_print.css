@@ -56,18 +56,18 @@
         text-align: justify;
     }
 
-    .texto-ccp, .texto-ccp span {
-        font-size: 8pt !important;
-        line-height: 15px;
+    .texto-ccp, .texto-ccp > span {
+        font-size: 6pt !important;
+        line-height: 8pt !important;
         white-space: pre-line;
     }
     div#oficio-hoja,
     div#oficio-hoja p,
     div#oficio-hoja table tr th,
     div#oficio-hoja table tr td,
-    div#oficio-hoja span,
+    div#oficio-hoja span:not(.editable),
     div#oficio-hoja input {
-        font-size: 8pt !important;
+/*        font-size: 1em;*/
     }
     div#oficio-hoja.autorizado p,
     div#oficio-hoja.autorizado div:not(.texto-ccp),
@@ -79,8 +79,23 @@
         background-image: url(../../../SAC/resources/images/guion-admnistracion-2018-2021.gif);
         background-repeat: repeat-x;
         background-position: bottom;
-        background-size: calc(50%);
     }
+    /*    #oficio-hoja.acta .bg-punteado:before {
+            float: left;
+            width: 0;
+            white-space: nowrap;
+            content:
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+                "- - - - - - - - - - - - - "
+        }*/
     div#oficio-hoja > table > thead td img {
         margin-bottom: 1cm;
     }
@@ -202,5 +217,12 @@
 
     .white {
         background-color: white;
+    }
+
+    .editable-click, 
+    a.editable-click, 
+    a.editable-click:hover {
+        text-decoration: none;
+        border: none;
     }
 }
