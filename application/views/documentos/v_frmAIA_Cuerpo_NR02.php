@@ -243,13 +243,15 @@ foreach ($RAP as $rap) {
                             <?php foreach ($documento['asistencias'] as $direcciones_id => $d): $direccion = $this->SAC_model->get_direccion($direcciones_id); ?>
                                 <?php if (isset($d[TIPO_ASISTENCIA_INVOLUCRADO])): ?>
                                     <div class="direccion_<?= $direcciones_id; ?>">
-                                        <p class="firmas_ua_nombre"><?= $direccion['direcciones_nombre']; ?></p>
+                                        <p class="firmas_ua_nombre"><?= !empty($direccion) ? $direccion['direcciones_nombre'] : ''; ?></p>
                                         <?php foreach ($d[TIPO_ASISTENCIA_INVOLUCRADO] as $e): ?>
-                                            <div class="firmas_empleado empleado_<?= $e['empleados_id']; ?>">
-                                                <div class="firmas_empleado_nombre"><?= $e['empleados_nombre_titulado_siglas']; ?></div>
-                                                <div class="firmas_empleado_cargo"><?= $e['empleados_cargo']; ?></div>
-                                                <div class="firmas_empleado_enlace">ENLACE DESIGNADO</div>
-                                            </div>
+                                            <?php if (!empty($e)): ?>
+                                                <div class="firmas_empleado empleado_<?= $e['empleados_id']; ?>">
+                                                    <div class="firmas_empleado_nombre"><?= $e['empleados_nombre_titulado_siglas']; ?></div>
+                                                    <div class="firmas_empleado_cargo"><?= $e['empleados_cargo']; ?></div>
+                                                    <div class="firmas_empleado_enlace">ENLACE DESIGNADO</div>
+                                                </div>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
                                     </div>
                                 <?php endif; ?>
