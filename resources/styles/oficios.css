@@ -273,3 +273,8 @@ table.table.table-borderless td,
 table.table.table-borderless th {
     border: none;
 }
+
+#oficio-hoja .sin-especificar {
+    color:white;
+    background-color: red;
+}
