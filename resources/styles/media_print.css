@@ -67,7 +67,7 @@
     div#oficio-hoja table tr td,
     div#oficio-hoja span:not(.editable),
     div#oficio-hoja input {
-/*        font-size: 1em;*/
+        font-size: 11px;
     }
     div#oficio-hoja.autorizado p,
     div#oficio-hoja.autorizado div:not(.texto-ccp),
@@ -165,7 +165,7 @@
         line-height: 20px;
         margin-bottom: 5px;
     }
-    .watermark {
+    div#oficio-hoja:not(.acta) .watermark{
         /* Safari */
         -webkit-transform: rotate(-60deg);
         /* Firefox */

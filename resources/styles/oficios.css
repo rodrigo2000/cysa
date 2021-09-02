@@ -88,7 +88,8 @@ table.mismo-tamano-fuente-p tr th {
         background: none;
         border: none;
     }
-    div#oficio-hoja.autorizado .watermark {
+    div#oficio-hoja.autorizado .watermark,
+    div#oficio-hoja.acta .watermark {
         display: none;
     }
 
@@ -231,7 +232,7 @@ span.autocomplete_empleados_delete,
 }
 
 #oficio-hoja.acta div.firmas div.firmas_empleado {
-    border-top: 1px solid black;
+    border-top: 1px solid rgba(0,0,0,.7);
     display: block;
     margin: 5em auto 1em auto;
     width: 280px;
@@ -250,12 +251,15 @@ span.autocomplete_empleados_delete,
 }
 
 #oficio-hoja.acta div#checkbox_asistencia {
+    margin-top: .5rem;
     padding-bottom: 4px;
-    font-size: 2em;
+    font-size: 1.5em;
+    border-radius: 20px;
 }
 
 #oficio-hoja.acta div#checkbox_asistencia input[type=checkbox] {
     transform: scale(2);
+    margin-right: 10px;
 }
 
 #oficio-hoja.acta.autorizado button,
