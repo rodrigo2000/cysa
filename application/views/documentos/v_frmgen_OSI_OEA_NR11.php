@@ -24,8 +24,8 @@
                 <td>
                     <p class="text-right text-sm-right">
                         <?php $hoy = date('Y-m-d'); ?>
-                        <?php $fechaDelOficio = isset($r) && isset($r[FECHA_LECTURA_CITATORIO]) ? $r[FECHA_LECTURA_CITATORIO] : $hoy; ?>
-                        Mérida, Yucatán, a <a href="#" class="xeditable" id="<?= FECHA_LECTURA_CITATORIO; ?>" data-pk="<?= FECHA_LECTURA_CITATORIO; ?>" data-type="date" data-placement="left" data-format="yyyy-mm-dd" data-title="Fecha del oficio" title="Fecha de emisión del oficio" data-value="<?= $fechaDelOficio; ?>"><?= mysqlDate2Date($fechaDelOficio); ?></a><br>
+                        <?php $fechaDelOficio = isset($r, $r[FECHA_LECTURA_CITATORIO]) ? $r[FECHA_LECTURA_CITATORIO] : $hoy; ?>
+                        Mérida, Yucatán, a <a href="#" class="xeditable" id="<?= FECHA_LECTURA_CITATORIO; ?>" data-pk="<?= FECHA_LECTURA_CITATORIO; ?>" data-type="date" data-placement="left" data-format="yyyy-mm-dd" data-title="Fecha del oficio" title="Fecha de emisión del oficio" data-value="<?= $fechaDelOficio; ?>"><?= stripos($fechaDelOficio, " ") === FALSE ? mysqlDate2Date($fechaDelOficio) : $fechaDelOficio; ?></a><br>
                         Oficio NO. <?= ($auditoria['auditorias_segundo_periodo'] == 1 ? '2' : '') . $auditoria['auditorias_areas_siglas']; ?>/<span contenteditable="true" id="<?= CITATORIO_OFICIO; ?>" class="editable" title="El número consecutivo de Orden" default-value="XXX"><?= isset($r) ? $r[CITATORIO_OFICIO] : ''; ?></span>/<?= $auditoria['auditorias_anio']; ?><br>
                         Asunto: Citatorio<br>
                         Clasificación: RS
@@ -47,7 +47,7 @@
                         realizada
                         <?= span_resaltar(get_frase_de_ua($auditoria)); ?>,
                         mismo que se llevará a cabo el
-                        <?php $aux = isset($r[FECHA_LECTURA_CITATORIO]) ? mysqlDate2OnlyDate($r[FECHA_LECTURA_CITATORIO]) : 'POR AGENDAR/CAPTURAR EN LÍNEA DE TIEMPO'; ?>
+                        <?php $aux = isset($r[FECHA_LECTURA_CITATORIO]) ? (strpos($fechaDelOficio, " de ") === FALSE ? mysqlDate2OnlyDate($r[FECHA_LECTURA_CITATORIO]) : $r[FECHA_LECTURA_CITATORIO]) : 'POR AGENDAR/CAPTURAR EN LÍNEA DE TIEMPO'; ?>
                         <?= span_resaltar($aux); ?>
                         a las
                         <?= span_editable($r, H_LECTURA_CITATORIO, 'HH:MM') ?>
