@@ -266,10 +266,12 @@ foreach ($RAP as $rap) {
                             <?php foreach ($documento['asistencias'] as $direcciones_id => $d): ?>
                                 <?php if (isset($d[TIPO_ASISTENCIA_TESTIGO])): ?>
                                     <?php foreach ($d[TIPO_ASISTENCIA_TESTIGO] as $e): ?>
-                                        <div class="firmas_empleado empleado_<?= $e['empleados_id']; ?>">
-                                            <div class="firmas_empleado_nombre"><?= $e['empleados_nombre_titulado_siglas']; ?></div>
-                                            <div class="firmas_empleado_cargo"><?= $e['empleados_cargo']; ?></div>
-                                        </div>
+                                        <?php if (!empty($e)): ?>
+                                            <div class="firmas_empleado empleado_<?= $e['empleados_id']; ?>">
+                                                <div class="firmas_empleado_nombre"><?= $e['empleados_nombre_titulado_siglas']; ?></div>
+                                                <div class="firmas_empleado_cargo"><?= $e['empleados_cargo']; ?></div>
+                                            </div>
+                                        <?php endif; ?>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
