@@ -46,27 +46,25 @@ function p($string) {
 }
 
 function mysqlDate2Date($f, $addBR = TRUE, $join = ' de ') {  // yyyy-mm-dd H:m:ss    ==>     13 de Febrero de 2015 <br> 00:00pm
-    if (trim($f) == ""){
-        return "";
+    if (!empty(trim($f))) {
+        $hora = $fecha = "";
+        if (strpos($f, " ") !== FALSE) {
+            list($fecha, $hora) = explode(" ", $f);
+        } else {
+            $fecha = $f;
+            $hora = "";
+        }
+        list($a, $m, $d) = preg_split("/[\/|-]/", $fecha);
+        if (!empty($hora)) {
+            list($hh, $mm, $ss) = explode(":", $hora);
+        }
+        $ampm = "am";
+        if (isset($hh) && intval($hh) > 12) {
+            $ampm = "pm";
+            $hh -= 12;
+        }
+        $cadena = $d . $join . getNombreDelMes($m) . $join . $a . ($hora != "" ? ($addBR ? "<br>" : '&nbsp;') . substr("0" . $hh, -2) . ":" . $mm . $ampm : '');
     }
-    $pos = strpos($f, " ");
-    $hora = $fecha = "";
-    if ($pos !== FALSE) {
-        list($fecha, $hora) = explode(" ", $f);
-    } else {
-        $fecha = $f;
-        $hora = "";
-    }
-    list($a, $m, $d) = explode("/[\/|-]/", $fecha);
-    if ($hora !== "") {
-        list($hh, $mm, $ss) = explode(":", $hora);
-    }
-    $ampm = "am";
-    if (isset($hh) && intval($hh) > 12) {
-        $ampm = "pm";
-        $hh -= 12;
-    }
-    $cadena = $d . $join . getNombreDelMes($m) . $join . $a . ($hora != "" ? ($addBR ? "<br>" : '&nbsp;') . substr("0" . $hh, -2) . ":" . $mm . $ampm : '');
     return $cadena;
 }
 
@@ -78,7 +76,7 @@ function mysqlDate2Date($f, $addBR = TRUE, $join = ' de ') {  // yyyy-mm-dd H:m:
  */
 function mysqlDate2OnlyDate($f, $addDayName = FALSE) { // yyyy-mm-dd H:m:ss    ==>     Lunes, 13 de Febrero de 2015
     $cadena = "";
-    if (!empty($f)) {
+    if (!empty(trim($f))) {
         $pos = strpos($f, " ");
         $fecha = "";
         if ($pos !== false) {
