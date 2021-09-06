@@ -46,18 +46,19 @@ function p($string) {
 }
 
 function mysqlDate2Date($f, $addBR = TRUE, $join = ' de ') {  // yyyy-mm-dd H:m:ss    ==>     13 de Febrero de 2015 <br> 00:00pm
-    if (trim($f) == "")
+    if (trim($f) == ""){
         return "";
+    }
     $pos = strpos($f, " ");
     $hora = $fecha = "";
-    if ($pos !== false) {
+    if ($pos !== FALSE) {
         list($fecha, $hora) = explode(" ", $f);
     } else {
         $fecha = $f;
         $hora = "";
     }
-    list($a, $m, $d) = preg_split("/[\/|-]/", $fecha);
-    if ($hora != "") {
+    list($a, $m, $d) = explode("/[\/|-]/", $fecha);
+    if ($hora !== "") {
         list($hh, $mm, $ss) = explode(":", $hora);
     }
     $ampm = "am";
