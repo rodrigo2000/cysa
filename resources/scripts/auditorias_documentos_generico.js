@@ -221,6 +221,57 @@ $(document).ready(function () {
     $("span.editable[contenteditable]").each(function (index, element) {
         element.addEventListener("paste", handlePaste);
     });
+
+    // Asiganmos el evento para cambiar el SIN ESPECIFICAR
+    $(document).on('click', 'a.sin-especificar', function () {
+        let $this = this;
+        let url = base_url + 'Oficios/asignar_valor';
+        let data = {
+            basedatos: $(this).attr("basedatos"),
+            tabla: $(this).attr("tabla"),
+            campo: $(this).attr("campo"),
+            where: $(this).attr('where'),
+            where_valor: $(this).attr('where_valor'),
+            valor: null
+        }
+        let a = swal({
+            title: tituloApp,
+            text: 'Especifique el valor',
+            type: "input",
+            imageUrl: imageUrlTitle,
+            showCancelButton: false,
+            cancelButtonText: txtCancelar,
+            cancelButtonColor: "#DD6B55",
+            confirmButtonText: txtAceptar,
+            closeOnConfirm: false,
+            animation: "slide-from-top",
+            inputPlaceholder: "",
+            showLoaderOnConfirm: true,
+        },
+                function (inputValue) {
+                    if (inputValue === false)
+                        return false;
+                    if (inputValue === "") {
+                        swal.showInputError("Debes escribir un valor");
+                        return false
+                    } else {
+                        data.valor = new String(inputValue);
+                        $.post(url, data, function (json) {
+                            if (json.success) {
+                                $($this).replaceWith('<span class="highlight">' + json.valor + '</span>');
+                                $("span.highlight").flash(1000, 5, function(){
+                                    $("span.highlight").replaceWith(json.valor);
+                                });
+                            } else {
+                                alert('Error ' + json.error.code + ': ' + json.error.message);
+                            }
+                            swal.close();
+                        }, "json").error(function () {
+                            alert("Error en la cadena JSON.")
+                        });
+                    }
+                });
+    });
 });
 function get_form_data(async = false) {
     var data = $("#frmOficios").serializeObject();
