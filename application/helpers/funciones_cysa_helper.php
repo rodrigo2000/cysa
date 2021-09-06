@@ -321,9 +321,9 @@ function get_identificacion($empleado) {
         $return = "cédula profesional con folio " . $empleado["empleados_cedula_profesional"];
     } elseif (isset($empleado['empleados_credencial_elector_delante'])) {
         $return = 'credencial para votar con clave de elector '
-                . (!empty($empleado['empleados_credencial_elector_delante']) ? $empleado['empleados_credencial_elector_delante'] : SIN_ESPECIFICAR_BOLD)
+                . (!empty($empleado['empleados_credencial_elector_delante']) ? $empleado['empleados_credencial_elector_delante'] : '<a href="#" class="sin-especificar" basedatos="' . APP_DATABASE_SAC . '" tabla="empleados" campo="empleados_credencial_elector_delante" where="empleados_credencial_elector_delante" where_valor="' . $empleado['empleados_credencial_elector_delante'] . '" title="Clic para cambiar el valor">' . SIN_ESPECIFICAR_BOLD . '</a>')
                 . ' y número identificador '
-                . (!empty($empleado['empleados_credencial_elector_detras']) ? $empleado['empleados_credencial_elector_detras'] : SIN_ESPECIFICAR_BOLD);
+                . (!empty($empleado['empleados_credencial_elector_detras']) ? $empleado['empleados_credencial_elector_detras'] : '<a href="#" class="sin-especificar" basedatos="' . APP_DATABASE_SAC . '" tabla="empleados" campo="empleados_credencial_elector_detras" where="empleados_credencial_elector_detras" where_valor="' . $empleado['empleados_credencial_elector_detras'] . '" title="Clic para cambiar el valor">' . SIN_ESPECIFICAR_BOLD . '</a>');
     }
     return $return;
 }
@@ -352,35 +352,37 @@ function crear_texto_asistencias($asistencias = array(), $distribuir = TRUE, $ti
             }
             if (isset($d[$tipo_asistencia])) {
                 foreach ($d[$tipo_asistencia] as $index => $e) {
-                    $aux = "";
-                    if ($incluir_articulos) {
-                        if ($incluir_domicilio) {
-                            $aux = " el ";
-                        } else {
-                            $aux .= (intval($e['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ');
+                    if (!empty($e)) {
+                        $aux = "";
+                        if ($incluir_articulos) {
+                            if ($incluir_domicilio) {
+                                $aux = " el ";
+                            } else {
+                                $aux .= (intval($e['empleados_genero']) === GENERO_FEMENINO ? ' la ' : ' el ');
+                            }
                         }
+                        if ($incluir_domicilio) {
+                            $aux .= ' servidor público ';
+                        }
+                        $aux .= $e['empleados_nombre_titulado'] . ($solo_nombre ? NULL : ', ' . $e['empleados_cargo']) . (!empty($enlace_designado) && $enlace_designado == $e['empleados_id'] ? ', Enlace Designado' : NULL);
+                        if ($incluir_domicilio) {
+                            $aux .= ", quien manifiesta ser de nacionalidad mexicana y con domicilio particular en "
+                                    . (!empty($e['empleados_domicilio']) ? $e['empleados_domicilio'] : '<a href="#" class="sin-especificar" basedatos="' . APP_DATABASE_SAC . '" tabla="empleados" campo="empleados_domicilio" where="empleados_domicilio" where_valor="' . $e['empleados_domicilio'] . '" title="Clic para cambiar el valor">' . SIN_ESPECIFICAR_BOLD . '</a>')
+                                    . " de la localidad de "
+                                    . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : '<a href="#" class="sin-especificar" basedatos="' . APP_DATABASE_SAC . '" tabla="empleados" campo="empleados_localidad" where="empleados_id" where_valor="' . $e['empleados_id'] . '" title="Clic para cambiar el valor">' . SIN_ESPECIFICAR_BOLD . '</a>')
+                                    . " se identifica con "
+                                    . get_identificacion($e)
+                                    . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia '
+                                    . 'su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos '
+                                    . 'como privados'
+                                    . '<input type="hidden" name="testigos[]" value="' . $e['empleados_id'] . '">'
+                                    . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
+                            ;
+                        }
+                        $css_class = "empleado_" . $e['empleados_id'];
+                        $str = span_resaltar($aux, $css_class);
+                        array_push($a, $str);
                     }
-                    if ($incluir_domicilio) {
-                        $aux .= ' servidor público ';
-                    }
-                    $aux .= $e['empleados_nombre_titulado'] . ($solo_nombre ? NULL : ', ' . $e['empleados_cargo']) . (!empty($enlace_designado) && $enlace_designado == $e['empleados_id'] ? ', Enlace Designado' : NULL);
-                    if ($incluir_domicilio) {
-                        $aux .= ", quien manifiesta ser de nacionalidad mexicana y con domicilio particular en "
-                                . $e['empleados_domicilio']
-                                . " de la localidad de "
-                                . (!empty($e['empleados_localidad']) ? Capitalizar($e['empleados_localidad']) : SIN_ESPECIFICAR_BOLD)
-                                . " se identifica con "
-                                . get_identificacion($e)
-                                . ', la cual contiene su nombre y fotografía que concuerda con sus rasgos fisonómicos y en la que se aprecia '
-                                . 'su firma, que reconoce como suya por ser la misma que utiliza para validar todos sus actos tanto públicos '
-                                . 'como privados'
-                                . '<input type="hidden" name="testigos[]" value="' . $e['empleados_id'] . '">'
-                                . '<span type="button" class="autocomplete_empleados_delete label label-danger" title="Eliminar" data-empleados-id="' . $e['empleados_id'] . '">&times;</span>'
-                        ;
-                    }
-                    $css_class = "empleado_" . $e['empleados_id'];
-                    $str = span_resaltar($aux, $css_class);
-                    array_push($a, $str);
                 }
             }
             if ($distribuir) {
