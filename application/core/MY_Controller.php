@@ -29,10 +29,10 @@ class MY_Controller extends CI_Controller {
         $this->module['breadcrumbs'] = "";
         date_default_timezone_set('America/Merida');
 
-        $this->redirect_nuevo_url = base_url() . $this->module['controller'];
-        $this->redirect_modificar_url = base_url() . $this->module['controller'];
-        $this->redirect_eliminar_url = base_url() . $this->module['controller'];
-        $this->redirect_destruir_url = base_url() . $this->module['controller'];
+        $this->redirect_nuevo_url = base_url();
+        $this->redirect_modificar_url = base_url();
+        $this->redirect_eliminar_url = base_url();
+        $this->redirect_destruir_url = base_url();
     }
 
     /**
@@ -128,6 +128,10 @@ class MY_Controller extends CI_Controller {
             $this->module['destroy_url'] = $this->module['url'] . '/destruir';
             $this->module['cancel_url'] = $this->module['url'];
             $this->module['catalogos_url'] = base_url() . "Catalogos";
+            $this->redirect_nuevo_url = base_url() . $this->module['controller'];
+            $this->redirect_modificar_url = base_url() . $this->module['controller'];
+            $this->redirect_eliminar_url = base_url() . $this->module['controller'];
+            $this->redirect_destruir_url = base_url() . $this->module['controller'];
         } else {
             $this->sin_permisos();
         }
