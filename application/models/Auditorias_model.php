@@ -61,7 +61,7 @@ class Auditorias_model extends MY_Model {
             $data2['clv_subdir'] = $cc['clv_subdir'];
             $data2['clv_depto'] = $cc['clv_depto'];
         }
-        $data2['auditorias_status_id'] = NULL; // Sin iniciar
+        $data2['auditorias_status_id'] = AUDITORIAS_STATUS_SIN_INICIAR; // Sin iniciar
         $return = parent::insert($data2);
         if ($return['state'] === 'success') {
             $fechas['auditorias_fechas_auditorias_id'] = $return['data']['insert_id'];
