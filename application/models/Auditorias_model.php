@@ -57,10 +57,13 @@ class Auditorias_model extends MY_Model {
         if (!empty($periodos_id) && !empty($direcciones_id) && !empty($subdirecciones_id) && !empty($departamentos_id)) {
             $cc = $this->SAC_model->get_cc_por_datos($periodos_id, $direcciones_id, $subdirecciones_id, $departamentos_id);
             $data2['auditorias_cc_id'] = $cc['cc_id'];
+            $data2['clv_dir'] = $cc['clv_dir'];
+            $data2['clv_subdir'] = $cc['clv_subdir'];
+            $data2['clv_depto'] = $cc['clv_depto'];
         }
+        $data2['auditorias_status_id'] = NULL; // Sin iniciar
         $return = parent::insert($data2);
         if ($return['state'] === 'success') {
-            $fechas['auditorias_status_id'] = 1;
             $fechas['auditorias_fechas_auditorias_id'] = $return['data']['insert_id'];
             $this->Auditorias_fechas_model->insert($fechas);
         }

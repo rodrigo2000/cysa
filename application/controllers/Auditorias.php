@@ -96,12 +96,22 @@ class Auditorias extends MY_Controller {
 
     function eliminar($id = NULL, $data = array()) {
         $data = array(
-            "etiqueta" => "¿Esta seguro que desea eliminar este cliente?",
+            "etiqueta" => "¿Esta seguro que desea eliminar esta auditoría?",
             "urlActionDelete" => $this->module['delete_url'],
             "urlActionCancel" => $this->module['listado_url'],
             "id" => $id
         );
         parent::eliminar($id, $data);
+    }
+    
+    function destruir($id = NULL, $data = array()) {
+        $data = array(
+            "etiqueta" => "¿Esta seguro que desea destruir esta auditoría?",
+            "urlActionDelete" => $this->module['destroy_url'],
+            "urlActionCancel" => $this->module['listado_url'],
+            "id" => $id
+        );
+        parent::destruir($id, $data);
     }
 
     function reporte_incidentes() {
