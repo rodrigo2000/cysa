@@ -18,7 +18,7 @@ echo validation_errors();
     </div>
     <div class="card-block">
         <div>
-            <form id="myForm" method="post" action="<?= $urlAction; ?>" novalidate="novalidate">
+            <form id="form_auditoria" method="post" action="<?= $urlAction; ?>" novalidate="novalidate">
                 <fieldset class="form-group">
                     <label for="area" class="col-sm-2 form-control-label">Número de auditoría</label>
                     <div class="col-sm-10">
@@ -200,10 +200,13 @@ echo validation_errors();
                 </fieldset>
                 <fieldset class="form-group">
                     <div class="pull-xs-right col-sm-offset-2 col-sm-10">
-                        <a href="<?= base_url() . $this->uri->segment(1); ?>" class="btn btn-default">Cancelar</a>
-                        <button type="submit" class="btn btn-primary"><?= $etiquetaBoton; ?></button>
+                        <a href="<?= base_url() . $this->uri->segment(1); ?>" class="btn btn-default"><?= $is_editable ? 'Cancelar' : 'Regresar'; ?></a>
+                        <?php if ($is_editable): ?>
+                            <button type="submit" class="btn btn-primary"><?= $etiquetaBoton; ?></button>
+                        <?php endif; ?>
                         <input type="hidden" name="accion" value="<?= $accion; ?>">
                         <input type="hidden" name="<?= $this->module['id_field']; ?>" value="<?= isset($r, $r[$this->module['id_field']]) ? $r[$this->module['id_field']] : ''; ?>">
+                        <input type="hidden" id="is_editable" value="<?= intval($is_editable); ?>">
                     </div>
                 </fieldset>
             </form>

@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    if ($("#is_editable").val() === "0") {
+        $("input, select, textarea, button.component-daterangepicker", "#form_auditoria").prop("disabled", true);
+    }
     $('.component-daterangepicker').daterangepicker({
         singleDatePicker: true,
         showDropdowns: true,

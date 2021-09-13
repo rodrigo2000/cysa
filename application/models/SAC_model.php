@@ -13,7 +13,7 @@ class SAC_model extends MY_Model {
     function get_ultimo_periodo() {
         $return = array();
         $result = $this->dbSAC
-                ->where("periodos_id", 2) /* Temporalmente siempre regresará el periodo 2 */
+                ->where("periodos_is_vigente", 1)
                 ->where("fecha_delete IS NULL")
                 ->order_by("periodos_fecha_fin", "DESC")
                 ->limit(1)
@@ -459,7 +459,7 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
-    function get_auditores_agrupados_por_cc($periodos_id) {
+    function get_auditores_agrupados_por_cc($periodos_id, $incluir_eliminados = FALSE) {
         $return = array();
         if (empty($periodos_id)) {
             $p = $this->get_ultimo_periodo();
@@ -470,15 +470,18 @@ class SAC_model extends MY_Model {
             PUESTO_COORDINADOR_AUDITORIA,
             PUESTO_JEFE_DEPARTAMENTO
         );
+        if($incluir_eliminados){
+            $this->dbSAC->where("e.fecha_delete IS NULL")
+                    ->where("e.empleados_fecha_baja IS NULL");
+        }
         $result = $this->dbSAC
                 ->join("centros_costos cc", "cc.cc_id = e.empleados_cc_id", "INNER")
                 ->join("subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "INNER")
                 ->join("departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "INNER")
                 ->where_in("empleados_puestos_id", $puestos)
-                ->where("cc_periodos_id", $periodos_id)
+                //->where("cc_periodos_id", $periodos_id)
                 ->where("cc_etiqueta_direccion", 5)
                 ->where("cc_etiqueta_subdireccion", 3)
-                ->where("e.fecha_delete IS NULL")
                 ->where("cc.fecha_delete IS NULL")
                 ->order_by("cc_etiqueta_subdireccion", "ASC")
                 ->order_by("cc_etiqueta_departamento", "ASC")

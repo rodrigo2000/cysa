@@ -69,7 +69,8 @@ class Auditorias extends MY_Controller {
             'subdirecciones' => array(),
             'departamentos' => array(),
             'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc($periodos_id),
-            'periodo_actual' => $periodo
+            'periodo_actual' => $periodo,
+            'is_editable' => TRUE
         );
         parent::nuevo($data);
     }
@@ -80,6 +81,7 @@ class Auditorias extends MY_Controller {
         $direcciones_id = intval($auditoria['auditorias_direcciones_id']);
         $subdirecciones_id = intval($auditoria['auditorias_subdirecciones_id']);
         $departamentos_id = intval($auditoria['auditorias_departamentos_id']);
+        $incluir_eliminados = in_array($auditoria['auditorias_status_id'], array(AUDITORIAS_STATUS_EN_PROCESO, AUDITORIAS_STATUS_SIN_INICIAR));
         $data = array(
             'areas' => $this->Auditorias_areas_model->get_todos(),
             'tipos' => $this->Auditorias_tipos_model->get_todos(),
@@ -88,7 +90,8 @@ class Auditorias extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodos_id),
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
-            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc($periodos_id),
+            'auditores' => $this->SAC_model->get_auditores_agrupados_por_cc($periodos_id, $incluir_eliminados),
+            'is_editable' => in_array($auditoria['auditorias_status_id'], array(AUDITORIAS_STATUS_SIN_INICIAR, AUDITORIAS_STATUS_EN_PROCESO, NULL)),
             'r' => $auditoria
         );
         parent::modificar($id, $data);
@@ -103,7 +106,7 @@ class Auditorias extends MY_Controller {
         );
         parent::eliminar($id, $data);
     }
-    
+
     function destruir($id = NULL, $data = array()) {
         $data = array(
             "etiqueta" => "¿Esta seguro que desea destruir esta auditoría?",
