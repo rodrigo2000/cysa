@@ -16,7 +16,7 @@ if (isset($cysa['auditorias_anio']) && !empty($cysa['auditorias_anio'])) {
 if (isset($cysa['auditorias_id']) && !empty($cysa['auditorias_id'])) {
     $data['auditoria'] = $this->Auditorias_model->get_auditoria($cysa['auditorias_id']);
 }
-$status = AUDITORIAS_STATUS_EN_PROCESO;
+$status = array(AUDITORIAS_STATUS_EN_PROCESO, AUDITORIAS_STATUS_SIN_INICIAR, NULL);
 if ($anio < 0) {
     $status = array(
         AUDITORIAS_STATUS_FINALIZADA,
