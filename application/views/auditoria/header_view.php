@@ -50,7 +50,7 @@ $anio_select = isset($this->session->cysa['auditorias_anio']) ? $this->session->
             <?php if ($tipos === 'auditorias_AP' && count($aa) > 0): ?>
                 <optgroup label="AUDITORIÁS (AP/AE/SA)">
                     <?php foreach ($aa as $r): ?>
-                        <?php if ($r['auditorias_status_id'] > 0): ?>
+                        <?php if ($r['auditorias_status_id'] > AUDITORIAS_STATUS_CANCELADA): ?>
                             <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= !empty($r['numero_auditoria']) && intval($r['numero_auditoria']) > 0 ? $r['numero_auditoria'] : 'S/N - ' . $r['auditorias_rubro']; ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>
@@ -59,7 +59,7 @@ $anio_select = isset($this->session->cysa['auditorias_anio']) ? $this->session->
             <?php if ($tipos === 'auditorias_IC' && count($aa) > 0): ?>
                 <optgroup label="INTERVENCIÓN DE CONTROL">
                     <?php foreach ($aa as $r): ?>
-                        <?php if ($r['auditorias_status_id'] > 0): ?>
+                        <?php if ($r['auditorias_status_id'] > AUDITORIAS_STATUS_CANCELADA): ?>
                             <option value="<?= $r['auditorias_id']; ?>" <?= $auditorias_id == $r['auditorias_id'] ? 'selected="selected"' : ''; ?> title="<?= $r['auditorias_objetivo'] ?>"><?= !empty($r['numero_auditoria']) && intval($r['numero_auditoria']) > 0 ? $r['numero_auditoria'] : 'S/N - ' . $r['auditorias_rubro']; ?></option>
                         <?php endif; ?>
                     <?php endforeach; ?>

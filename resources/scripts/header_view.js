@@ -12,7 +12,7 @@ $(document).ready(function () {
                 APs += '<optgroup label="AUDITORIÁS (AP/AE/SA)">';
                 $.each(json.auditorias_AP, function (index, element) {
                     var label = element.numero_auditoria;
-                    if (label == null) {
+                    if (isEmpty(label)) {
                         label = "S/N - " + element.auditorias_rubro;
                     }
                     APs += '<option value="' + element.auditorias_id + '" ' + (auditorias_id == element.auditorias_id ? 'selected="selected"' : '') + ' title="' + (!isEmpty(element.auditorias_objetivo) ? ucfirst(element.auditorias_objetivo) : '') + '">' + label + '</option>';

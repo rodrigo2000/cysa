@@ -277,7 +277,7 @@ class Auditoria extends MY_Controller {
         if ($this->input->server("REQUEST_METHOD") === "POST") {
             $anio = intval($this->input->post('auditorias_anio'));
             $this->{$this->module['controller'] . "_model"}->actualizar_session('auditorias_anio', $anio);
-            $status_id = AUDITORIAS_STATUS_EN_PROCESO;
+            $status_id = array(AUDITORIAS_STATUS_EN_PROCESO, AUDITORIAS_STATUS_SIN_INICIAR, NULL);
             if ($anio < 0) {
                 $status_id = array(
                     AUDITORIAS_STATUS_FINALIZADA,
@@ -306,7 +306,7 @@ class Auditoria extends MY_Controller {
                 'auditorias_IC' => $ICs
             );
         }
-        echo json_encode($return);
+        echo json_encode($return, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK);
     }
 
     function nuevo_documento($documentos_tipos_id, $direcciones_id) {
