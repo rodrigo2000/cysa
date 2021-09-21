@@ -3,7 +3,7 @@
         <div class="card">
             <h3 class="card-header bg-info">Representante Designado</h3>
             <div class="card-block">
-                <?php if ($auditoria['auditorias_status_id'] < AUDITORIAS_STATUS_FINALIZADA): ?>
+                <?php if (!$is_finalizada): ?>
                     <div class="row">
                         <div class="col-xs-12">
                             <p>
@@ -19,12 +19,12 @@
                             <div class="col-xs-12">
                                 <p align="center" class="lead">
                                     <span id="label-enlace-designado"><?= !empty($auditoria['enlace_designado']) ? $auditoria['enlace_designado']['empleados_nombre_titulado_siglas'] : 'SELECCIONAR'; ?></span>
-                                    <?php if ($auditoria['auditorias_status_id'] < AUDITORIAS_STATUS_FINALIZADA): ?>
+                                    <?php if (in_array($auditoria['auditorias_status_id'], array(AUDITORIAS_STATUS_EN_PROCESO, AUDITORIAS_STATUS_SIN_INICIAR))): ?>
                                         <a href="#" id="btn-editar-enlace-designado"><i class="fa fa-edit"></i></a>
                                     <?php endif; ?>
                                 </p>
                             </div>
-                            <?php if ($auditoria['auditorias_status_id'] < AUDITORIAS_STATUS_FINALIZADA): ?>
+                            <?php if (!$is_finalizada): ?>
                                 <div id="show-hide-asignar-enlace-designado" class="espaciado" style="display:none">
                                     <select id="cc_periodos_id" name="cc_periodos_id" class="form-control periodos_dependiente hidden-xs-up">
                                         <option value="0" selected="selected">SELECCIONE PERÍODO</option>
@@ -167,8 +167,8 @@
             </div>
         </div>
     </div>
-    <?php $mostrar_bajas = $auditoria['auditorias_status_id'] > AUDITORIAS_STATUS_EN_PROCESO ? TRUE : FALSE; ?>
-    <?php $empleados_contraloria = $this->SAC_model->get_auditores($auditoria['auditorias_periodos_id'], $mostrar_bajas); ?>
+    <?php $mostrar_bajas = $is_finalizada; ?>
+    <?php $empleados_contraloria = $this->SAC_model->get_auditores($mostrar_bajas); ?>
     <?php $equipo = array_column($auditoria['auditoria_equipo'], 'empleados_id'); ?>
     <div class="col-xs-12">
         <div class="card">
