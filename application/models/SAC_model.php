@@ -387,7 +387,12 @@ class SAC_model extends MY_Model {
         return $return;
     }
 
-    function get_auditores($periodos_id = NULL, $mostrar_bajas = FALSE) {
+    /**
+     * Devuelve los auditores vigentes de la Contraloría
+     * @param boolean $mostrar_bajas TRUE para que devuelva tambien los auditores que ya estan dados de baja. De forma predeterminada es FALSE, es decir, que devuelva solo los vigentes.
+     * @return array Listado de auditores con sus atributos
+     */
+    function get_auditores($mostrar_bajas = FALSE) {
         $return = array();
         $puestos = array(
             PUESTO_AUDITOR,
@@ -397,10 +402,7 @@ class SAC_model extends MY_Model {
             PUESTO_AUXILIAR_DE_AUDITORIA,
             PUESTO_SUBDIRECTOR
         );
-        if (empty($periodos_id)) {
-            $p = $this->get_ultimo_periodo();
-            $periodos_id = $p['periodos_id'];
-        }
+        
         if (!$mostrar_bajas) {
             $this->dbSAC
                     ->group_start()
@@ -409,8 +411,7 @@ class SAC_model extends MY_Model {
                     ->group_end();
         }
         $this->dbSAC
-                ->where("cc.cc_periodos_id", $periodos_id)
-                ->where("cc.cc_etiqueta_direccion", 5)
+                ->where("cc.cc_etiqueta_direccion", APP_DIRECCION_CONTRALORIA)
                 ->where_in("e.empleados_puestos_id", $puestos)
                 ->order_by("nombre_completo", "ASC");
         $return = $this->get_empleados($mostrar_bajas);
