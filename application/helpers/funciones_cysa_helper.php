@@ -94,6 +94,8 @@ function span_editable($r, $constante, $default_value = NULL, $title = NULL, $de
     } elseif (!empty($descripcion) && is_string($descripcion)) {
         $real_descripcion = $descripcion;
     }
+    $r[$constante] = trim($r[$constante]);
+    $r[$constante] = trim($r[$constante],'<br>');
     $html = '<span '
             . 'id="' . $constante . '" '
             . 'contenteditable="true" '
