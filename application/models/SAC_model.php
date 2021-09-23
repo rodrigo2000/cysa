@@ -402,7 +402,7 @@ class SAC_model extends MY_Model {
             PUESTO_AUXILIAR_DE_AUDITORIA,
             PUESTO_SUBDIRECTOR
         );
-        
+
         if (!$mostrar_bajas) {
             $this->dbSAC
                     ->group_start()
@@ -471,7 +471,7 @@ class SAC_model extends MY_Model {
             PUESTO_COORDINADOR_AUDITORIA,
             PUESTO_JEFE_DEPARTAMENTO
         );
-        if($incluir_eliminados){
+        if ($incluir_eliminados) {
             $this->dbSAC->where("e.fecha_delete IS NULL")
                     ->where("e.empleados_fecha_baja IS NULL");
         }
@@ -505,11 +505,12 @@ class SAC_model extends MY_Model {
                 ->join("titulos t", "t.titulos_id = " . "e.empleados_titulos_id", "LEFT")->select("t.*")
                 ->join("titulos subt", "subt.titulos_id = " . "e.empleados_titulos_id", "LEFT")->select("subt.*")
                 ->join("centros_costos cc", "cc.cc_id = " . "e.empleados_cc_id", "LEFT")->select("cc.*")
-                ->join("puestos p", "p.puestos_id = " . "e.empleados_puestos_id", "LEFT")->select("p.puestos_nombre")
+                ->join("puestos p", "p.puestos_id = " . "e.empleados_puestos_id", "LEFT")->select("p.puestos_nombre, p.puestos_nombre_femenino")
 //                ->join("empleados_cc_historico ecch", "ecch.historico_" . $this->id_field . " = " . "e." . $this->id_field, "LEFT")->select("ecch.historico_fecha_baja")->where("ecch.historico_fecha_baja IS NULL")
                 ->join("direcciones d", "d.direcciones_id = cc.cc_direcciones_id", "LEFT")->select("direcciones_nombre, direcciones_nombre_generico, direcciones_ubicacion, direcciones_is_descentralizada")
                 ->join("subdirecciones s", "s.subdirecciones_id = cc.cc_subdirecciones_id", "LEFT")->select("s.subdirecciones_nombre")
                 ->join("departamentos dd", "dd.departamentos_id = cc.cc_departamentos_id", "LEFT")->select("dd.departamentos_nombre")
+                ->join("tipos_ua tua", "d.direcciones_tipos_ua_id = tua.tipos_ua_id", "LEFT")->select("tua.tipos_ua_nombre, tua.tipos_ua_genero")
                 ->order_by("CASE
                     WHEN puestos_id IN (155) THEN 0
                     WHEN puestos_id IN (45, 290, 145, 294, 293) THEN 1
@@ -525,7 +526,7 @@ class SAC_model extends MY_Model {
             $return = $result->result_array();
             foreach ($return as $index => $row) {
                 get_nombre_titulado($return[$index]);
-                get_cargo_de_empleado($return[$index]);
+                get_cargo_de_empleado2($return[$index]);
                 get_siglas_de_empleado($return[$index]);
             }
         }

@@ -24,11 +24,15 @@ class Documentos_blob_model extends MY_Model {
                 $data = array(
                     $this->id_field => $documentos_id,
                     'documentos_blob_contenido' => $blob,
+                    'documentos_html' => $blob,
                     'documentos_blob_tipo' => $tipo
                 );
                 $return = $this->insert($data);
             } else {
-                $data = array('documentos_blob_contenido' => $blob);
+                $data = array(
+                    'documentos_blob_contenido' => $blob,
+                    'documentos_html' => $blob
+                );
                 $this->db->where('documentos_blob_tipo', $tipo);
                 $return = $this->update($documentos_id, $data);
             }
@@ -38,12 +42,14 @@ class Documentos_blob_model extends MY_Model {
 
     function get_html($auditorias_id, $documentos_tipos_id) {
         $return = "";
+        //$index = 'documentos_blob_contenido';
+        $index = 'documentos_html';
         $documentos = $this->Documentos_model->get_documentos_de_auditoria($auditorias_id, $documentos_tipos_id);
         if (count($documentos) == 1) {
             $documento = $documentos[0];
         }
-        if (!empty($documento) && isset($documento['documentos_blob_contenido']) && !empty($documento['documentos_blob_contenido'])) {
-            $return = utf8_encode($documento['documentos_blob_contenido']);
+        if (!empty($documento) && isset($documento[$index]) && !empty($documento[$index])) {
+            $return = $documento[$index];
         } else {
             $aux = $this->Importar_model->get_documento_de_auditoria($auditorias_id, $documentos_tipos_id);
             if (!empty($aux) && isset($aux['contenido'])) {

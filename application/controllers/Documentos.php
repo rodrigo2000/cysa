@@ -150,7 +150,6 @@ class Documentos extends MY_Controller {
                 'accion' => 'modificar',
             );
         }
-        $html = utf8_decode($html);
         $this->Documentos_blob_model->insert_update($documentos_id, 'html', $html);
         echo json_encode($json);
     }

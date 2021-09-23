@@ -46,7 +46,7 @@ class Auditoria extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodos_id),
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
-            'is_finalizada' => $auditoria['auditorias_status_id'] >= AUDITORIAS_STATUS_FINALIZADA ? TRUE : FALSE,
+            'is_finalizada' => !in_array($auditoria['auditorias_status_id'], array(AUDITORIAS_STATUS_EN_PROCESO, AUDITORIAS_STATUS_SIN_INICIAR)),
         );
         if (!empty($auditorias_id)) {
             $this->{$this->module['controller'] . "_model"}->actualizar_session('auditorias_id', intval($auditorias_id));
@@ -74,8 +74,8 @@ class Auditoria extends MY_Controller {
             $documentos_tipos_id = $this->Documentos_tipos_model->parse_siglas($documentos_tipos_id);
             $documentos_tipos_id = intval($documentos_tipos_id);
         }
-        $titular = $this->SAC_model->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $auditoria['auditorias_periodos_id']);
-        $de_empleados_id = $titular['empleados_id'];
+        $contralor = $this->SAC_model->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $auditoria['auditorias_periodos_id']);
+        $de_empleados_id = isset($contralor['empleados_id']) ? $contralor['empleados_id'] : NULL;
         $accion = "nuevo";
         $index = 0;
         $vista = NULL;
@@ -256,7 +256,7 @@ class Auditoria extends MY_Controller {
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo($periodos_id),
             'subdirecciones' => $this->SAC_model->get_subdirecciones_de_direccion($periodos_id, $direcciones_id),
             'departamentos' => $this->SAC_model->get_departamentos_de_subdireccion($periodos_id, $direcciones_id, $subdirecciones_id),
-            'is_finalizada' => $auditoria['auditorias_status_id'] >= AUDITORIAS_STATUS_FINALIZADA ? TRUE : FALSE,
+            'is_finalizada' => !in_array($auditoria['auditorias_status_id'], array(AUDITORIAS_STATUS_EN_PROCESO, AUDITORIAS_STATUS_SIN_INICIAR)),
             'vigente_documentos_versiones_id' => $this->Documentos_versiones_model->get_version_vigente_del_tipo_de_documento($documentos_tipos_id),
             'vista' => $vista
         );
@@ -519,8 +519,8 @@ class Auditoria extends MY_Controller {
             }
         }
         $auditoria = $this->Auditoria_model->get_auditoria($auditorias_id);
-        $titular = $this->SAC_model->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $auditoria['auditorias_periodos_id']);
-        $de_empleados_id = $titular['empleados_id'];
+        $contralor = $this->SAC_model->get_director_de_ua(APP_DIRECCION_CONTRALORIA, $auditoria['auditorias_periodos_id']);
+        $de_empleados_id = $contralor['empleados_id'];
         $accion = "descargar";
         $is_oficio = TRUE;
         $documento['asistencias'] = $this->Asistencias_model->get_asistencias_de_documento($documentos_id);
@@ -644,7 +644,7 @@ class Auditoria extends MY_Controller {
             'etiquetaBoton' => "Guardar",
             'id' => $auditorias_id,
             'accion' => $accion,
-            'is_finalizada' => $auditoria['auditorias_status_id'] >= AUDITORIAS_STATUS_FINALIZADA ? TRUE : FALSE,
+            'is_finalizada' => !in_array($auditoria['auditorias_status_id'], array(AUDITORIAS_STATUS_EN_PROCESO, AUDITORIAS_STATUS_SIN_INICIAR)),
         );
         if ($is_oficio) {
             $data['oficio_para'] = array(

@@ -426,6 +426,24 @@ function get_cargo_de_empleado(&$row) {
     return TRUE;
 }
 
+function get_cargo_de_empleado2(&$row) {
+    $puesto = $row['puestos_nombre_femenino'];
+    if (!empty($row['empleados_nombramiento'])) {
+        $puesto = $row['empleados_nombramiento'];
+    }
+    $direccion = $row['direcciones_nombre_generico'];
+    $conector = ($row['tipos_ua_genero'] == 1 ? ' del ' : ' de la ');
+    switch($row['cc_direcciones_id']){
+        case 14: // DIF
+            $conector = " de ";
+            break;
+        default:
+            break;
+    }
+    $row['empleados_cargo'] = trim($puesto) . $conector . trim($direccion);
+    return TRUE;
+}
+
 /**
  * Genera valores al arreglo del empleado
  * @param array $empleado

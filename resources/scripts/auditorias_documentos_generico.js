@@ -259,7 +259,7 @@ $(document).ready(function () {
                         $.post(url, data, function (json) {
                             if (json.success) {
                                 $($this).replaceWith('<span class="highlight">' + json.valor + '</span>');
-                                $("span.highlight").flash(1000, 5, function(){
+                                $("span.highlight").flash(1000, 5, function () {
                                     $("span.highlight").replaceWith(json.valor);
                                 });
                             } else {
@@ -304,22 +304,22 @@ function get_form_data(async = false) {
     });
     // Eliminamos elementos del oficios (el que se guardará en HTML) que no son necesarios para que el HTML quede lo
     // más limpio que se pueda.
-//    var oficio = $("#oficio-hoja").clone(true);
-//    $("button, .btn, .autocomplete_empleados_delete, .hidden-print, .watermark, input[type=hidden]", oficio).remove();
-//    $(".xeditable", oficio).each(function (index, element) {
-//        $(element, oficio).editable("destroy");
-//    });
-//    $(".resaltar, .editable, .bg-white>span", oficio).each(function (index, element) {
-//        let txt = $(element).text();
-//        $(element).replaceWith(txt);
-//    });
-//    $(".dd-selected-image", oficio).each(function (index, element) {
-//        let obj = $(element).css('margin-bottom', '1em').removeClass();
-//        let div = $(element).parents('div.dd-container');
-//        div.parent('td').addClass('text-xs-center');
-//        div.replaceWith(obj);
-//    });
-//    data.html = $(oficio).get(0).outerHTML;
+    var oficio = $("#oficio-hoja").clone(true);
+    $("button, .btn, .autocomplete_empleados_delete, .hidden-print, .watermark, input[type=hidden]", oficio).remove();
+    $(".xeditable", oficio).each(function (index, element) {
+        $(element, oficio).editable("destroy");
+    });
+    $(".resaltar, .editable:not([aceptar-enter]), .bg-white>span", oficio).each(function (index, element) {
+        let txt = $(element).text();
+        $(element).replaceWith(txt);
+    });
+    $(".dd-selected-image", oficio).each(function (index, element) {
+        let obj = $(element).css('margin-bottom', '1em').removeClass();
+        let div = $(element).parents('div.dd-container');
+        div.parent('td').addClass('text-xs-center');
+        div.replaceWith(obj);
+    });
+    data.html = $(oficio).get(0).outerHTML;
     /////////////////////////////////////////////////////////////////////////
     var url = base_url + 'Documentos/guardar';
     $("button.boton_guardar").prop('disabled', true).addClass('disabled').html('Guardando...');
