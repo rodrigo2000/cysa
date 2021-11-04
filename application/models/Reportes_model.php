@@ -324,7 +324,7 @@ class Reportes_model extends MY_Model {
         } else {
             $path = "archivos/";
             $archivo = $nombre_archivo;
-            if(!is_dir($path)){
+            if (!is_dir($path)) {
                 mkdir($path);
             }
             $objWriter->save($path . $archivo);
@@ -354,6 +354,11 @@ class Reportes_model extends MY_Model {
         $status = $auditorias_status_id;
         $areas = NULL;
         $auditorias = $this->Auditorias_model->get_auditorias($anios, $status, $areas);
+        return $auditorias;
+    }
+
+    function generar_reporte_personalizado($anio = NULL, $auditorias_status_id = NULL, $areas = NULL) {
+        $auditorias = $this->Auditorias_model->get_auditorias($anio, $auditorias_status_id, $areas);
         return $auditorias;
     }
 

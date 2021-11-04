@@ -96,6 +96,12 @@ class Reportes extends MY_Controller {
                     );
                     $json = $this->Reportes_model->generar_reporte_xls($auditorias, 'Reporte de PAA ' . $anio . '.xlsx', $campos);
                     break;
+                case 'custom':
+                    $this->db->order_by("auditorias_numero", "ASC");
+                    $auditorias = $this->Reportes_model->generar_reporte_personalizado($anio);
+                    $campos = $this->input->post('campos');
+                    $json = $this->Reportes_model->generar_reporte_xls($auditorias, 'Reporte de personalizado ' . $anio . '.xlsx', $campos);
+                    break;
                 default:
                     $json['error'] = "No se seleccionó una opción válida.";
                     break;
