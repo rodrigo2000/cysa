@@ -37,6 +37,12 @@
                     <input type="checkbox" name="campos[]" value="auditorias_fechas_vobo_subdirector_etapa_1" data-labelauty="Fecha VoBo Subdirector (Solventación)" />
                     <input type="checkbox" name="campos[]" value="auditorias_fechas_vobo_director_etapa_1" data-labelauty="Fecha VoBo Director (Solventación)" />
                     <input type="checkbox" name="campos[]" value="auditorias_fechas_lectura_etapa_1" data-labelauty="Fecha Lectura ARR" />
+                    <hr>
+                    <input type="checkbox" name="campos[]" value="observaciones_total" data-labelauty="Total de observaciones" />
+                    <input type="checkbox" name="campos[]" value="observaciones_titulo" data-labelauty="Título de la observación" />
+                    <input type="checkbox" name="campos[]" value="observaciones_solventadas" data-labelauty="Observaciones solventadas" />
+                    <input type="checkbox" name="campos[]" value="observaciones_no_solventadas" data-labelauty="Observaciones NO solventadas" />
+                    <input type="checkbox" name="campos[]" value="recomendaciones_por_observacion" data-labelauty="Recomendaciones por observación" />
                 </div>
             </div>
         </div>

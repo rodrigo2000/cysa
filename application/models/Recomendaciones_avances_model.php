@@ -34,7 +34,7 @@ class Recomendaciones_avances_model extends MY_Model {
      */
     function get_avances_de_recomendacion($recomendaciones_id, $numero_revision = NULL) {
         $return = array();
-        if (intval($numero_revision) === 0) {
+        if (empty($numero_revision)) {
             $result = $this->db->select_max("recomendaciones_avances_numero_revision", 'maximo')
                     ->where($this->id_field, $recomendaciones_id)
                     ->limit(1)

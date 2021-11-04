@@ -200,6 +200,12 @@ class Reportes_model extends MY_Model {
             'tipos_ua_genero' => array('label' => 'Género de UA'),
             'subdirecciones_nombre' => array('label' => 'Subdirección'),
             'departamentos_nombre' => array('label' => 'Departamento'),
+            // campos calculados
+            'observaciones_total' => array('label' => 'Total de observaciones', 'campo_calculado' => TRUE),
+            'observaciones_titulo' => array('label' => 'Titulos', 'campo_calculado' => TRUE, 'wraptext' => TRUE, 'width' => 50, 'aligment_h' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT),
+            'observaciones_solventadas' => array('label' => 'Obs. Solventadas', 'campo_calculado' => TRUE),
+            'observaciones_no_solventadas' => array('label' => 'Obs. No Solventadas', 'campo_calculado' => TRUE),
+            'recomendaciones_por_observacion' => array('label' => 'Recomendaciones', 'campo_calculado' => TRUE, 'wraptext' => TRUE, 'width' => 50, 'aligment_h' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT),
         );
 
         // DATA
@@ -223,6 +229,16 @@ class Reportes_model extends MY_Model {
                         } else {
                             array_push($encabezados, $titulos[$key]['label']);
                         }
+                    } else {
+                        // Campos calculados
+                        switch ($key) {
+                            case 'observaciones_total':
+                                $indices[$key] = 0;
+                                array_push($encabezados, $titulos[$key]['label']);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -237,6 +253,9 @@ class Reportes_model extends MY_Model {
                         $d[$key] = call_user_func($titulos[$key]['map_function'], $d[$key]);
                     } elseif (stripos($key, 'fecha') !== FALSE) {
                         $d[$key] = phpDate2excelDate($d[$key]);
+                    } elseif (isset($titulos[$key]['campo_calculado']) && $titulos[$key]['campo_calculado'] === TRUE) {
+//                        echo "<pre>" . print_r($d, 1) . "</pre>";
+                        $d[$key] = $this->mis_campos_calculados($key, $d);
                     }
                     $aux2[$key] = $d[$key];
                 }
@@ -244,6 +263,7 @@ class Reportes_model extends MY_Model {
             }
             $data = $aux;
         }
+//        die();
         $sheet = $objPHPExcel->getActiveSheet();
         if (!empty($sheet_name)) {
             $sheet->setTitle($sheet_name);
@@ -285,6 +305,12 @@ class Reportes_model extends MY_Model {
             }
             if (isset($titulos[$key]['wraptext']) && $titulos[$key]['wraptext'] === TRUE) {
                 $sheet->getStyle($letra . '2:' . $letra . $fila)->getAlignment()->setWrapText(TRUE);
+            }
+            if (isset($titulos[$key]['aligment_h'])) {
+                $sheet->getStyle($letra . '2:' . $letra . $fila)->getAlignment()->setHorizontal($titulos[$key]['aligment_h']);
+            }
+            if (isset($titulos[$key]['aligment_v'])) {
+                $sheet->getStyle($letra . '2:' . $letra . $fila)->getAlignment()->setVertical($titulos[$key]['aligment_v']);
             }
             $i++;
         }
@@ -357,9 +383,125 @@ class Reportes_model extends MY_Model {
         return $auditorias;
     }
 
-    function generar_reporte_personalizado($anio = NULL, $auditorias_status_id = NULL, $areas = NULL) {
-        $auditorias = $this->Auditorias_model->get_auditorias($anio, $auditorias_status_id, $areas);
+    function generar_reporte_personalizado($anio = NULL, $auditorias_status_id = NULL, $areas = NULL, $solo_con_numero = NULL, $mas_datos = NULL) {
+        $auditorias = $this->Auditorias_model->get_auditorias($anio, $auditorias_status_id, $areas, $solo_con_numero, $mas_datos);
         return $auditorias;
+    }
+
+    function mis_campos_calculados($campo, $auditoria) {
+        $return = NULL;
+        switch ($campo) {
+            case 'observaciones_total':
+                if ($auditoria['auditorias_is_sin_observaciones'] == 1) {
+                    $return = "Sin observaciones";
+                } elseif (isset($auditoria['observaciones'])) {
+                    if (empty($auditoria['observaciones'])) {
+                        $return = "No se han capturado observaciones";
+                    } else {
+                        $contador = 0;
+                        foreach ($auditoria['observaciones'] as $o) {
+                            if ($o['observaciones_is_eliminada'] == 0) {
+                                $contador++;
+                            }
+                        }
+                        $return = $contador;
+                    }
+                }
+                break;
+            case 'observaciones_titulo':
+                if ($auditoria['auditorias_is_sin_observaciones'] == 1) {
+                    $return = "Sin observaciones";
+                } elseif (isset($auditoria['observaciones'])) {
+                    $aux = array();
+                    foreach ($auditoria['observaciones'] as $o) {
+                        if ($o['observaciones_is_eliminada'] == 0) {
+                            array_push($aux, $o['observaciones_numero'] . " - " . $o['observaciones_titulo']);
+                        }
+                    }
+                    $return = implode("\n", $aux);
+                }
+                break;
+            case 'observaciones_solventadas':
+                if ($auditoria['auditorias_is_sin_observaciones'] == 1) {
+                    $return = "No aplica";
+                } elseif (isset($auditoria['observaciones'])) {
+                    $contador = 0;
+                    foreach ($auditoria['observaciones'] as $o) {
+                        $recomendacion_solventada = TRUE; // Considero que todas la recomendaciones de la observación estan solventadas
+                        if ($o['observaciones_is_eliminada'] == 0) {
+                            foreach ($o['recomendaciones'] as $r) {
+                                // Si alguna recomendacion NO esta solventada, entonces toda la observación NO esta solventada.
+                                if (empty($r['fecha_delete']) && $r['recomendaciones_status_id'] != OBSERVACIONES_STATUS_SOLVENTADA) {
+                                    $recomendacion_solventada = FALSE;
+                                }
+                            }
+                        }
+                        // Si la variable es igual a TRUE, entonces la observacion esta solventada
+                        if ($recomendacion_solventada) {
+                            $contador++;
+                        }
+                    }
+                    $return = $contador;
+                }
+                break;
+            case 'observaciones_no_solventadas':
+                if ($auditoria['auditorias_is_sin_observaciones'] == 1) {
+                    $return = "No aplica";
+                } elseif (isset($auditoria['observaciones'])) {
+                    $contador = 0;
+                    foreach ($auditoria['observaciones'] as $o) {
+                        $recomendacion_solventada = TRUE; // Considero que todas la recomendaciones de la observación estan solventadas
+                        if ($o['observaciones_is_eliminada'] == 0) {
+                            foreach ($o['recomendaciones'] as $r) {
+                                // Si alguna recomendacion NO esta solventada, entonces toda la observación NO esta solventada.
+                                if (empty($r['fecha_delete']) && $r['recomendaciones_status_id'] != OBSERVACIONES_STATUS_SOLVENTADA) {
+                                    $recomendacion_solventada = FALSE;
+                                }
+                            }
+                        }
+                        // Si la variable es igual a FALSE, entonces la observacion NO esta solventada
+                        if (!$recomendacion_solventada) {
+                            $contador++;
+                        }
+                    }
+                    $return = $contador;
+                }
+                break;
+            case 'recomendaciones_por_observacion':
+                if ($auditoria['auditorias_is_sin_observaciones'] == 1) {
+                    $return = "No aplica";
+                } elseif (isset($auditoria['observaciones'])) {
+                    $aux = array();
+                    foreach ($auditoria['observaciones'] as $o) {
+                        $contador = 0;
+                        if ($o['observaciones_is_eliminada'] == 0) {
+                            foreach ($o['recomendaciones'] as $r) {
+                                if (empty($r['fecha_delete'])) {
+                                    $contador++;
+                                }
+                            }
+                        }
+                        $txt = "Observación " . $o['observaciones_numero'] . ": " . $contador . " " . ($contador > 1 ? 'recomendaciones' : 'recomendación');
+                        array_push($aux, $txt);
+                    }
+                    switch (count($aux)) {
+                        case 0:
+                            $return = "Ninguna recomendación";
+                            break;
+                        case 1:
+                            $return = '1 recomendación';
+                            break;
+                        default:
+                            $return = implode("\n", $aux);
+                            break;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return strval($return);
     }
 
 }

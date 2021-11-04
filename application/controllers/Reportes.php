@@ -27,6 +27,13 @@ class Reportes extends MY_Controller {
             'success' => TRUE,
             'archivo' => NULL
         );
+        $campos_calculados = array(
+            'observaciones_total',
+            'observaciones_solventadas',
+            'observaciones_no_solventadas',
+            'observaciones_titulo',
+            'recomendaciones_por_observacion'
+        );
         if (!empty($reportes)) {
             switch ($reportes) {
                 case 'control-auditorias':
@@ -97,9 +104,14 @@ class Reportes extends MY_Controller {
                     $json = $this->Reportes_model->generar_reporte_xls($auditorias, 'Reporte de PAA ' . $anio . '.xlsx', $campos);
                     break;
                 case 'custom':
-                    $this->db->order_by("auditorias_numero", "ASC");
-                    $auditorias = $this->Reportes_model->generar_reporte_personalizado($anio);
+                    $solo_con_numero = FALSE;
+                    $mas_datos = FALSE;
                     $campos = $this->input->post('campos');
+                    if (count(array_intersect($campos, $campos_calculados)) > 0) {
+                        $mas_datos = TRUE;
+                    }
+                    $this->db->order_by("auditorias_numero", "ASC");
+                    $auditorias = $this->Reportes_model->generar_reporte_personalizado($anio, $status, $anio, $solo_con_numero, $mas_datos);
                     $json = $this->Reportes_model->generar_reporte_xls($auditorias, 'Reporte de personalizado ' . $anio . '.xlsx', $campos);
                     break;
                 default:

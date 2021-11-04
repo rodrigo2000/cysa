@@ -58,7 +58,7 @@ class Recomendaciones_avances extends MY_Controller {
                     $return['data'] = array_merge($return['data'], $data);
                 }
             }
-            if ($return['success']) {
+            if (isset($return['success'])) {
                 $return['state'] = 'success';
             }
         }
