@@ -34,6 +34,7 @@ class Auditorias extends MY_Controller {
             array('field' => 'auditorias_direcciones_id', 'label' => 'Dirección', 'rules' => 'trim'),
             array('field' => 'auditorias_subdirecciones_id', 'label' => 'Subdirección', 'rules' => 'trim'),
             array('field' => 'auditorias_departamentos_id', 'label' => 'Departamento', 'rules' => 'trim'),
+            array('field' => 'auditorias_status_id', 'label' => 'Status ID', 'rules' => 'trim'),
         );
         $accion = $this->input->post('accion');
         if ($accion === "modificar") {
@@ -51,7 +52,7 @@ class Auditorias extends MY_Controller {
             'areas' => $this->Auditorias_areas_model->get_todos(NULL, NULL, TRUE),
             'tipos' => $this->Auditorias_tipos_model->get_todos(NULL, NULL, TRUE),
             'anios' => range(date("Y"), 2007, -1),
-            'status' => $this->Auditorias_status_model->get_todos(NULL, NULL, TRUE),
+            'status' => $this->Auditorias_status_model->get_status_auditoria_ordenados(),
             'direcciones' => $this->SAC_model->get_direcciones_de_periodo(),
         );
         $this->listado($data);
@@ -246,7 +247,7 @@ class Auditorias extends MY_Controller {
         }
         $datos = array();
         $status = array(NULL, "Cancelada", "En proceso", "Finalizada", "Reprogramada", "Sin iniciar", "Sustituída");
-        $className = array(NULL, 'text-danger', 'text-info', 'text-success', 'text-warning', 'text-purple', 'text-purple');
+        $className = array(NULL, 'text-danger', 'text-info', 'text-success', 'text-warning', 'text-purple', 'text-purple', 'text-purple');
         foreach ($data as $index => $r) {
             $datos[$index]['numero'] = '<span class="text-danger">SIN ASIGNAR</span>';
             if (!empty($r['auditorias_numero']) && intval($r['auditorias_numero']) > 0) {

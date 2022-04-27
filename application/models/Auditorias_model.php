@@ -49,6 +49,9 @@ class Auditorias_model extends MY_Model {
         }
         if (!empty($data2['auditorias_fechas_inicio_real'])) {
             $fechas['auditorias_fechas_sello_orden_entrada'] = $data2['auditorias_fechas_inicio_real'];
+            if (!empty($data['auditorias_status_id']) && $data['auditorias_status_id'] == AUDITORIAS_STATUS_SIN_INICIAR) {
+                $data2['auditorias_status_id'] = AUDITORIAS_STATUS_EN_PROCESO;
+            }
         }
         $periodos_id = $data['auditorias_periodos_id'];
         $direcciones_id = $data['auditorias_direcciones_id'];
@@ -89,6 +92,9 @@ class Auditorias_model extends MY_Model {
         }
         if (!empty($data['auditorias_fechas_inicio_real'])) {
             $fechas['auditorias_fechas_sello_orden_entrada'] = $data['auditorias_fechas_inicio_real'];
+            if (!empty($data['auditorias_status_id']) && $data['auditorias_status_id'] == AUDITORIAS_STATUS_SIN_INICIAR) {
+                $data2['auditorias_status_id'] = AUDITORIAS_STATUS_EN_PROCESO;
+            }
         }
         $data2['auditorias_cc_id'] = NULL;
         $periodos_id = $data['auditorias_periodos_id'];

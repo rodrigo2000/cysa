@@ -29,16 +29,24 @@ class Auditorias_status_model extends MY_Model {
                     $valor = 4;
                 }
                 break;
-            case 2:
-            case 3:
-            case 4:
+            case 2: // Finalizada
+            case 3: // Finalizada reservada
+            case 4: // Finalizada manualmente
                 $valor = 3;
                 break;
-            case 5:
+            case 5: // Reprogramada
+            case 6: // Sustituida
+            case 7: // Sin iniciar
                 $valor = 5;
                 break;
         }
         return $valor;
+    }
+
+    function get_status_auditoria_ordenados($is_ascendente = TRUE) {
+        $orden = $is_ascendente ? "ASC" : "DESC";
+        $this->db->order_by('auditorias_status_ordenamiento', $orden);
+        return $this->get_todos();
     }
 
 }

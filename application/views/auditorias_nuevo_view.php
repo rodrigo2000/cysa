@@ -207,6 +207,7 @@ echo validation_errors();
                         <input type="hidden" name="accion" value="<?= $accion; ?>">
                         <input type="hidden" name="<?= $this->module['id_field']; ?>" value="<?= isset($r, $r[$this->module['id_field']]) ? $r[$this->module['id_field']] : ''; ?>">
                         <input type="hidden" id="is_editable" value="<?= intval($is_editable); ?>">
+                        <input type="hidden" name="auditorias_status_id" value="<?= $r['auditorias_status_id']; ?>">
                     </div>
                 </fieldset>
             </form>
